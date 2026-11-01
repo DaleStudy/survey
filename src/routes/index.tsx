@@ -157,7 +157,7 @@ function Landing() {
               <Card.Body>
                 <Card.Title>결과는 모두 공개해요</Card.Title>
                 <Card.Description>
-                  12월에 결과 리포트를 누구나 볼 수 있게 내요. 누군지 알 수 없게 처리한 응답 데이터도 CSV로 함께 올려요.
+                  12월 21일에 결과 리포트를 누구나 볼 수 있게 내요. 누군지 알 수 없게 처리한 응답 데이터도 CSV로 함께 올려요.
                 </Card.Description>
               </Card.Body>
             </Card>
@@ -178,8 +178,8 @@ function Landing() {
         <div style={section}>
           <SectionTitle label="무엇을 묻나요" title="여섯 가지 주제, 30문항 안팎" />
           <Text size="lg" style={{ maxWidth: 720, lineHeight: 1.6 }}>
-            지금 상황에 맞는 질문만 나와서, 실제로 답할 문항은 이보다 적을 수 있어요. 응답은 11월 [시작일]부터 [마감일]까지 받고, 결과는 12월
-            [발표일]에 공개해요.
+            지금 상황에 맞는 질문만 나와서, 실제로 답할 문항은 이보다 적을 수 있어요. 응답은 11월 16일부터 12월 6일까지 받고, 결과는 12월
+            21일에 공개해요.
           </Text>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-12)' }}>
             {['나에 대해', '일하는 곳', '보상', '커리어', '기술'].map((t) => (

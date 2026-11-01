@@ -96,7 +96,7 @@ function Survey() {
       <main style={page}>
         <div style={column}>
           <Heading level={1}>고마워요</Heading>
-          <Text size="lg">응답이 익명으로 저장됐어요. 결과는 12월에 누구나 볼 수 있게 공개할게요.</Text>
+          <Text size="lg">응답이 익명으로 저장됐어요. 결과는 12월 21일에 누구나 볼 수 있게 공개할게요.</Text>
         </div>
       </main>
     )
@@ -107,7 +107,7 @@ function Survey() {
       <main style={page}>
         <div style={column}>
           <Heading level={1}>설문이 마감됐어요</Heading>
-          <Text size="lg">참여해 주신 분들 고마워요. 결과는 12월에 누구나 볼 수 있게 공개할게요.</Text>
+          <Text size="lg">참여해 주신 분들 고마워요. 결과는 12월 21일에 누구나 볼 수 있게 공개할게요.</Text>
           <Link to="/">설문 소개로 돌아가기</Link>
         </div>
       </main>
@@ -119,7 +119,7 @@ function Survey() {
       <main style={page}>
         <div style={column}>
           <Heading level={1}>이미 답해 주셨어요</Heading>
-          <Text size="lg">이 브라우저에서는 응답을 마쳤어요. 결과는 12월에 누구나 볼 수 있게 공개할게요.</Text>
+          <Text size="lg">이 브라우저에서는 응답을 마쳤어요. 결과는 12월 21일에 누구나 볼 수 있게 공개할게요.</Text>
         </div>
       </main>
     )
@@ -148,7 +148,7 @@ function Survey() {
           <Heading level={1}>2026 한국 개발자 설문</Heading>
           <Text size="lg">
             해외 설문에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 묻는 설문이에요. 매년 같은 질문을 드리고, 결과는
-            12월에 누구나 볼 수 있게 공개해요.
+            12월 21일에 누구나 볼 수 있게 공개해요.
           </Text>
           <Text>이름도 이메일도 로그인도 필요 없어요. 10분 안팎이면 끝나요.</Text>
           <Button tone="brand" size="lg" disabled={!hydrated} onClick={() => setPhase('consent')}>
