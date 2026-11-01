@@ -5,6 +5,8 @@ import { ConsentStep } from '@/components/ConsentStep'
 import { QuestionStep } from '@/components/QuestionStep'
 import { Turnstile } from '@/components/Turnstile'
 import { DevTypeCard } from '@/components/DevTypeCard'
+import { SiteFooter } from '@/components/SiteFooter'
+import { SiteHeader } from '@/components/SiteHeader'
 import { ShareButton } from '@/components/ShareButton'
 import { type DevType, devTypeOf, findDevType } from '@/lib/devType'
 import { findEdition, isClosed } from '@/editions'
@@ -39,6 +41,17 @@ const column: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
   gap: 'var(--spacing-24)',
+}
+
+// 응답을 마쳤거나 마감된 화면. 설문 진행 중이 아니라서 다른 화면으로 갈 수 있게 헤더와 하단을 둔다.
+function EndPage({ children }: { children: React.ReactNode }) {
+  return (
+    <div style={{ ...page, display: 'flex', flexDirection: 'column' }}>
+      <SiteHeader />
+      <main style={{ flex: 1 }}>{children}</main>
+      <SiteFooter />
+    </div>
+  )
 }
 
 function Survey() {
@@ -112,7 +125,7 @@ function Survey() {
 
   if (phase === 'done') {
     return (
-      <main style={page}>
+      <EndPage>
         <div style={{ ...column, alignItems: 'flex-start' }}>
           <Heading level={1}>고마워요</Heading>
           <Text size="lg">응답이 익명으로 저장됐어요. 결과는 12월 21일에 누구나 볼 수 있게 공개할게요.</Text>
@@ -124,25 +137,25 @@ function Survey() {
             </>
           )}
         </div>
-      </main>
+      </EndPage>
     )
   }
 
   if (isClosed(edition)) {
     return (
-      <main style={page}>
+      <EndPage>
         <div style={column}>
           <Heading level={1}>설문이 마감됐어요</Heading>
           <Text size="lg">참여해 주신 분들 고마워요. 결과는 12월 21일에 누구나 볼 수 있게 공개할게요.</Text>
           <Link to="/">설문 소개로 돌아가기</Link>
         </div>
-      </main>
+      </EndPage>
     )
   }
 
   if (phase === 'already') {
     return (
-      <main style={page}>
+      <EndPage>
         <div style={{ ...column, alignItems: 'flex-start' }}>
           <Heading level={1}>이미 답해 주셨어요</Heading>
           <Text size="lg">이 브라우저에서는 응답을 마쳤어요. 결과는 12월 21일에 누구나 볼 수 있게 공개할게요.</Text>
@@ -153,7 +166,7 @@ function Survey() {
             </>
           )}
         </div>
-      </main>
+      </EndPage>
     )
   }
 

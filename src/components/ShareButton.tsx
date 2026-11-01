@@ -1,8 +1,7 @@
 import { Button, Link as DaleLink } from 'daleui'
 import { useEffect, useState } from 'react'
 import type { DevType } from '@/lib/devType'
-
-export const SITE_URL = 'https://survey.dalestudy.com'
+import { SITE_URL } from '@/lib/og'
 
 // 공유 링크에는 유형 이름만 넣는다. 응답 내용은 담지 않는다.
 // 데스크톱의 OS 공유 창은 메시지·메모 같은 대상만 보여서, 터치 기기에서만 쓴다.

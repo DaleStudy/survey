@@ -3,9 +3,9 @@ import { Text } from 'daleui'
 import { DevTypeCard } from '@/components/DevTypeCard'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
-import { SITE_URL } from '@/components/ShareButton'
 import { findEdition } from '@/editions'
 import { findDevType } from '@/lib/devType'
+import { SITE_URL, ogImage } from '@/lib/og'
 
 // 공유 링크로 들어오는 페이지. 유형만 보여 주고, 설문은 랜딩에서 ref=share 로 시작하게 한다.
 export const Route = createFileRoute('/$edition/type/$slug')({
@@ -28,6 +28,7 @@ export const Route = createFileRoute('/$edition/type/$slug')({
         { property: 'og:type', content: 'website' },
         { property: 'og:locale', content: 'ko_KR' },
         { property: 'og:site_name', content: '한국 개발자 설문' },
+        ...ogImage(loaderData.slug, loaderData.name),
       ],
     }
   },

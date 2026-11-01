@@ -18,6 +18,13 @@ export function DevTypeCard({ type, label }: { type: DevType; label: string }) {
         boxSizing: 'border-box',
       }}
     >
+      <img
+        src={`/types/${type.slug}.jpg`}
+        alt=""
+        width={1200}
+        height={630}
+        style={{ width: '100%', height: 'auto', borderRadius: 'var(--radii-md)' }}
+      />
       <Text size="sm" weight="semibold" tone="brand">
         {label}
       </Text>
