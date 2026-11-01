@@ -2,11 +2,9 @@
 
 [![All Contributors](https://img.shields.io/github/all-contributors/DaleStudy/survey?color=ee8449&style=flat-square)](#contributors)
 
-달레 스터디가 운영하는 [한국 개발자 설문](https://survey.dalestudy.com)(Korea Developer Survey). 한국 개발자의 일과 성장, AI 도구 사용을 회차마다 같은 질문으로 묻고, 결과를 모두가 볼 수 있게 공개합니다. [달레 UI 디자인 시스템](https://github.com/DaleStudy/daleui)으로 만들었습니다.
+달레 스터디가 운영하는 [한국 개발자 설문](https://survey.dalestudy.com). [달레 UI 디자인 시스템](https://github.com/DaleStudy/daleui)으로 만들었습니다.
 
-첫 회차인 2026 설문은 11월 16일에 열고 12월 6일에 마감하며, 결과는 12월 21일에 발표합니다. 응답은 익명이고, 공개하는 것은 응답자 수가 충분한 문항의 집계뿐입니다.
-
-개발에 필요한 내용은 [AGENTS.md](AGENTS.md)에, 조사 자료와 결정 기록은 [docs](docs)에, 설문 문항은 [questions](questions)에 있습니다.
+개발에 필요한 내용은 [AGENTS.md](AGENTS.md)와 [docs](docs)에 있습니다.
 
 ## 기여 (Contribution)
 
