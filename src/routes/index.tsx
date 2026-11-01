@@ -1,5 +1,6 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { Card, Heading, Icon, Tag, Text } from 'daleui'
+import { SiteFooter } from '@/components/SiteFooter'
 
 const TITLE = '2026 한국 개발자 설문'
 const DESCRIPTION = '해외 설문에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 매년 같은 질문으로 물어요. 결과와 응답 데이터는 누구나 볼 수 있게 공개해요.'
@@ -208,19 +209,7 @@ function Landing() {
         </div>
       </section>
 
-      <footer>
-        <div style={{ ...wrap, padding: 'var(--spacing-32) 24px', display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center', justifyContent: 'space-between' }}>
-          <Text size="sm" muted>
-            달레 스터디가 운영하는 연례 설문이에요
-          </Text>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-24)' }}>
-            <Link to="/privacy">개인정보 처리방침</Link>
-            <a href="https://github.com/DaleStudy/survey" target="_blank" rel="noreferrer">
-              GitHub
-            </a>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }

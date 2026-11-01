@@ -1,5 +1,6 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { Heading, Text } from 'daleui'
+import { SiteFooter } from '@/components/SiteFooter'
 
 export const Route = createFileRoute('/privacy')({
   head: () => ({ meta: [{ title: '개인정보 처리방침 · 2026 한국 개발자 설문' }] }),
@@ -67,28 +68,31 @@ const SECTIONS: { title: string; body: string[] }[] = [
 
 function Privacy() {
   return (
-    <main style={{ maxWidth: 760, margin: '0 auto', padding: '72px 24px 96px', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-32)' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-12)' }}>
-        <Link to="/">← 설문으로 돌아가기</Link>
-        <Heading level={1} size={2}>
-          개인정보 처리방침
-        </Heading>
-        <Text tone="neutral" muted>
-          2026 한국 개발자 설문 · 시행일 2026년 11월 16일
-        </Text>
-      </div>
-      {SECTIONS.map((s) => (
-        <section key={s.title} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
-          <Heading level={2} size={5}>
-            {s.title}
+    <>
+      <main style={{ maxWidth: 760, margin: '0 auto', padding: '72px 24px 96px', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-32)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-12)' }}>
+          <Link to="/">← 설문으로 돌아가기</Link>
+          <Heading level={1} size={2}>
+            개인정보 처리방침
           </Heading>
-          {s.body.map((line) => (
-            <Text key={line} as="p" style={{ lineHeight: 1.7 }}>
-              {line}
-            </Text>
-          ))}
-        </section>
-      ))}
-    </main>
+          <Text tone="neutral" muted>
+            2026 한국 개발자 설문 · 시행일 2026년 11월 16일
+          </Text>
+        </div>
+        {SECTIONS.map((s) => (
+          <section key={s.title} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
+            <Heading level={2} size={5}>
+              {s.title}
+            </Heading>
+            {s.body.map((line) => (
+              <Text key={line} as="p" style={{ lineHeight: 1.7 }}>
+                {line}
+              </Text>
+            ))}
+          </section>
+        ))}
+      </main>
+      <SiteFooter />
+    </>
   )
 }

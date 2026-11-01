@@ -1,6 +1,7 @@
 import { Link, createFileRoute, notFound } from '@tanstack/react-router'
 import { Text } from 'daleui'
 import { DevTypeCard } from '@/components/DevTypeCard'
+import { SiteFooter } from '@/components/SiteFooter'
 import { SITE_URL } from '@/components/ShareButton'
 import { findEdition } from '@/editions'
 import { findDevType } from '@/lib/devType'
@@ -35,29 +36,32 @@ export const Route = createFileRoute('/$edition/type/$slug')({
 function TypePage() {
   const type = Route.useLoaderData()
   return (
-    <main style={{ minHeight: '100vh', background: 'var(--colors-bg-brand)', color: 'var(--colors-fg-neutral)' }}>
-      <div style={{ maxWidth: 840, margin: '0 auto', padding: '96px 24px', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)', alignItems: 'flex-start' }}>
-        <DevTypeCard type={type} label="친구의 개발자 유형" />
-        <Text size="lg">한국 개발자의 일과 커리어를 묻는 연례 설문이에요. 10분이면 나의 유형도 알 수 있어요.</Text>
-        <Link
-          to="/"
-          search={{ ref: 'share' }}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            minHeight: 52,
-            padding: '0 var(--spacing-24)',
-            borderRadius: 'var(--radii-md)',
-            background: 'var(--colors-bg-solid-brand)',
-            color: 'var(--colors-fg-solid-brand)',
-            fontSize: '1.125rem',
-            fontWeight: 500,
-            textDecoration: 'none',
-          }}
-        >
-          나도 해 보기
-        </Link>
-      </div>
-    </main>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--colors-bg-brand)', color: 'var(--colors-fg-neutral)' }}>
+      <main style={{ flex: 1 }}>
+        <div style={{ maxWidth: 840, margin: '0 auto', padding: '96px 24px', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)', alignItems: 'flex-start' }}>
+          <DevTypeCard type={type} label="친구의 개발자 유형" />
+          <Text size="lg">한국 개발자의 일과 커리어를 묻는 연례 설문이에요. 10분이면 나의 유형도 알 수 있어요.</Text>
+          <Link
+            to="/"
+            search={{ ref: 'share' }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              minHeight: 52,
+              padding: '0 var(--spacing-24)',
+              borderRadius: 'var(--radii-md)',
+              background: 'var(--colors-bg-solid-brand)',
+              color: 'var(--colors-fg-solid-brand)',
+              fontSize: '1.125rem',
+              fontWeight: 500,
+              textDecoration: 'none',
+            }}
+          >
+            나도 해 보기
+          </Link>
+        </div>
+      </main>
+      <SiteFooter />
+    </div>
   )
 }
