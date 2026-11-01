@@ -1,224 +1,226 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
-import { Button, Heading, Icon, Tag, Text } from 'daleui'
-import { useEffect, useRef, useState } from 'react'
-import { ConsentStep } from '@/components/ConsentStep'
-import { QuestionStep } from '@/components/QuestionStep'
-import { Turnstile } from '@/components/Turnstile'
-import { isEmpty, visibleQuestions } from '@/questions/logic'
-import { type Answers, QUESTIONS } from '@/questions/survey'
-import { submitResponse } from '@/server/functions/responses'
+import { Card, Heading, Icon, Tag, Text } from 'daleui'
+
+const TITLE = '2026 한국 개발자 설문'
+const DESCRIPTION = '해외 설문에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 매년 같은 질문으로 물어요. 결과와 응답 데이터는 누구나 볼 수 있게 공개해요.'
 
 export const Route = createFileRoute('/')({
+  // 공유 링크의 ?ref= 를 설문 링크로 넘겨 유입 경로를 남긴다
   validateSearch: (search: Record<string, unknown>): { ref?: string } =>
     typeof search.ref === 'string' ? { ref: search.ref } : {},
-  component: Survey,
+  head: () => ({
+    meta: [
+      { title: TITLE },
+      { name: 'description', content: DESCRIPTION },
+      { property: 'og:title', content: TITLE },
+      { property: 'og:description', content: DESCRIPTION },
+      { property: 'og:url', content: 'https://survey.dalestudy.com/' },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:locale', content: 'ko_KR' },
+      { property: 'og:site_name', content: '한국 개발자 설문' },
+    ],
+  }),
+  component: Landing,
 })
 
-// 하나만 고르는 문항은 고른 걸 잠깐 보여 준 뒤 다음 문항으로 넘긴다
-const AUTO_ADVANCE_MS = 300
-// 같은 브라우저에서 다시 답하지 않게 남기는 표시. 서버로는 보내지 않는다.
-const DONE_KEY = 'survey-2026-done'
-
-const page: React.CSSProperties = {
-  minHeight: '100vh',
-  boxSizing: 'border-box',
-  background: 'var(--colors-bg-brand)',
-  color: 'var(--colors-fg-neutral)',
-}
-const column: React.CSSProperties = {
-  maxWidth: 840,
-  margin: '0 auto',
-  padding: '96px 24px 120px',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 'var(--spacing-24)',
+const wrap: React.CSSProperties = { maxWidth: 1120, margin: '0 auto', padding: '0 24px', boxSizing: 'border-box' }
+const section: React.CSSProperties = { ...wrap, padding: '96px 24px', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-40)' }
+const cta: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  minHeight: 52,
+  padding: '0 var(--spacing-24)',
+  borderRadius: 'var(--radii-md)',
+  background: 'var(--colors-bg-solid-brand)',
+  color: 'var(--colors-fg-solid-brand)',
+  fontSize: '1.125rem',
+  fontWeight: 500,
+  textDecoration: 'none',
 }
 
-function Survey() {
+function SectionTitle({ label, title }: { label: string; title: string }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-12)', maxWidth: 720 }}>
+      <Text weight="semibold" tone="brand">
+        {label}
+      </Text>
+      <Heading level={2}>{title}</Heading>
+    </div>
+  )
+}
+
+function Landing() {
   const { ref } = Route.useSearch()
-  const [answers, setAnswers] = useState<Answers>({})
-  const [qid, setQid] = useState<string | null>(null)
-  const [phase, setPhase] = useState<'intro' | 'consent' | 'question' | 'sending' | 'done' | 'already'>('intro')
-  const [error, setError] = useState('')
-  // 하이드레이션 전에 누른 버튼은 아무 일도 하지 않으므로, 그 전에는 시작 버튼을 막아 둔다
-  const [hydrated, setHydrated] = useState(false)
-  // 마지막 문항 화면에서 받는다. 토큰은 5분이면 만료돼서 설문을 시작할 때 받으면 늦다.
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
-  const [turnstileReset, setTurnstileReset] = useState(0)
-  const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
-  useEffect(() => {
-    setHydrated(true)
-    if (localStorage.getItem(DONE_KEY)) setPhase('already')
-    return () => clearTimeout(timer.current)
-  }, [])
-
-  const visible = visibleQuestions(QUESTIONS, answers)
-  const pos = visible.findIndex((q) => q.id === qid)
-  const current = pos >= 0 ? visible[pos] : undefined
-
-  async function submit(final: Answers) {
-    if (!turnstileToken) {
-      setError('자동 입력 방지 확인이 끝나면 제출할 수 있어요. 잠시만 기다려 주세요.')
-      return
-    }
-    setPhase('sending')
-    try {
-      await submitResponse({ data: { answers: final, ref, consented: true, turnstileToken } })
-      localStorage.setItem(DONE_KEY, '1')
-      setPhase('done')
-    } catch {
-      setPhase('question')
-      setError('저장하지 못했어요. 잠시 뒤에 다시 시도해 주세요.')
-      // 쓴 토큰은 다시 쓸 수 없으니 새로 받는다
-      setTurnstileReset((n) => n + 1)
-    }
-  }
-
-  // 답이 바뀌면 보이는 문항도 바뀌므로, 다음 문항은 새 답으로 다시 계산한다
-  function advance(next: Answers) {
-    if (!current) return
-    const list = visibleQuestions(QUESTIONS, next)
-    const i = list.findIndex((q) => q.id === current.id)
-    setError('')
-    if (i + 1 >= list.length) void submit(next)
-    else setQid(list[i + 1].id)
-  }
-
-  function update(next: Answers) {
-    clearTimeout(timer.current)
-    setAnswers(next)
-    setError('')
-  }
-
-  if (phase === 'done') {
-    return (
-      <main style={page}>
-        <div style={column}>
-          <Heading level={1}>고마워요</Heading>
-          <Text size="lg">응답이 익명으로 저장됐어요. 결과는 12월에 누구나 볼 수 있게 공개할게요.</Text>
-        </div>
-      </main>
-    )
-  }
-
-  if (phase === 'already') {
-    return (
-      <main style={page}>
-        <div style={column}>
-          <Heading level={1}>이미 답해 주셨어요</Heading>
-          <Text size="lg">이 브라우저에서는 응답을 마쳤어요. 결과는 12월에 누구나 볼 수 있게 공개할게요.</Text>
-        </div>
-      </main>
-    )
-  }
-
-  if (phase === 'consent') {
-    return (
-      <main style={page}>
-        <div style={column}>
-          <ConsentStep
-            onAgree={() => {
-              setQid(visible[0].id)
-              setPhase('question')
-            }}
-          />
-        </div>
-      </main>
-    )
-  }
-
-  if (phase === 'intro' || !current) {
-    return (
-      <main style={page}>
-        <div style={{ ...column, alignItems: 'flex-start' }}>
-          <Tag tone="brand">2026 · 1회차</Tag>
-          <Heading level={1}>2026 한국 개발자 설문</Heading>
-          <Text size="lg">
-            해외 설문에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 묻는 설문이에요. 매년 같은 질문을 드리고, 결과는
-            12월에 누구나 볼 수 있게 공개해요.
-          </Text>
-          <Text>이름도 이메일도 로그인도 필요 없어요. 10분 안팎이면 끝나요.</Text>
-          <Button tone="brand" size="lg" disabled={!hydrated} onClick={() => setPhase('consent')}>
-            시작하기 <Icon name="chevronRight" size="sm" />
-          </Button>
-          <Link to="/privacy">개인정보 처리방침</Link>
-        </div>
-      </main>
-    )
-  }
-
-  const value = answers[current.id]
-  const last = pos === visible.length - 1
-  const progress = Math.round((pos / visible.length) * 100)
+  const start = (
+    <Link to="/survey" search={ref ? { ref } : {}} style={cta}>
+      설문 시작하기
+    </Link>
+  )
 
   return (
-    <main style={page}>
-      <div
-        role="progressbar"
-        aria-label="설문 진행률"
-        aria-valuenow={pos + 1}
-        aria-valuemin={1}
-        aria-valuemax={visible.length}
-        style={{ position: 'fixed', top: 0, left: 0, right: 0, height: 4, background: 'var(--colors-bg-brand-active)' }}
-      >
-        <div style={{ height: 4, width: `${progress}%`, background: 'var(--colors-bg-solid-brand)', transition: 'width 300ms ease' }} />
-      </div>
-      <div style={column}>
-        <Text size="sm" tone="neutral" muted>
-          {pos + 1} / {visible.length}
-        </Text>
-        <QuestionStep
-          question={current}
-          value={value}
-          error={error}
-          onPick={(code) => {
-            const next = { ...answers, [current.id]: code }
-            update(next)
-            timer.current = setTimeout(() => advance(next), AUTO_ADVANCE_MS)
-          }}
-          onToggle={(code) => {
-            const picked = Array.isArray(value) ? value : []
-            if (!picked.includes(code) && current.limit && picked.length >= current.limit) {
-              setError(`최대 ${current.limit}개까지 고를 수 있어요. 다른 걸 먼저 빼 주세요.`)
-              return
-            }
-            update({ ...answers, [current.id]: picked.includes(code) ? picked.filter((c) => c !== code) : [...picked, code] })
-          }}
-          onText={(text) => update({ ...answers, [current.id]: text })}
-        />
-        {last && <Turnstile onToken={setTurnstileToken} resetKey={turnstileReset} />}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-12)', alignItems: 'center' }}>
-          <Button tone="neutral" variant="outline" onClick={() => (pos > 0 ? setQid(visible[pos - 1].id) : setPhase('consent'))}>
-            <Icon name="chevronLeft" size="sm" /> 이전
-          </Button>
-          <Button
-            tone="brand"
-            loading={phase === 'sending'}
-            onClick={() => {
-              if (current.required && isEmpty(value)) {
-                setError(current.type === 'multi' ? '하나 이상 골라 주세요.' : current.type === 'long' ? '내용을 적어 주세요.' : '답을 하나 골라 주세요.')
-                return
-              }
-              advance(answers)
-            }}
-          >
-            {last ? '제출하기' : '다음'}
-          </Button>
-          {!current.required && (
-            <Button
-              tone="neutral"
-              variant="ghost"
-              onClick={() => {
-                const { [current.id]: _, ...rest } = answers
-                update(rest)
-                advance(rest)
+    <div style={{ background: 'var(--colors-app-bg)', color: 'var(--colors-fg-neutral)' }}>
+      <header style={{ borderBottom: '1px solid var(--colors-bg-neutral-hover)' }}>
+        <div style={{ ...wrap, padding: 'var(--spacing-16) 24px', display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
+            <Icon name="codeXml" tone="brand" />
+            <Text size="lg" weight="bold">
+              한국 개발자 설문
+            </Text>
+          </div>
+          <nav aria-label="주요 메뉴" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-24)', alignItems: 'center' }}>
+            <a href="#why">왜 하나요</a>
+            <a href="#promise">약속</a>
+            <a href="#schedule">일정</a>
+          </nav>
+        </div>
+      </header>
+
+      <section style={{ background: 'var(--colors-bg-brand)' }}>
+        <div style={{ ...section, gap: 'var(--spacing-24)', alignItems: 'flex-start' }}>
+          <Tag tone="brand">2026 · 1회차</Tag>
+          <Heading level={1} style={{ maxWidth: 820 }}>
+            한국 개발자의 오늘을 함께 기록해요
+          </Heading>
+          <Text size="xl" style={{ maxWidth: 680, lineHeight: 1.6 }}>
+            {DESCRIPTION}
+          </Text>
+          {start}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-24)' }}>
+            <span style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
+              <Icon name="clock" size="sm" /> <Text>10분 안팎</Text>
+            </span>
+            <span style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
+              <Icon name="eyeOff" size="sm" /> <Text>로그인도 이메일도 필요 없어요</Text>
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section id="why">
+        <div style={section}>
+          <SectionTitle label="왜 하나요" title="해외 설문 속 한국은 너무 작아요" />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'var(--spacing-32)', alignItems: 'start' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 'var(--spacing-8)',
+                padding: 'var(--spacing-32)',
+                borderRadius: 'var(--radii-lg)',
+                background: 'var(--colors-bg-solid-brand)',
+                color: 'var(--colors-fg-solid-brand)',
               }}
             >
-              건너뛸게요
-            </Button>
-          )}
+              <div style={{ fontSize: '4.5rem', fontWeight: 700, lineHeight: 1 }}>86명</div>
+              <div style={{ fontSize: '1.125rem', lineHeight: 1.5 }}>
+                Stack Overflow 2025 설문에서 나라를 밝힌 35,369명 가운데 한국 응답자 수예요. 전체의 0.2%밖에 안 돼요.
+              </div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
+                <Heading level={3} size={4}>
+                  국내 연례 설문은 2023년에 멈췄어요
+                </Heading>
+                <Text size="lg" style={{ lineHeight: 1.6 }}>
+                  가장 컸던 프로그래머스 개발자 설문(2018~2023)이 끝난 뒤로, 국내 개발자 전체를 매년 조사하는 곳이 없어요.
+                </Text>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
+                <Heading level={3} size={4}>
+                  한국에만 있는 질문이 있어요
+                </Heading>
+                <Text size="lg" style={{ lineHeight: 1.6 }}>
+                  SI·SM과 원청·하청 구조, 코딩 테스트, 원화 연봉처럼 해외 설문에서는 묻지 않는 것들이에요.
+                </Text>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </main>
+      </section>
+
+      <section id="promise" style={{ background: 'var(--colors-bg-neutral-hover)' }}>
+        <div style={section}>
+          <SectionTitle label="약속" title="답한 사람이 손해 보지 않게 할게요" />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--spacing-24)' }}>
+            <Card tone="neutral" outline>
+              <Card.Icon name="eyeOff" />
+              <Card.Body>
+                <Card.Title>익명으로 답해요</Card.Title>
+                <Card.Description>
+                  이름, 이메일, 로그인을 받지 않아요. 연봉이나 지역처럼 민감한 건 구간으로만 묻고, 답하지 않아도 돼요.
+                </Card.Description>
+              </Card.Body>
+            </Card>
+            <Card tone="neutral" outline>
+              <Card.Icon name="handHeart" />
+              <Card.Body>
+                <Card.Title>결과는 모두 공개해요</Card.Title>
+                <Card.Description>
+                  12월에 결과 리포트를 누구나 볼 수 있게 내요. 누군지 알 수 없게 처리한 응답 데이터도 CSV로 함께 올려요.
+                </Card.Description>
+              </Card.Body>
+            </Card>
+            <Card tone="neutral" outline>
+              <Card.Icon name="clock" />
+              <Card.Body>
+                <Card.Title>매년 같은 질문을 해요</Card.Title>
+                <Card.Description>
+                  핵심 문항은 해마다 바꾸지 않아요. 올해 답이 한국 개발자가 어떻게 달라지는지 보여 주는 기준이 돼요.
+                </Card.Description>
+              </Card.Body>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      <section id="schedule">
+        <div style={section}>
+          <SectionTitle label="무엇을 묻나요" title="여섯 가지 주제, 30문항 안팎" />
+          <Text size="lg" style={{ maxWidth: 720, lineHeight: 1.6 }}>
+            지금 상황에 맞는 질문만 나와서, 실제로 답할 문항은 이보다 적을 수 있어요. 응답은 11월 [시작일]부터 [마감일]까지 받고, 결과는 12월
+            [발표일]에 공개해요.
+          </Text>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-12)' }}>
+            {['나에 대해', '일하는 곳', '보상', '커리어', '기술'].map((t) => (
+              <Tag key={t} tone="neutral">
+                {t}
+              </Tag>
+            ))}
+            <Tag tone="brand">올해의 주제 · AI</Tag>
+          </div>
+        </div>
+      </section>
+
+      <section style={{ background: 'var(--colors-bg-solid-brand)', color: 'var(--colors-fg-solid-brand)' }}>
+        <div style={{ ...section, padding: '80px 24px', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--spacing-24)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)', maxWidth: 640 }}>
+            <div style={{ fontSize: '2.25rem', fontWeight: 700, lineHeight: 1.2 }}>10분이면 한국 개발자 지도에 점 하나를 더할 수 있어요</div>
+            <div style={{ fontSize: '1.125rem', lineHeight: 1.5 }}>주변 개발자에게도 알려 주세요. 다양한 사람이 답할수록 결과가 정확해져요.</div>
+          </div>
+          <Link
+            to="/survey"
+            search={ref ? { ref } : {}}
+            style={{ ...cta, background: 'var(--colors-fg-solid-brand)', color: 'var(--colors-bg-solid-brand)', fontWeight: 600 }}
+          >
+            설문 시작하기
+          </Link>
+        </div>
+      </section>
+
+      <footer>
+        <div style={{ ...wrap, padding: 'var(--spacing-32) 24px', display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center', justifyContent: 'space-between' }}>
+          <Text size="sm" muted>
+            달레 스터디가 운영하는 연례 설문이에요
+          </Text>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-24)' }}>
+            <Link to="/privacy">개인정보 처리방침</Link>
+            <a href="https://github.com/DaleStudy/survey" target="_blank" rel="noreferrer">
+              GitHub
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
   )
 }

@@ -2,6 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { env } from 'cloudflare:workers'
 import { getDb } from '@/db'
 import { responses } from '@/db/schema'
+import { isClosed } from '@/lib/schedule'
 import { verifyTurnstile } from '@/lib/turnstile'
 import { cleanAnswers } from '@/questions/logic'
 import { type Answers, QUESTIONS, YEAR } from '@/questions/survey'
@@ -11,6 +12,7 @@ export const submitResponse = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     // 동의 화면을 거치지 않은 요청은 받지 않는다 (개인정보 보호법 제15조, 제28조의8)
     if (data.consented !== true) throw new Error('동의가 필요해요.')
+    if (isClosed()) throw new Error('설문이 마감됐어요.')
     // 자동화된 대량 제출을 막는다. 토큰은 한 번만 쓸 수 있다.
     const human = await verifyTurnstile({
       token: data.turnstileToken,

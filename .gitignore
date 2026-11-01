@@ -13,3 +13,6 @@ src/routeTree.gen.ts
 
 # Generated from questions/*.yaml
 src/questions/generated/
+
+# 원본 응답 내보내기 (bun run export). 공개하지 않는다.
+exports/
