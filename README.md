@@ -2,7 +2,7 @@
 
 [![All Contributors](https://img.shields.io/github/all-contributors/DaleStudy/survey?color=ee8449&style=flat-square)](#contributors)
 
-달레 스터디가 운영하는 한국 개발자 설문입니다.
+개발자 커뮤니티 [달레 스터디](https://dalestudy.com)가 운영하는 한국 개발자 설문입니다. [달레 UI](https://www.daleui.com)로 만들었습니다.
 
 ## 기여 (Contribution)
 
