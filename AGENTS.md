@@ -35,6 +35,16 @@ bun run export              # 운영 D1 원본 응답을 exports/<연도>-respon
 - 시크릿: Worker 시크릿 `TURNSTILE_SECRET`. 원본은 1Password `dev/CF_SURVEY_TURNSTILE`(위젯 대시보드 URL 포함). 배포 토큰 `CLOUDFLARE_API_TOKEN` 의 원본은 1Password `dev/CF_DALE_STUDY` — DaleStudy 계정 소유 토큰이고 Turnstile 권한도 있다. 로컬 개발을 하려면 `.dev.vars` 에 `TURNSTILE_SECRET`, `TURNSTILE_HOSTNAMES=localhost,127.0.0.1` 을 둔다.
 - D1 `survey` 는 `apac` 위치 힌트로 만들었지만 국내 저장은 보장되지 않는다. 동의 화면의 국외 보관 안내가 이 때문이다.
 
+## 베타와 오픈
+
+- 지금은 운영진 베타 중이다. `survey.dalestudy.com` 전체를 Cloudflare Access 앱 "한국 개발자 설문 (베타)"로 잠가 GitHub `DaleStudy/maintainer` 팀만 들어온다. 로그인은 Zero Trust(`dalestudy.cloudflareaccess.com`)의 GitHub 로그인 수단 — DaleStudy 조직 소유 OAuth 앱 "DaleStudy Cloudflare Access", 시크릿 원본은 1Password `dev/GITHUB_DALESTUDY_CF_ACCESS`.
+- 베타 응답은 `?ref=beta` 링크로 받아 운영 D1 에 함께 쌓는다.
+- 오픈(11월 16일) 직전에 할 일:
+  1. 베타 응답 지우기 (`DELETE FROM responses` — 확인 후 `bun run export` 로 먼저 받아 둘지 정한다)
+  2. Access 앱 "한국 개발자 설문 (베타)" 끄기 또는 삭제
+  3. `src/routes/__root.tsx` 의 `noindex` 빼기
+  4. 링크 미리보기(og 태그)가 공유 채널에서 제대로 뜨는지 확인
+
 ## 작업 방식
 
 - 혼자 개발하는 동안에는 브랜치나 PR 없이 `main` 에 바로 커밋하고 push 한다. push 하면 곧 배포되므로 `bun run test` 를 먼저 통과시킨다. 다른 기여자가 생기면 `feedback` 처럼 PR 과 미리보기 방식으로 바꾼다.
