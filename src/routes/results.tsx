@@ -1,12 +1,27 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
-import { EDITIONS } from '@/editions'
-import { RESULTS } from '@/results'
+import { createFileRoute } from '@tanstack/react-router'
+import { Heading, Text } from 'daleui'
+import { EditionList } from '@/components/EditionList'
+import { SiteFooter } from '@/components/SiteFooter'
+import { SiteHeader } from '@/components/SiteHeader'
 
-// 짧은 주소: 가장 최근 회차의 결과로 보낸다. 실제 결과가 없으면 예시라도 보여 준다.
+// 결과 아카이브: 지난 회차까지 모든 회차를 한곳에서 찾는다.
 export const Route = createFileRoute('/results')({
-  beforeLoad: () => {
-    const withResults = EDITIONS.filter((e) => RESULTS[e.id])
-    const latest = withResults.find((e) => !e.sample) ?? withResults[0]
-    throw latest ? redirect({ to: '/$edition/results', params: { edition: latest.id } }) : redirect({ to: '/' })
-  },
+  head: () => ({ meta: [{ title: '결과 · 한국 개발자 설문' }] }),
+  component: Archive,
 })
+
+function Archive() {
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--colors-app-bg)', color: 'var(--colors-fg-neutral)' }}>
+      <SiteHeader />
+      <main style={{ flex: 1, width: '100%', maxWidth: 960, margin: '0 auto', padding: '72px 24px 96px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-32)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-12)' }}>
+          <Heading level={1}>결과</Heading>
+          <Text size="lg">회차마다 같은 질문을 하고 결과를 모두 공개해요. 지난 회차도 여기서 볼 수 있어요.</Text>
+        </div>
+        <EditionList />
+      </main>
+      <SiteFooter />
+    </div>
+  )
+}

@@ -1,7 +1,8 @@
-import { createFileRoute, notFound } from '@tanstack/react-router'
+import { Link, createFileRoute, notFound } from '@tanstack/react-router'
 import { Heading, Icon, Tag, Text } from 'daleui'
 import { findEdition } from '@/editions'
 import { SiteFooter } from '@/components/SiteFooter'
+import { SiteHeader } from '@/components/SiteHeader'
 import { RESULTS } from '@/results'
 import { MIN_GROUP, type QuestionStat } from '@/results/aggregate'
 
@@ -68,6 +69,7 @@ function Results() {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--colors-app-bg)', color: 'var(--colors-fg-neutral)' }}>
+      <SiteHeader />
       <main style={{ flex: 1 }}>
         {result.sample && (
           <div
@@ -88,6 +90,7 @@ function Results() {
         )}
         <div style={{ maxWidth: 960, margin: '0 auto', padding: '72px 24px 96px', display: 'flex', flexDirection: 'column', gap: 64 }}>
           <section style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-16)', alignItems: 'flex-start' }}>
+            <Link to="/results">← 모든 회차 결과</Link>
             {result.sample && <Tag tone="warning">예시</Tag>}
             <Heading level={1}>{title} 결과</Heading>
             <Text size="xl">{result.total.toLocaleString()}명이 답해 주셨어요.</Text>

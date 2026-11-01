@@ -2,6 +2,7 @@ import { Link, createFileRoute, notFound } from '@tanstack/react-router'
 import { Text } from 'daleui'
 import { DevTypeCard } from '@/components/DevTypeCard'
 import { SiteFooter } from '@/components/SiteFooter'
+import { SiteHeader } from '@/components/SiteHeader'
 import { SITE_URL } from '@/components/ShareButton'
 import { findEdition } from '@/editions'
 import { findDevType } from '@/lib/devType'
@@ -37,6 +38,7 @@ function TypePage() {
   const type = Route.useLoaderData()
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--colors-bg-brand)', color: 'var(--colors-fg-neutral)' }}>
+      <SiteHeader />
       <main style={{ flex: 1 }}>
         <div style={{ maxWidth: 840, margin: '0 auto', padding: '96px 24px', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)', alignItems: 'flex-start' }}>
           <DevTypeCard type={type} label="친구의 개발자 유형" />

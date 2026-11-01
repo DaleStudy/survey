@@ -1,6 +1,8 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { Card, Heading, Icon, Tag, Text } from 'daleui'
+import { EditionList } from '@/components/EditionList'
 import { SiteFooter } from '@/components/SiteFooter'
+import { SiteHeader } from '@/components/SiteHeader'
 
 const TITLE = '2026 한국 개발자 설문'
 const DESCRIPTION = '해외 설문에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 매년 같은 질문으로 물어요. 결과와 응답 데이터는 누구나 볼 수 있게 공개해요.'
@@ -61,21 +63,7 @@ function Landing() {
 
   return (
     <div style={{ background: 'var(--colors-app-bg)', color: 'var(--colors-fg-neutral)' }}>
-      <header style={{ borderBottom: '1px solid var(--colors-bg-neutral-hover)' }}>
-        <div style={{ ...wrap, padding: 'var(--spacing-16) 24px', display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
-            <Icon name="codeXml" tone="brand" />
-            <Text size="lg" weight="bold">
-              한국 개발자 설문
-            </Text>
-          </div>
-          <nav aria-label="주요 메뉴" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-24)', alignItems: 'center' }}>
-            <a href="#why">왜 하나요</a>
-            <a href="#promise">약속</a>
-            <a href="#schedule">일정</a>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader />
 
       <section style={{ background: 'var(--colors-bg-brand)' }}>
         <div style={{ ...section, gap: 'var(--spacing-24)', alignItems: 'flex-start' }}>
@@ -190,6 +178,13 @@ function Landing() {
             ))}
             <Tag tone="brand">올해의 주제 · AI</Tag>
           </div>
+        </div>
+      </section>
+
+      <section id="results">
+        <div style={section}>
+          <SectionTitle label="결과" title="회차마다 결과를 모두 공개해요" />
+          <EditionList />
         </div>
       </section>
 

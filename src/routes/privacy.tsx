@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { Heading, Text } from 'daleui'
 import { SiteFooter } from '@/components/SiteFooter'
+import { SiteHeader } from '@/components/SiteHeader'
 
 export const Route = createFileRoute('/privacy')({
   head: () => ({ meta: [{ title: '개인정보 처리방침 · 2026 한국 개발자 설문' }] }),
@@ -69,6 +70,7 @@ const SECTIONS: { title: string; body: string[] }[] = [
 function Privacy() {
   return (
     <>
+      <SiteHeader />
       <main style={{ maxWidth: 760, margin: '0 auto', padding: '72px 24px 96px', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-32)' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-12)' }}>
           <Link to="/">← 설문으로 돌아가기</Link>

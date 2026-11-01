@@ -28,7 +28,7 @@ bun scripts/sample-results.ts   # 예시 회차 2025 의 집계(src/results/2025
 
 **TanStack Start** on **Cloudflare Workers**, D1 + Drizzle, 달레 UI. 구성은 `DaleStudy/feedback` 을 따른다.
 
-- 화면: `/` 랜딩, `/survey` → 열린 회차 설문(여럿이면 고르는 화면, `?ref=` 유지), `/results` → 가장 최근 결과, `/privacy`. 회차별로 `/<회차>/survey`(시작 → 동의 → 문항 → 완료와 개발자 유형), `/<회차>/type/<유형>`(공유용, ADR 0004), `/<회차>/results`(집계만 읽는 결과 화면). 유형은 브라우저에서만 계산하고 저장하지 않는다.
+- 화면: `/` 랜딩, `/survey` → 열린 회차 설문(여럿이면 고르는 화면, `?ref=` 유지), `/results` 결과 아카이브(모든 회차를 최근 것부터, `src/components/EditionList.tsx`), `/privacy`. 회차별로 `/<회차>/survey`(시작 → 동의 → 문항 → 완료와 개발자 유형), `/<회차>/type/<유형>`(공유용, ADR 0004), `/<회차>/results`(집계만 읽는 결과 화면). 유형은 브라우저에서만 계산하고 저장하지 않는다. 설문 진행 화면을 뺀 모든 화면에 공통 헤더(`SiteHeader`, 결과·참여하기)와 하단(`SiteFooter`)을 둔다.
 - 마감은 회차의 `closesAt` 으로 정한다. 화면과 서버 함수가 함께 본다.
 - 결과는 응답 → 집계(`src/results/aggregate.ts`, 응답자 30명 미만 문항은 숨김) → 화면으로 나눈다. 결과 화면은 `src/results/<회차>.json` 만 읽고 원본 응답을 모른다. 회차끼리 비교할 수 있게 같은 문항 `id` 는 모든 회차에서 같은 선택지 `code` 를 쓴다.
 - 원본 응답 내보내기는 웹 관리자 화면 없이 `bun run export` 로 한다 — 로그인이 없는 사이트라 관리자 인증을 새로 만들지 않고, DaleStudy Cloudflare 계정 접근 권한으로 갈음한다.

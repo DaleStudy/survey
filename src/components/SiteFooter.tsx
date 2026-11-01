@@ -17,7 +17,7 @@ export function SiteFooter() {
           justifyContent: 'space-between',
         }}
       >
-        <Text size="sm" muted style={{ wordBreak: 'keep-all' }}>
+        <Text size="sm" muted>
           개발자 커뮤니티{' '}
           <DaleLink href="https://dalestudy.com/?ref=survey" external size="sm" tone="brand" underline>
             달레 스터디
