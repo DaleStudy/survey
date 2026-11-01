@@ -1,0 +1,407 @@
+# 2026 한국 개발자 설문 문항 원본
+#
+# id 와 선택지 code 는 연도별 비교의 키다. fixed: true 문항은 문구·선택지·순서를 바꾸지 않는다.
+# 선택지를 늘릴 때는 기존 code 를 지우지 않고 "기타"를 쪼개는 식으로 새 code 를 더한다.
+# show_if 는 키마다 AND, 값 목록은 OR 이다. required 를 적지 않으면 필수다.
+# 동의와 만 14세 확인은 문항이 아니라 설문 앞 단계에서 처리한다.
+
+survey: 2026
+status: draft
+
+sections:
+  - id: about
+    title: 나에 대해
+    questions:
+      - id: status
+        fixed: true
+        type: single
+        label: 지금 어떤 상태인가요?
+        options:
+          - { code: employed, label: "개발자로 일하고 있어요" }
+          - { code: job_seeking, label: "개발 일을 구하고 있어요" }
+          - { code: student, label: "학생이에요" }
+          - { code: other_job, label: "개발이 아닌 일을 하고 있어요" }
+          - { code: not_working, label: "지금은 일하지 않아요" }
+
+      - id: experience
+        fixed: true
+        type: single
+        label: 돈을 받고 개발한 기간은 모두 합쳐 얼마인가요?
+        help: 학생 때 경험은 빼고 세어 주세요.
+        options:
+          - { code: none, label: "아직 없어요" }
+          - { code: "0_2", label: "2년 이하" }
+          - { code: "3_5", label: "3~5년" }
+          - { code: "6_9", label: "6~9년" }
+          - { code: "10_14", label: "10~14년" }
+          - { code: "15_plus", label: "15년 이상" }
+
+      - id: role
+        fixed: true
+        type: multi
+        max: 2
+        label: 주로 하는(또는 하려는) 개발 직무는 무엇인가요?
+        help: 두 개까지 고를 수 있어요.
+        options:
+          - { code: backend, label: "백엔드" }
+          - { code: frontend, label: "프론트엔드" }
+          - { code: fullstack, label: "풀스택" }
+          - { code: mobile, label: "모바일 앱" }
+          - { code: data_eng, label: "데이터 엔지니어링" }
+          - { code: data_ml, label: "데이터 분석·머신러닝" }
+          - { code: devops, label: "DevOps·인프라·SRE" }
+          - { code: security, label: "보안" }
+          - { code: embedded, label: "임베디드·시스템" }
+          - { code: game, label: "게임" }
+          - { code: qa, label: "QA·테스트" }
+          - { code: manager, label: "엔지니어링 매니저" }
+          - { code: other, label: "기타" }
+
+      - id: age
+        fixed: true
+        type: single
+        required: false
+        label: 나이는 어느 구간인가요?
+        help: 답하지 않아도 돼요.
+        options:
+          - { code: "14_19", label: "14~19세" }
+          - { code: "20_24", label: "20~24세" }
+          - { code: "25_29", label: "25~29세" }
+          - { code: "30_34", label: "30~34세" }
+          - { code: "35_39", label: "35~39세" }
+          - { code: "40_44", label: "40~44세" }
+          - { code: "45_plus", label: "45세 이상" }
+          - { code: no_answer, label: "답하지 않을게요" }
+
+      - id: region
+        fixed: true
+        type: single
+        label: 주로 일하는(또는 사는) 지역은 어디인가요?
+        options:
+          - { code: seoul, label: "서울" }
+          - { code: gyeonggi, label: "경기" }
+          - { code: incheon, label: "인천" }
+          - { code: busan_ulsan_gyeongnam, label: "부산·울산·경남" }
+          - { code: daegu_gyeongbuk, label: "대구·경북" }
+          - { code: daejeon_sejong_chungcheong, label: "대전·세종·충청" }
+          - { code: gwangju_jeolla, label: "광주·전라" }
+          - { code: gangwon_jeju, label: "강원·제주" }
+          - { code: abroad, label: "해외" }
+
+  - id: workplace
+    title: 일하는 곳
+    show_if: { status: [employed] }
+    questions:
+      - id: employment_type
+        fixed: true
+        type: single
+        label: 어떤 형태로 일하고 있나요?
+        options:
+          - { code: permanent, label: "정규직" }
+          - { code: contract, label: "계약직" }
+          - { code: dispatch, label: "파견" }
+          - { code: freelance, label: "프리랜서" }
+          - { code: founder, label: "창업·대표" }
+          - { code: other, label: "기타" }
+
+      - id: company_type
+        fixed: true
+        type: single
+        label: 지금 일하는 곳은 어떤 곳인가요?
+        options:
+          - { code: large, label: "대기업" }
+          - { code: midsize, label: "중견기업" }
+          - { code: small, label: "중소기업" }
+          - { code: startup, label: "스타트업" }
+          - { code: si_sm, label: "SI·SM 회사" }
+          - { code: public, label: "공공기관·공기업" }
+          - { code: foreign, label: "외국계 기업" }
+          - { code: none, label: "회사에 속하지 않아요" }
+
+      - id: company_size
+        fixed: true
+        type: single
+        label: 회사 전체 직원은 몇 명인가요?
+        show_if: { company_type: [large, midsize, small, startup, si_sm, public, foreign] }
+        options:
+          - { code: lt_10, label: "10명 미만" }
+          - { code: "10_49", label: "10~49명" }
+          - { code: "50_299", label: "50~299명" }
+          - { code: "300_999", label: "300~999명" }
+          - { code: "1000_4999", label: "1,000~4,999명" }
+          - { code: "5000_plus", label: "5,000명 이상" }
+          - { code: unknown, label: "잘 모르겠어요" }
+
+      - id: contract_position
+        fixed: false
+        type: single
+        label: 지금 하는 일은 발주 구조에서 어디에 있나요?
+        help: 자사 서비스를 만든다면 "발주처·자사 서비스"를 골라 주세요.
+        show_if: { company_type: [si_sm, none] }
+        options:
+          - { code: owner, label: "발주처·자사 서비스" }
+          - { code: prime, label: "원청" }
+          - { code: sub_1, label: "1차 하청" }
+          - { code: sub_2_plus, label: "2차 이하 하청" }
+          - { code: unknown, label: "잘 모르겠어요" }
+
+      - id: work_mode
+        fixed: true
+        type: single
+        label: 주로 어떻게 일하나요?
+        options:
+          - { code: onsite, label: "매일 출근해요" }
+          - { code: hybrid, label: "출근과 재택을 섞어요" }
+          - { code: remote, label: "거의 재택이에요" }
+
+      - id: weekly_hours
+        fixed: true
+        type: single
+        label: 지난 한 달 동안 일주일에 평균 몇 시간 일했나요?
+        options:
+          - { code: lte_40, label: "40시간 이하" }
+          - { code: "41_45", label: "41~45시간" }
+          - { code: "46_52", label: "46~52시간" }
+          - { code: gt_52, label: "52시간 초과" }
+
+  - id: compensation
+    title: 보상
+    show_if: { status: [employed] }
+    questions:
+      - id: salary
+        fixed: true
+        type: single
+        required: false
+        label: 세전 연봉은 어느 구간인가요?
+        help: 계약 연봉 기준이고 성과급은 빼 주세요. 프리랜서는 지난 1년 수입으로 답해 주세요. 답하지 않아도 돼요.
+        options:
+          - { code: lt_20, label: "2천만 원 미만" }
+          - { code: "20_30", label: "2천만~3천만 원" }
+          - { code: "30_40", label: "3천만~4천만 원" }
+          - { code: "40_50", label: "4천만~5천만 원" }
+          - { code: "50_60", label: "5천만~6천만 원" }
+          - { code: "60_70", label: "6천만~7천만 원" }
+          - { code: "70_80", label: "7천만~8천만 원" }
+          - { code: "80_90", label: "8천만~9천만 원" }
+          - { code: "90_100", label: "9천만~1억 원" }
+          - { code: "100_150", label: "1억~1억 5천만 원" }
+          - { code: "150_200", label: "1억 5천만~2억 원" }
+          - { code: "200_plus", label: "2억 원 이상" }
+          - { code: no_answer, label: "답하지 않을게요" }
+
+      - id: salary_change
+        fixed: true
+        type: single
+        required: false
+        label: 1년 전과 비교해 연봉이 어떻게 달라졌나요?
+        options:
+          - { code: up_10_plus, label: "10% 이상 올랐어요" }
+          - { code: up_lt_10, label: "10% 미만으로 올랐어요" }
+          - { code: same, label: "같아요" }
+          - { code: down, label: "줄었어요" }
+          - { code: new, label: "1년 전에는 일하지 않았어요" }
+          - { code: no_answer, label: "답하지 않을게요" }
+
+  - id: career
+    title: 커리어
+    questions:
+      - id: job_satisfaction
+        fixed: true
+        type: scale
+        label: 지금 하는 일에 얼마나 만족하나요?
+        show_if: { status: [employed] }
+        min: { value: 1, label: "전혀 만족하지 않아요" }
+        max: { value: 5, label: "매우 만족해요" }
+
+      - id: job_search
+        fixed: true
+        type: single
+        label: 지난 1년 동안 이직이나 취업을 위해 무엇을 했나요?
+        options:
+          - { code: none, label: "하지 않았어요" }
+          - { code: browsed, label: "알아보기만 했어요" }
+          - { code: applied, label: "지원했어요" }
+          - { code: moved, label: "지원해서 옮겼거나 취업했어요" }
+
+      - id: coding_test
+        fixed: true
+        type: single
+        label: 지난 1년 동안 채용 코딩 테스트를 몇 번 봤나요?
+        options:
+          - { code: "0", label: "보지 않았어요" }
+          - { code: "1_2", label: "1~2번" }
+          - { code: "3_5", label: "3~5번" }
+          - { code: "6_plus", label: "6번 이상" }
+
+      - id: coding_test_burden
+        fixed: false
+        type: scale
+        label: 코딩 테스트 준비가 얼마나 부담됐나요?
+        show_if: { coding_test: ["1_2", "3_5", "6_plus"] }
+        min: { value: 1, label: "전혀 부담되지 않았어요" }
+        max: { value: 5, label: "매우 부담됐어요" }
+
+      - id: company_criteria
+        fixed: true
+        type: multi
+        max: 3
+        label: 일할 곳을 고를 때 가장 중요하게 보는 것은 무엇인가요?
+        help: 세 개까지 고를 수 있어요.
+        options:
+          - { code: pay, label: "연봉" }
+          - { code: growth, label: "성장 기회와 기술" }
+          - { code: stability, label: "회사의 안정성" }
+          - { code: hours, label: "근무 시간과 워라밸" }
+          - { code: flexible, label: "재택·유연 근무" }
+          - { code: culture, label: "동료와 조직 문화" }
+          - { code: reputation, label: "회사 규모와 인지도" }
+          - { code: commute, label: "출퇴근 거리" }
+          - { code: domain, label: "서비스와 도메인" }
+          - { code: other, label: "기타" }
+
+      - id: next_workplace
+        fixed: false
+        type: single
+        label: 다음에 일하고 싶은 곳은 어떤 곳인가요?
+        options:
+          - { code: stay, label: "지금 일하는 곳에 계속" }
+          - { code: large, label: "대기업" }
+          - { code: midsize_small, label: "중견·중소기업" }
+          - { code: startup, label: "스타트업" }
+          - { code: public, label: "공공기관·공기업" }
+          - { code: foreign, label: "외국계 기업" }
+          - { code: abroad, label: "해외 회사" }
+          - { code: independent, label: "프리랜서·창업" }
+          - { code: undecided, label: "아직 모르겠어요" }
+
+      - id: career_concern
+        fixed: false
+        type: multi
+        max: 2
+        label: 요즘 가장 큰 커리어 고민은 무엇인가요?
+        help: 두 개까지 고를 수 있어요.
+        options:
+          - { code: expertise, label: "전문성이 부족한 것 같아요" }
+          - { code: pay, label: "연봉" }
+          - { code: market, label: "얼어붙은 채용 시장" }
+          - { code: ai, label: "AI로 달라질 일자리" }
+          - { code: direction, label: "앞으로의 커리어 방향" }
+          - { code: balance, label: "일과 삶의 균형" }
+          - { code: other, label: "기타" }
+
+  - id: tech
+    title: 기술
+    questions:
+      - id: main_language
+        fixed: true
+        type: single
+        label: 지난 1년 동안 가장 많이 쓴 프로그래밍 언어는 무엇인가요?
+        options:
+          - { code: java, label: "Java" }
+          - { code: kotlin, label: "Kotlin" }
+          - { code: javascript, label: "JavaScript" }
+          - { code: typescript, label: "TypeScript" }
+          - { code: python, label: "Python" }
+          - { code: go, label: "Go" }
+          - { code: csharp, label: "C#" }
+          - { code: c_cpp, label: "C·C++" }
+          - { code: swift, label: "Swift" }
+          - { code: dart, label: "Dart" }
+          - { code: rust, label: "Rust" }
+          - { code: php, label: "PHP" }
+          - { code: other, label: "기타" }
+
+      - id: want_language
+        fixed: true
+        type: multi
+        max: 2
+        label: 내년에 더 써 보고 싶은 언어는 무엇인가요?
+        help: 두 개까지 고를 수 있어요.
+        options_from: main_language
+
+      - id: cloud
+        fixed: false
+        type: multi
+        label: 업무에서 쓰는 클라우드는 무엇인가요?
+        help: 해당하는 것을 모두 골라 주세요.
+        options:
+          - { code: aws, label: "AWS" }
+          - { code: gcp, label: "Google Cloud" }
+          - { code: azure, label: "Azure" }
+          - { code: ncloud, label: "네이버 클라우드" }
+          - { code: nhn, label: "NHN Cloud" }
+          - { code: kt, label: "KT Cloud" }
+          - { code: onprem, label: "자체 서버(온프레미스)" }
+          - { code: unknown, label: "잘 모르겠어요" }
+
+  - id: ai
+    title: 올해의 주제 · AI
+    questions:
+      - id: ai_frequency
+        fixed: true
+        type: single
+        label: 개발할 때 AI 코딩 도구를 얼마나 자주 쓰나요?
+        options:
+          - { code: daily, label: "매일 써요" }
+          - { code: weekly, label: "일주일에 몇 번 써요" }
+          - { code: monthly, label: "한 달에 몇 번 써요" }
+          - { code: stopped, label: "써 봤지만 지금은 안 써요" }
+          - { code: never, label: "써 본 적 없어요" }
+
+      - id: ai_tools
+        fixed: false
+        type: multi
+        label: 주로 쓰는 AI 도구는 무엇인가요?
+        help: 해당하는 것을 모두 골라 주세요.
+        show_if: { ai_frequency: [daily, weekly, monthly] }
+        options:
+          - { code: copilot, label: "GitHub Copilot" }
+          - { code: cursor, label: "Cursor" }
+          - { code: claude_code, label: "Claude Code" }
+          - { code: codex, label: "Codex" }
+          - { code: chatgpt, label: "ChatGPT" }
+          - { code: claude, label: "Claude" }
+          - { code: gemini, label: "Gemini" }
+          - { code: other, label: "기타" }
+
+      - id: ai_policy
+        fixed: false
+        type: single
+        label: 회사는 AI 코딩 도구를 어떻게 다루나요?
+        help: 망분리 같은 보안 규정도 함께 생각해 주세요.
+        show_if: { status: [employed] }
+        options:
+          - { code: provided, label: "회사가 제공하고 권장해요" }
+          - { code: allowed, label: "허용하지만 개인이 준비해요" }
+          - { code: limited, label: "일부 업무에만 허용해요" }
+          - { code: banned, label: "쓸 수 없어요" }
+          - { code: unknown, label: "잘 모르겠어요" }
+
+      - id: ai_productivity
+        fixed: false
+        type: scale
+        label: AI 도구를 쓰고 나서 생산성이 어떻게 달라졌나요?
+        show_if: { ai_frequency: [daily, weekly, monthly] }
+        min: { value: 1, label: "크게 줄었어요" }
+        max: { value: 5, label: "크게 늘었어요" }
+
+      - id: ai_outlook
+        fixed: false
+        type: single
+        label: 앞으로 3년 동안 AI가 내 일에 어떤 영향을 줄 것 같나요?
+        options:
+          - { code: threat, label: "내 일자리를 위협할 것 같아요" }
+          - { code: major, label: "일하는 방식이 크게 바뀔 것 같아요" }
+          - { code: minor, label: "조금 바뀔 것 같아요" }
+          - { code: none, label: "거의 그대로일 것 같아요" }
+          - { code: unknown, label: "잘 모르겠어요" }
+
+  - id: closing
+    title: 마무리
+    questions:
+      - id: comment
+        fixed: false
+        type: long
+        required: false
+        label: 한국 개발자로 일하며 이 설문이 더 물어봤으면 하는 것이 있나요?
+        help: 이름, 회사명처럼 누군지 알 수 있는 내용은 쓰지 마세요. 공개 전에 지워요.
