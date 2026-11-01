@@ -17,12 +17,12 @@ export function SiteFooter() {
           justifyContent: 'space-between',
         }}
       >
-        <Text size="sm" muted>
+        <Text size="sm" muted style={{ wordBreak: 'keep-all' }}>
           개발자 커뮤니티{' '}
           <DaleLink href="https://dalestudy.com/?ref=survey" external size="sm" tone="brand" underline>
             달레 스터디
           </DaleLink>
-          가 운영하는 설문이에요 ·{' '}
+          가 운영하는 설문이에요 · 한국어 환경에 맞는 디자인 시스템{' '}
           <DaleLink href="https://www.daleui.com/?ref=survey" external size="sm" tone="brand" underline>
             달레 UI
           </DaleLink>
