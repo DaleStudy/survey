@@ -18,7 +18,11 @@ export function SiteFooter() {
         }}
       >
         <Text size="sm" muted>
-          달레 스터디가 운영하는 설문이에요 ·{' '}
+          개발자 커뮤니티{' '}
+          <DaleLink href="https://dalestudy.com/?ref=survey" external size="sm" tone="brand" underline>
+            달레 스터디
+          </DaleLink>
+          가 운영하는 설문이에요 ·{' '}
           <DaleLink href="https://www.daleui.com/?ref=survey" external size="sm" tone="brand" underline>
             달레 UI
           </DaleLink>
