@@ -1,5 +1,6 @@
-import { Button, Link as DaleLink } from 'daleui'
+import { Button, Icon, Link as DaleLink } from 'daleui'
 import { useEffect, useState } from 'react'
+import { BrandIcon } from '@/components/BrandIcon'
 import type { DevType } from '@/lib/devType'
 import { SITE_URL } from '@/lib/og'
 
@@ -31,9 +32,9 @@ export function ShareButton({ type, edition }: { type: DevType; edition: { id: s
 
   const q = encodeURIComponent
   const targets = [
-    { name: 'X', href: `https://x.com/intent/post?text=${q(text)}&url=${q(url)}` },
-    { name: 'LinkedIn', href: `https://www.linkedin.com/sharing/share-offsite/?url=${q(url)}` },
-    { name: 'Threads', href: `https://www.threads.net/intent/post?text=${q(`${text}\n${url}`)}` },
+    { name: 'X', icon: <BrandIcon name="XTwitter" />, href: `https://x.com/intent/post?text=${q(text)}&url=${q(url)}` },
+    { name: 'LinkedIn', icon: <Icon name="LinkedIn" size="sm" />, href: `https://www.linkedin.com/sharing/share-offsite/?url=${q(url)}` },
+    { name: 'Threads', icon: <BrandIcon name="Threads" />, href: `https://www.threads.net/intent/post?text=${q(`${text}\n${url}`)}` },
   ]
 
   return (
@@ -50,7 +51,8 @@ export function ShareButton({ type, edition }: { type: DevType; edition: { id: s
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-24)' }}>
         {targets.map((t) => (
-          <DaleLink key={t.name} href={t.href} external>
+          <DaleLink key={t.name} href={t.href} external style={{ display: 'inline-flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
+            {t.icon}
             {t.name}에 공유
           </DaleLink>
         ))}
