@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "survey",
+  "account_id": "94480614a6df7731f1e4491bdac5c440",
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "@tanstack/react-start/server-entry",
+  "observability": { "enabled": true },
+  "upload_source_maps": true,
+  "routes": [{ "pattern": "survey.dalestudy.com", "custom_domain": true }],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "survey",
+      "database_id": "5b7f5ecb-24de-4b7e-b3b9-3c50f8265c42",
+      "migrations_dir": "drizzle"
+    }
+  ]
+}

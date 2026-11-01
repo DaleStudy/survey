@@ -1,0 +1,30 @@
+import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import appCss from 'daleui/styles.css?url'
+
+export const Route = createRootRoute({
+  head: () => ({
+    meta: [
+      { charSet: 'utf-8' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { title: '2026 한국 개발자 설문' },
+      // 오픈 전이라 검색에 나오지 않게 한다
+      { name: 'robots', content: 'noindex' },
+    ],
+    links: [{ rel: 'stylesheet', href: appCss }],
+  }),
+  shellComponent: RootDocument,
+})
+
+function RootDocument({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="ko">
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+        {children}
+        <Scripts />
+      </body>
+    </html>
+  )
+}

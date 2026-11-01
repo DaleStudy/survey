@@ -1,13 +1,33 @@
 # AGENTS.md
 
-한국 개발자 설문(Korea Developer Survey) — 달레 스터디가 운영하는 연례 설문. 한국 개발자를 대상으로 매년 같은 질문을 하고 결과와 익명 데이터를 공개한다. 아직 기획 단계라 코드는 없다.
+한국 개발자 설문(Korea Developer Survey) — 달레 스터디가 운영하는 연례 설문. 한국 개발자를 대상으로 매년 같은 질문을 하고 결과와 익명 데이터를 공개한다. https://survey.dalestudy.com
 
 ## Docs
 
 - `questions/<연도>.yaml` — 그해 설문의 문항 원본. 문항 `id` 와 선택지 `code` 는 연도별 비교의 키라서, `fixed: true` 문항은 문구·선택지·순서를 바꾸지 않는다.
-
 - `docs/research/` — 조사 결과. 파일 이름의 날짜 기준 스냅샷이라 고치지 않는다. 다시 조사하면 새 파일을 만든다.
 - `docs/decisions/` — 결정 기록(ADR).
+
+## Commands
+
+```bash
+bun install
+bun run dev                 # Dev server on port 3000
+bun run build
+bun run test                # tsc --noEmit
+bun run cf-typegen          # wrangler.jsonc 변경 후 worker-configuration.d.ts 재생성
+bunx drizzle-kit generate --name <desc>   # 스키마 변경 후 마이그레이션 생성
+bun run db:migrate:local    # 로컬 D1 마이그레이션
+bun run db:migrate:remote   # 프로덕션 D1 마이그레이션 (배포 전에 먼저)
+```
+
+## Architecture
+
+**TanStack Start** on **Cloudflare Workers**, D1 + Drizzle, 달레 UI. 구성은 `DaleStudy/feedback` 을 따른다.
+
+- `main` 에 push 하면 GitHub Actions(`.github/workflows/deploy.yml`)가 배포한다. 시크릿은 org secret `CLOUDFLARE_API_TOKEN` 하나.
+- 익명 설문이다. 로그인이 없고, 응답 1건이 `responses` 1행이다. IP·User-Agent 처럼 응답자를 알아볼 수 있는 값은 저장하지 않는다 — 스키마에 칸을 두지 않는 것으로 지킨다([개인정보 조사](docs/research/2026-10-privacy-law.md)).
+- D1 `survey` 는 `apac` 위치 힌트로 만들었지만 국내 저장은 보장되지 않는다. 동의 화면의 국외 보관 안내가 이 때문이다.
 
 ## 작업 방식
 
