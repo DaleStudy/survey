@@ -1,20 +1,22 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { Button, Heading, Icon, Tag, Text } from 'daleui'
 import { useEffect, useRef, useState } from 'react'
+import { ConsentStep } from '@/components/ConsentStep'
 import { QuestionStep } from '@/components/QuestionStep'
 import { isEmpty, visibleQuestions } from '@/questions/logic'
 import { type Answers, QUESTIONS } from '@/questions/survey'
 import { submitResponse } from '@/server/functions/responses'
 
 export const Route = createFileRoute('/')({
-  validateSearch: (search: Record<string, unknown>) => ({
-    ref: typeof search.ref === 'string' ? search.ref : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { ref?: string } =>
+    typeof search.ref === 'string' ? { ref: search.ref } : {},
   component: Survey,
 })
 
 // 하나만 고르는 문항은 고른 걸 잠깐 보여 준 뒤 다음 문항으로 넘긴다
 const AUTO_ADVANCE_MS = 300
+// 같은 브라우저에서 다시 답하지 않게 남기는 표시. 서버로는 보내지 않는다.
+const DONE_KEY = 'survey-2026-done'
 
 const page: React.CSSProperties = {
   minHeight: '100vh',
@@ -35,10 +37,16 @@ function Survey() {
   const { ref } = Route.useSearch()
   const [answers, setAnswers] = useState<Answers>({})
   const [qid, setQid] = useState<string | null>(null)
-  const [phase, setPhase] = useState<'intro' | 'question' | 'sending' | 'done'>('intro')
+  const [phase, setPhase] = useState<'intro' | 'consent' | 'question' | 'sending' | 'done' | 'already'>('intro')
   const [error, setError] = useState('')
+  // 하이드레이션 전에 누른 버튼은 아무 일도 하지 않으므로, 그 전에는 시작 버튼을 막아 둔다
+  const [hydrated, setHydrated] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
-  useEffect(() => () => clearTimeout(timer.current), [])
+  useEffect(() => {
+    setHydrated(true)
+    if (localStorage.getItem(DONE_KEY)) setPhase('already')
+    return () => clearTimeout(timer.current)
+  }, [])
 
   const visible = visibleQuestions(QUESTIONS, answers)
   const pos = visible.findIndex((q) => q.id === qid)
@@ -47,7 +55,8 @@ function Survey() {
   async function submit(final: Answers) {
     setPhase('sending')
     try {
-      await submitResponse({ data: { answers: final, ref } })
+      await submitResponse({ data: { answers: final, ref, consented: true } })
+      localStorage.setItem(DONE_KEY, '1')
       setPhase('done')
     } catch {
       setPhase('question')
@@ -82,6 +91,32 @@ function Survey() {
     )
   }
 
+  if (phase === 'already') {
+    return (
+      <main style={page}>
+        <div style={column}>
+          <Heading level={1}>이미 답해 주셨어요</Heading>
+          <Text size="lg">이 브라우저에서는 응답을 마쳤어요. 결과는 12월에 누구나 볼 수 있게 공개할게요.</Text>
+        </div>
+      </main>
+    )
+  }
+
+  if (phase === 'consent') {
+    return (
+      <main style={page}>
+        <div style={column}>
+          <ConsentStep
+            onAgree={() => {
+              setQid(visible[0].id)
+              setPhase('question')
+            }}
+          />
+        </div>
+      </main>
+    )
+  }
+
   if (phase === 'intro' || !current) {
     return (
       <main style={page}>
@@ -92,16 +127,11 @@ function Survey() {
             해외 설문에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 묻는 설문이에요. 매년 같은 질문을 드리고, 결과는
             12월에 누구나 볼 수 있게 공개해요.
           </Text>
-          <Button
-            tone="brand"
-            size="lg"
-            onClick={() => {
-              setQid(visible[0].id)
-              setPhase('question')
-            }}
-          >
+          <Text>이름도 이메일도 로그인도 필요 없어요. 10분 안팎이면 끝나요.</Text>
+          <Button tone="brand" size="lg" disabled={!hydrated} onClick={() => setPhase('consent')}>
             시작하기 <Icon name="chevronRight" size="sm" />
           </Button>
+          <Link to="/privacy">개인정보 처리방침</Link>
         </div>
       </main>
     )
@@ -147,7 +177,7 @@ function Survey() {
           onText={(text) => update({ ...answers, [current.id]: text })}
         />
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-12)', alignItems: 'center' }}>
-          <Button tone="neutral" variant="outline" onClick={() => (pos > 0 ? setQid(visible[pos - 1].id) : setPhase('intro'))}>
+          <Button tone="neutral" variant="outline" onClick={() => (pos > 0 ? setQid(visible[pos - 1].id) : setPhase('consent'))}>
             <Icon name="chevronLeft" size="sm" /> 이전
           </Button>
           <Button
