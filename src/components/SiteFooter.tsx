@@ -26,7 +26,7 @@ export function SiteFooter() {
           <DaleLink href="https://www.daleui.com/?ref=survey" external size="sm" tone="brand" underline>
             달레 UI
           </DaleLink>
-          로 만들었어요
+          로 만들었어요.
         </Text>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-24)' }}>
           <Link to="/privacy">개인정보 처리방침</Link>
