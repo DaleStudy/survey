@@ -4,7 +4,8 @@
 
 ## Docs
 
-- `questions/<연도>.yaml` — 그해 설문의 문항 원본. 문항 `id` 와 선택지 `code` 는 연도별 비교의 키라서, `fixed: true` 문항은 문구·선택지·순서를 바꾸지 않는다.
+- `src/editions.ts` — 회차 목록(ADR 0005). 한 번 열고 닫는 설문 하나가 회차다: `2026`(연례), `2027-h1`(반기), `2027-frontend`(트랙). 마감 시각, 설문·유형 결과 유무, 예시 여부를 여기서 정한다.
+- `questions/<회차>.yaml` — 그 회차 설문의 문항 원본. 문항 `id` 와 선택지 `code` 는 연도별 비교의 키라서, `fixed: true` 문항은 문구·선택지·순서를 바꾸지 않는다.
 - `docs/research/` — 조사 결과. 파일 이름의 날짜 기준 스냅샷이라 고치지 않는다. 다시 조사하면 새 파일을 만든다.
 - `docs/decisions/` — 결정 기록(ADR).
 
@@ -19,15 +20,17 @@ bun run cf-typegen          # wrangler.jsonc 변경 후 worker-configuration.d.t
 bunx drizzle-kit generate --name <desc>   # 스키마 변경 후 마이그레이션 생성
 bun run db:migrate:local    # 로컬 D1 마이그레이션
 bun run db:migrate:remote   # 프로덕션 D1 마이그레이션 (배포 전에 먼저)
-bun run export              # 운영 D1 원본 응답을 exports/<연도>-responses-<날짜>.csv 로 (git 무시, 공개 금지)
+bun run export <회차>       # 운영 D1 원본 응답을 exports/<회차>-responses-<날짜>.csv 로 (git 무시, 공개 금지)
+bun scripts/sample-results.ts   # 예시 회차 2025 의 집계(src/results/2025.json)를 다시 만든다
 ```
 
 ## Architecture
 
 **TanStack Start** on **Cloudflare Workers**, D1 + Drizzle, 달레 UI. 구성은 `DaleStudy/feedback` 을 따른다.
 
-- 화면: `/` 소개(랜딩), `/survey` 응답(시작 → 동의 → 문항 → 완료와 개발자 유형), `/type/<유형>` 공유용 유형 페이지, `/privacy` 처리방침. 유형은 브라우저에서만 계산하고 저장하지 않는다(ADR 0004, `src/lib/devType.ts`). 공유 링크의 `?ref=` 는 랜딩에서 `/survey` 로 넘겨 `responses.ref` 에 남긴다.
-- 마감은 `src/lib/schedule.ts` 의 `CLOSES_AT` 하나로 정한다. 화면과 서버 함수가 함께 본다.
+- 화면: `/` 랜딩, `/survey` → 열린 회차 설문(여럿이면 고르는 화면, `?ref=` 유지), `/results` → 가장 최근 결과, `/privacy`. 회차별로 `/<회차>/survey`(시작 → 동의 → 문항 → 완료와 개발자 유형), `/<회차>/type/<유형>`(공유용, ADR 0004), `/<회차>/results`(집계만 읽는 결과 화면). 유형은 브라우저에서만 계산하고 저장하지 않는다.
+- 마감은 회차의 `closesAt` 으로 정한다. 화면과 서버 함수가 함께 본다.
+- 결과는 응답 → 집계(`src/results/aggregate.ts`, 응답자 30명 미만 문항은 숨김) → 화면으로 나눈다. 결과 화면은 `src/results/<회차>.json` 만 읽고 원본 응답을 모른다. 회차끼리 비교할 수 있게 같은 문항 `id` 는 모든 회차에서 같은 선택지 `code` 를 쓴다.
 - 원본 응답 내보내기는 웹 관리자 화면 없이 `bun run export` 로 한다 — 로그인이 없는 사이트라 관리자 인증을 새로 만들지 않고, DaleStudy Cloudflare 계정 접근 권한으로 갈음한다.
 - `main` 에 push 하면 GitHub Actions(`.github/workflows/deploy.yml`)가 배포한다. 시크릿은 org secret `CLOUDFLARE_API_TOKEN` 하나.
 - 익명 설문이다. 로그인이 없고, 응답 1건이 `responses` 1행이다. IP·User-Agent 처럼 응답자를 알아볼 수 있는 값은 저장하지 않는다 — 스키마에 칸을 두지 않는 것으로 지킨다([개인정보 조사](docs/research/2026-10-privacy-law.md)).
@@ -44,6 +47,7 @@ bun run export              # 운영 D1 원본 응답을 exports/<연도>-respon
   2. Access 앱 "한국 개발자 설문 (베타)" 끄기 또는 삭제
   3. `src/routes/__root.tsx` 의 `noindex` 빼기
   4. 링크 미리보기(og 태그)가 공유 채널에서 제대로 뜨는지 확인
+  5. 예시 회차 `2025` 지우기: `src/editions.ts` 의 항목, `src/results/2025.json`, `src/results/index.ts` 의 줄, `scripts/sample-results.ts`
 
 ## 작업 방식
 

@@ -5,7 +5,7 @@
 # show_if 는 키마다 AND, 값 목록은 OR 이다. required 를 적지 않으면 필수다.
 # 동의와 만 14세 확인은 문항이 아니라 설문 앞 단계에서 처리한다.
 
-survey: 2026
+edition: "2026"
 status: draft
 
 sections:

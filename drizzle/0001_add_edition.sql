@@ -1,0 +1,1 @@
+ALTER TABLE `responses` ADD `edition` text DEFAULT '2026' NOT NULL;

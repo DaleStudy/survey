@@ -1,6 +1,8 @@
 import { describe, expect, test } from 'bun:test'
 import { cleanAnswers, visibleQuestions } from './logic'
-import { QUESTIONS } from './survey'
+import { questionsFor } from './survey'
+
+const QUESTIONS = questionsFor('2026')!
 
 const ids = (answers: Record<string, string | string[]>) => visibleQuestions(QUESTIONS, answers).map((q) => q.id)
 

@@ -1,6 +1,8 @@
 import { describe, expect, test } from 'bun:test'
-import { QUESTIONS } from '@/questions/survey'
+import { questionsFor } from '@/questions/survey'
 import { DEV_TYPES, devTypeOf, findDevType } from './devType'
+
+const QUESTIONS = questionsFor('2026')!
 
 describe('devTypeOf', () => {
   test('AI 사용 빈도와 성장 추구로 여섯 유형이 모두 나온다', () => {

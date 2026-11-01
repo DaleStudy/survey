@@ -1,19 +1,8 @@
 import { describe, expect, test } from 'bun:test'
-import { QUESTIONS } from '@/questions/survey'
+import { questionsFor } from '@/questions/survey'
 import { csvCell, toCsv } from './csv'
-import { isClosed } from './schedule'
 
-describe('isClosed', () => {
-  test('마감 시각이 없으면 열려 있다', () => {
-    expect(isClosed(new Date('2030-01-01T00:00:00Z'), null)).toBe(false)
-  })
-
-  test('마감 시각부터 닫힌다', () => {
-    const closesAt = '2026-12-06T23:59:59+09:00'
-    expect(isClosed(new Date('2026-12-06T14:59:58Z'), closesAt)).toBe(false)
-    expect(isClosed(new Date('2026-12-06T14:59:59Z'), closesAt)).toBe(true)
-  })
-})
+const QUESTIONS = questionsFor('2026')!
 
 describe('CSV', () => {
   test('특수 문자가 있는 칸만 따옴표로 감싼다', () => {

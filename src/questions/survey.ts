@@ -1,4 +1,4 @@
-import raw from './generated/2026.json'
+import raw from './generated/index'
 
 export type QuestionType = 'single' | 'multi' | 'scale' | 'long'
 export type Option = { code: string; label: string }
@@ -38,7 +38,7 @@ type RawQuestion = {
   max?: ScaleEnd
 }
 type RawSection = { id: string; title: string; show_if?: ShowIf; questions: RawQuestion[] }
-type RawSurvey = { survey: number; sections: RawSection[] }
+type RawSurvey = { sections: RawSection[] }
 
 export function normalize(survey: RawSurvey): Question[] {
   const flat = survey.sections.flatMap((s) => s.questions.map((q) => ({ q, s })))
@@ -61,5 +61,11 @@ export function normalize(survey: RawSurvey): Question[] {
   })
 }
 
-export const YEAR = (raw as RawSurvey).survey
-export const QUESTIONS = normalize(raw as RawSurvey)
+// 회차 ID → 문항. questions/<회차>.yaml 에서 만든다 (scripts/questions.ts).
+const BY_EDITION = new Map(Object.entries(raw).map(([id, survey]) => [id, normalize(survey as RawSurvey)]))
+
+export function questionsFor(edition: string): Question[] | undefined {
+  return BY_EDITION.get(edition)
+}
+
+export const QUESTION_EDITIONS = [...BY_EDITION.keys()]

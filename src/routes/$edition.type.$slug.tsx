@@ -2,25 +2,27 @@ import { Link, createFileRoute, notFound } from '@tanstack/react-router'
 import { Text } from 'daleui'
 import { DevTypeCard } from '@/components/DevTypeCard'
 import { SITE_URL } from '@/components/ShareButton'
+import { findEdition } from '@/editions'
 import { findDevType } from '@/lib/devType'
 
 // 공유 링크로 들어오는 페이지. 유형만 보여 주고, 설문은 랜딩에서 ref=share 로 시작하게 한다.
-export const Route = createFileRoute('/type/$slug')({
+export const Route = createFileRoute('/$edition/type/$slug')({
   loader: ({ params }) => {
-    const type = findDevType(params.slug)
-    if (!type) throw notFound()
-    return type
+    const edition = findEdition(params.edition)
+    const type = edition?.devTypes ? findDevType(params.slug) : undefined
+    if (!edition || !type) throw notFound()
+    return { ...type, edition: edition.id, editionTitle: edition.title }
   },
   head: ({ loaderData }) => {
     if (!loaderData) return {}
-    const title = `나는 '${loaderData.name}' 개발자 · 2026 한국 개발자 설문`
+    const title = `나는 '${loaderData.name}' 개발자 · ${loaderData.editionTitle}`
     return {
       meta: [
         { title },
         { name: 'description', content: loaderData.description },
         { property: 'og:title', content: title },
         { property: 'og:description', content: `${loaderData.description} 10분이면 나의 유형도 알 수 있어요.` },
-        { property: 'og:url', content: `${SITE_URL}/type/${loaderData.slug}` },
+        { property: 'og:url', content: `${SITE_URL}/${loaderData.edition}/type/${loaderData.slug}` },
         { property: 'og:type', content: 'website' },
         { property: 'og:locale', content: 'ko_KR' },
         { property: 'og:site_name', content: '한국 개발자 설문' },
