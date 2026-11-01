@@ -1,0 +1,26 @@
+{
+  "projectName": "survey",
+  "projectOwner": "DaleStudy",
+  "commit": true,
+  "repoType": "github",
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "DaleSeo",
+      "name": "Dale Seo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5466341?v=4",
+      "profile": "https://github.com/DaleSeo",
+      "contributions": [
+        "code",
+        "design",
+        "doc",
+        "research"
+      ]
+    }
+  ],
+  "files": [
+    "README.md"
+  ],
+  "commitType": "docs",
+  "contributorsPerLine": 7
+}
