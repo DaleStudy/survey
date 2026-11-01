@@ -3,9 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite dev --port 3000",
-    "build": "vite build",
-    "test": "tsc --noEmit",
+    "questions": "bun scripts/questions.ts",
+    "dev": "bun run questions && vite dev --port 3000",
+    "build": "bun run questions && vite build",
+    "test": "bun run questions && tsc --noEmit && bun test",
     "deploy": "bun run build && wrangler deploy",
     "cf-typegen": "wrangler types",
     "db:generate": "drizzle-kit generate",

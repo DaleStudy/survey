@@ -1,73 +1,183 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Button, Heading, Text, VStack } from 'daleui'
-import { useState } from 'react'
+import { Button, Heading, Icon, Tag, Text } from 'daleui'
+import { useEffect, useRef, useState } from 'react'
+import { QuestionStep } from '@/components/QuestionStep'
+import { isEmpty, visibleQuestions } from '@/questions/logic'
+import { type Answers, QUESTIONS } from '@/questions/survey'
 import { submitResponse } from '@/server/functions/responses'
 
 export const Route = createFileRoute('/')({
   validateSearch: (search: Record<string, unknown>) => ({
     ref: typeof search.ref === 'string' ? search.ref : undefined,
   }),
-  component: Home,
+  component: Survey,
 })
 
-// 0단계 뼈대: 문항 하나를 받아 저장하는 데까지만. 문항은 1단계에서 questions/2026.yaml 로 옮긴다.
-const STATUS_OPTIONS = [
-  { code: 'employed', label: '개발자로 일하고 있어요' },
-  { code: 'job_seeking', label: '개발 일자리를 찾고 있어요' },
-  { code: 'student', label: '학생이에요' },
-  { code: 'other_job', label: '개발 말고 다른 일을 해요' },
-  { code: 'not_working', label: '지금은 일을 쉬고 있어요' },
-]
+// 하나만 고르는 문항은 고른 걸 잠깐 보여 준 뒤 다음 문항으로 넘긴다
+const AUTO_ADVANCE_MS = 300
 
-function Home() {
+const page: React.CSSProperties = {
+  minHeight: '100vh',
+  boxSizing: 'border-box',
+  background: 'var(--colors-bg-brand)',
+  color: 'var(--colors-fg-neutral)',
+}
+const column: React.CSSProperties = {
+  maxWidth: 840,
+  margin: '0 auto',
+  padding: '96px 24px 120px',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 'var(--spacing-24)',
+}
+
+function Survey() {
   const { ref } = Route.useSearch()
-  const [status, setStatus] = useState<string>()
-  const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
+  const [answers, setAnswers] = useState<Answers>({})
+  const [qid, setQid] = useState<string | null>(null)
+  const [phase, setPhase] = useState<'intro' | 'question' | 'sending' | 'done'>('intro')
+  const [error, setError] = useState('')
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  useEffect(() => () => clearTimeout(timer.current), [])
 
-  async function submit() {
-    if (!status) return
-    setState('sending')
+  const visible = visibleQuestions(QUESTIONS, answers)
+  const pos = visible.findIndex((q) => q.id === qid)
+  const current = pos >= 0 ? visible[pos] : undefined
+
+  async function submit(final: Answers) {
+    setPhase('sending')
     try {
-      await submitResponse({ data: { answers: { status }, ref } })
-      setState('done')
+      await submitResponse({ data: { answers: final, ref } })
+      setPhase('done')
     } catch {
-      setState('error')
+      setPhase('question')
+      setError('저장하지 못했어요. 잠시 뒤에 다시 시도해 주세요.')
     }
   }
 
-  if (state === 'done') {
+  // 답이 바뀌면 보이는 문항도 바뀌므로, 다음 문항은 새 답으로 다시 계산한다
+  function advance(next: Answers) {
+    if (!current) return
+    const list = visibleQuestions(QUESTIONS, next)
+    const i = list.findIndex((q) => q.id === current.id)
+    setError('')
+    if (i + 1 >= list.length) void submit(next)
+    else setQid(list[i + 1].id)
+  }
+
+  function update(next: Answers) {
+    clearTimeout(timer.current)
+    setAnswers(next)
+    setError('')
+  }
+
+  if (phase === 'done') {
     return (
-      <VStack gap="16" padding="40" align="left">
-        <Heading level={1}>고마워요</Heading>
-        <Text>응답이 저장됐어요.</Text>
-      </VStack>
+      <main style={page}>
+        <div style={column}>
+          <Heading level={1}>고마워요</Heading>
+          <Text size="lg">응답이 익명으로 저장됐어요. 결과는 12월에 누구나 볼 수 있게 공개할게요.</Text>
+        </div>
+      </main>
     )
   }
 
-  return (
-    <VStack gap="24" padding="40" align="left">
-      <Heading level={1}>2026 한국 개발자 설문</Heading>
-      <Heading level={2} size={3} id="question">
-        지금 어떤 상황인가요?
-      </Heading>
-      <VStack gap="8" align="stretch" role="radiogroup" aria-labelledby="question">
-        {STATUS_OPTIONS.map((o) => (
+  if (phase === 'intro' || !current) {
+    return (
+      <main style={page}>
+        <div style={{ ...column, alignItems: 'flex-start' }}>
+          <Tag tone="brand">2026 · 1회차</Tag>
+          <Heading level={1}>2026 한국 개발자 설문</Heading>
+          <Text size="lg">
+            해외 설문에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 묻는 설문이에요. 매년 같은 질문을 드리고, 결과는
+            12월에 누구나 볼 수 있게 공개해요.
+          </Text>
           <Button
-            key={o.code}
-            role="radio"
-            aria-checked={status === o.code}
-            variant={status === o.code ? 'solid' : 'outline'}
-            tone={status === o.code ? 'brand' : 'neutral'}
-            onClick={() => setStatus(o.code)}
+            tone="brand"
+            size="lg"
+            onClick={() => {
+              setQid(visible[0].id)
+              setPhase('question')
+            }}
           >
-            {o.label}
+            시작하기 <Icon name="chevronRight" size="sm" />
           </Button>
-        ))}
-      </VStack>
-      <Button tone="brand" disabled={!status} loading={state === 'sending'} onClick={submit}>
-        제출하기
-      </Button>
-      {state === 'error' && <Text tone="danger">저장하지 못했어요. 잠시 뒤에 다시 시도해 주세요.</Text>}
-    </VStack>
+        </div>
+      </main>
+    )
+  }
+
+  const value = answers[current.id]
+  const last = pos === visible.length - 1
+  const progress = Math.round((pos / visible.length) * 100)
+
+  return (
+    <main style={page}>
+      <div
+        role="progressbar"
+        aria-label="설문 진행률"
+        aria-valuenow={pos + 1}
+        aria-valuemin={1}
+        aria-valuemax={visible.length}
+        style={{ position: 'fixed', top: 0, left: 0, right: 0, height: 4, background: 'var(--colors-bg-brand-active)' }}
+      >
+        <div style={{ height: 4, width: `${progress}%`, background: 'var(--colors-bg-solid-brand)', transition: 'width 300ms ease' }} />
+      </div>
+      <div style={column}>
+        <Text size="sm" tone="neutral" muted>
+          {pos + 1} / {visible.length}
+        </Text>
+        <QuestionStep
+          question={current}
+          value={value}
+          error={error}
+          onPick={(code) => {
+            const next = { ...answers, [current.id]: code }
+            update(next)
+            timer.current = setTimeout(() => advance(next), AUTO_ADVANCE_MS)
+          }}
+          onToggle={(code) => {
+            const picked = Array.isArray(value) ? value : []
+            if (!picked.includes(code) && current.limit && picked.length >= current.limit) {
+              setError(`최대 ${current.limit}개까지 고를 수 있어요. 다른 걸 먼저 빼 주세요.`)
+              return
+            }
+            update({ ...answers, [current.id]: picked.includes(code) ? picked.filter((c) => c !== code) : [...picked, code] })
+          }}
+          onText={(text) => update({ ...answers, [current.id]: text })}
+        />
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-12)', alignItems: 'center' }}>
+          <Button tone="neutral" variant="outline" onClick={() => (pos > 0 ? setQid(visible[pos - 1].id) : setPhase('intro'))}>
+            <Icon name="chevronLeft" size="sm" /> 이전
+          </Button>
+          <Button
+            tone="brand"
+            loading={phase === 'sending'}
+            onClick={() => {
+              if (current.required && isEmpty(value)) {
+                setError(current.type === 'multi' ? '하나 이상 골라 주세요.' : current.type === 'long' ? '내용을 적어 주세요.' : '답을 하나 골라 주세요.')
+                return
+              }
+              advance(answers)
+            }}
+          >
+            {last ? '제출하기' : '다음'}
+          </Button>
+          {!current.required && (
+            <Button
+              tone="neutral"
+              variant="ghost"
+              onClick={() => {
+                const { [current.id]: _, ...rest } = answers
+                update(rest)
+                advance(rest)
+              }}
+            >
+              건너뛸게요
+            </Button>
+          )}
+        </div>
+      </div>
+    </main>
   )
 }

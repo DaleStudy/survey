@@ -2,18 +2,21 @@ import { createServerFn } from '@tanstack/react-start'
 import { env } from 'cloudflare:workers'
 import { getDb } from '@/db'
 import { responses } from '@/db/schema'
-
-const YEAR = 2026
+import { cleanAnswers } from '@/questions/logic'
+import { type Answers, QUESTIONS, YEAR } from '@/questions/survey'
 
 export const submitResponse = createServerFn({ method: 'POST' })
-  .validator((input: { answers: Record<string, string | string[]>; ref?: string }) => input)
+  .validator((input: { answers: Answers; ref?: string }) => input)
   .handler(async ({ data }) => {
+    // 화면과 같은 규칙으로 다시 검사한다. 숨겨진 문항의 답은 여기서 버려진다.
+    const result = cleanAnswers(QUESTIONS, data.answers)
+    if (!result.ok) throw new Error(result.error)
     await getDb(env.DB)
       .insert(responses)
       .values({
         id: crypto.randomUUID(),
         year: YEAR,
-        answers: data.answers,
+        answers: result.answers,
         ref: data.ref?.slice(0, 64) || null,
         createdAt: new Date().toISOString(),
       })

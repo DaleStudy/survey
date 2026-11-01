@@ -39,7 +39,7 @@ sections:
       - id: role
         fixed: true
         type: multi
-        max: 2
+        limit: 2
         label: 주로 맡은(또는 맡고 싶은) 직무는 무엇인가요?
         help: 두 개까지 고를 수 있어요.
         options:
@@ -244,7 +244,7 @@ sections:
       - id: company_criteria
         fixed: true
         type: multi
-        max: 3
+        limit: 3
         label: 일할 곳을 고를 때 무엇을 가장 중요하게 보나요?
         help: 세 개까지 고를 수 있어요.
         options:
@@ -277,7 +277,7 @@ sections:
       - id: career_concern
         fixed: false
         type: multi
-        max: 2
+        limit: 2
         label: 요즘 커리어에서 가장 큰 고민은 무엇인가요?
         help: 두 개까지 고를 수 있어요.
         options:
@@ -314,7 +314,7 @@ sections:
       - id: want_language
         fixed: true
         type: multi
-        max: 2
+        limit: 2
         label: 내년에 더 써 보고 싶은 언어는 무엇인가요?
         help: 두 개까지 고를 수 있어요.
         options_from: main_language
@@ -324,6 +324,7 @@ sections:
         type: multi
         label: 업무에서 어떤 클라우드를 쓰나요?
         help: 해당하는 걸 모두 골라 주세요.
+        show_if: { status: [employed] }
         options:
           - { code: aws, label: "AWS" }
           - { code: gcp, label: "Google Cloud" }

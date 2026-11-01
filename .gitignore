@@ -10,3 +10,6 @@ dist
 # Generated
 worker-configuration.d.ts
 src/routeTree.gen.ts
+
+# Generated from questions/*.yaml
+src/questions/generated/
