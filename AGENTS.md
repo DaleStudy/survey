@@ -19,12 +19,16 @@ bun run cf-typegen          # wrangler.jsonc 변경 후 worker-configuration.d.t
 bunx drizzle-kit generate --name <desc>   # 스키마 변경 후 마이그레이션 생성
 bun run db:migrate:local    # 로컬 D1 마이그레이션
 bun run db:migrate:remote   # 프로덕션 D1 마이그레이션 (배포 전에 먼저)
+bun run export              # 운영 D1 원본 응답을 exports/<연도>-responses-<날짜>.csv 로 (git 무시, 공개 금지)
 ```
 
 ## Architecture
 
 **TanStack Start** on **Cloudflare Workers**, D1 + Drizzle, 달레 UI. 구성은 `DaleStudy/feedback` 을 따른다.
 
+- 화면: `/` 소개(랜딩), `/survey` 응답(시작 → 동의 → 문항 → 완료), `/privacy` 처리방침. 공유 링크의 `?ref=` 는 랜딩에서 `/survey` 로 넘겨 `responses.ref` 에 남긴다.
+- 마감은 `src/lib/schedule.ts` 의 `CLOSES_AT` 하나로 정한다. 화면과 서버 함수가 함께 본다.
+- 원본 응답 내보내기는 웹 관리자 화면 없이 `bun run export` 로 한다 — 로그인이 없는 사이트라 관리자 인증을 새로 만들지 않고, DaleStudy Cloudflare 계정 접근 권한으로 갈음한다.
 - `main` 에 push 하면 GitHub Actions(`.github/workflows/deploy.yml`)가 배포한다. 시크릿은 org secret `CLOUDFLARE_API_TOKEN` 하나.
 - 익명 설문이다. 로그인이 없고, 응답 1건이 `responses` 1행이다. IP·User-Agent 처럼 응답자를 알아볼 수 있는 값은 저장하지 않는다 — 스키마에 칸을 두지 않는 것으로 지킨다([개인정보 조사](docs/research/2026-10-privacy-law.md)).
 - 제출은 Turnstile(위젯 `survey`, Managed)로 막는다. 위젯은 마지막 문항 화면에만 띄운다 — 토큰이 5분이면 만료된다. 서버(`submitResponse`)는 저장 전에 `verifyTurnstile`(`src/lib/turnstile.ts`)로 `success`·action `survey_submit`·호스트 이름을 확인하고, 하나라도 어긋나면 거절한다(fail closed). 허용 호스트는 `wrangler.jsonc` 의 `TURNSTILE_HOSTNAMES`(운영에는 localhost 를 넣지 않는다), 로컬은 `.dev.vars` 가 덮는다.

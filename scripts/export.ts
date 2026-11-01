@@ -18,7 +18,7 @@ const results = JSON.parse(out)[0].results as { created_at: string; ref: string 
 const rows: ResponseRow[] = results.map((r) => ({ createdAt: r.created_at, ref: r.ref, answers: JSON.parse(r.answers) }))
 
 await mkdir('exports', { recursive: true })
-const path = `exports/responses-${YEAR}-${new Date().toISOString().slice(0, 10)}.csv`
+const path = `exports/${YEAR}-responses-${new Date().toISOString().slice(0, 10)}.csv`
 // 엑셀이 UTF-8 로 읽도록 BOM 을 붙인다
-await Bun.write(path, '﻿' + toCsv(QUESTIONS, rows))
+await Bun.write(path, '\uFEFF' + toCsv(QUESTIONS, rows))
 console.log(`${rows.length}건을 ${path} 에 저장했어요.`)
