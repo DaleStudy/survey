@@ -3,6 +3,7 @@ import { Button, Heading, Icon, Tag, Text } from 'daleui'
 import { useEffect, useRef, useState } from 'react'
 import { ConsentStep } from '@/components/ConsentStep'
 import { QuestionStep } from '@/components/QuestionStep'
+import { Turnstile } from '@/components/Turnstile'
 import { isEmpty, visibleQuestions } from '@/questions/logic'
 import { type Answers, QUESTIONS } from '@/questions/survey'
 import { submitResponse } from '@/server/functions/responses'
@@ -41,6 +42,9 @@ function Survey() {
   const [error, setError] = useState('')
   // 하이드레이션 전에 누른 버튼은 아무 일도 하지 않으므로, 그 전에는 시작 버튼을 막아 둔다
   const [hydrated, setHydrated] = useState(false)
+  // 마지막 문항 화면에서 받는다. 토큰은 5분이면 만료돼서 설문을 시작할 때 받으면 늦다.
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+  const [turnstileReset, setTurnstileReset] = useState(0)
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
   useEffect(() => {
     setHydrated(true)
@@ -53,14 +57,20 @@ function Survey() {
   const current = pos >= 0 ? visible[pos] : undefined
 
   async function submit(final: Answers) {
+    if (!turnstileToken) {
+      setError('자동 입력 방지 확인이 끝나면 제출할 수 있어요. 잠시만 기다려 주세요.')
+      return
+    }
     setPhase('sending')
     try {
-      await submitResponse({ data: { answers: final, ref, consented: true } })
+      await submitResponse({ data: { answers: final, ref, consented: true, turnstileToken } })
       localStorage.setItem(DONE_KEY, '1')
       setPhase('done')
     } catch {
       setPhase('question')
       setError('저장하지 못했어요. 잠시 뒤에 다시 시도해 주세요.')
+      // 쓴 토큰은 다시 쓸 수 없으니 새로 받는다
+      setTurnstileReset((n) => n + 1)
     }
   }
 
@@ -176,6 +186,7 @@ function Survey() {
           }}
           onText={(text) => update({ ...answers, [current.id]: text })}
         />
+        {last && <Turnstile onToken={setTurnstileToken} resetKey={turnstileReset} />}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-12)', alignItems: 'center' }}>
           <Button tone="neutral" variant="outline" onClick={() => (pos > 0 ? setQid(visible[pos - 1].id) : setPhase('consent'))}>
             <Icon name="chevronLeft" size="sm" /> 이전

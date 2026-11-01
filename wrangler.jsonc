@@ -8,6 +8,8 @@
   "observability": { "enabled": true },
   "upload_source_maps": true,
   "routes": [{ "pattern": "survey.dalestudy.com", "custom_domain": true }],
+  // Turnstile 토큰을 받아 줄 프런트엔드 호스트. 로컬 개발은 .dev.vars 에서 localhost 로 덮는다.
+  "vars": { "TURNSTILE_HOSTNAMES": "survey.dalestudy.com" },
   "d1_databases": [
     {
       "binding": "DB",
