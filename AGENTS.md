@@ -26,7 +26,7 @@ bun run export              # 운영 D1 원본 응답을 exports/<연도>-respon
 
 **TanStack Start** on **Cloudflare Workers**, D1 + Drizzle, 달레 UI. 구성은 `DaleStudy/feedback` 을 따른다.
 
-- 화면: `/` 소개(랜딩), `/survey` 응답(시작 → 동의 → 문항 → 완료), `/privacy` 처리방침. 공유 링크의 `?ref=` 는 랜딩에서 `/survey` 로 넘겨 `responses.ref` 에 남긴다.
+- 화면: `/` 소개(랜딩), `/survey` 응답(시작 → 동의 → 문항 → 완료와 개발자 유형), `/type/<유형>` 공유용 유형 페이지, `/privacy` 처리방침. 유형은 브라우저에서만 계산하고 저장하지 않는다(ADR 0004, `src/lib/devType.ts`). 공유 링크의 `?ref=` 는 랜딩에서 `/survey` 로 넘겨 `responses.ref` 에 남긴다.
 - 마감은 `src/lib/schedule.ts` 의 `CLOSES_AT` 하나로 정한다. 화면과 서버 함수가 함께 본다.
 - 원본 응답 내보내기는 웹 관리자 화면 없이 `bun run export` 로 한다 — 로그인이 없는 사이트라 관리자 인증을 새로 만들지 않고, DaleStudy Cloudflare 계정 접근 권한으로 갈음한다.
 - `main` 에 push 하면 GitHub Actions(`.github/workflows/deploy.yml`)가 배포한다. 시크릿은 org secret `CLOUDFLARE_API_TOKEN` 하나.

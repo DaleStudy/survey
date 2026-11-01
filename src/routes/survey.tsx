@@ -4,6 +4,9 @@ import { useEffect, useRef, useState } from 'react'
 import { ConsentStep } from '@/components/ConsentStep'
 import { QuestionStep } from '@/components/QuestionStep'
 import { Turnstile } from '@/components/Turnstile'
+import { DevTypeCard } from '@/components/DevTypeCard'
+import { ShareButton } from '@/components/ShareButton'
+import { type DevType, devTypeOf, findDevType } from '@/lib/devType'
 import { isClosed } from '@/lib/schedule'
 import { isEmpty, visibleQuestions } from '@/questions/logic'
 import { type Answers, QUESTIONS } from '@/questions/survey'
@@ -47,9 +50,15 @@ function Survey() {
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
   const [turnstileReset, setTurnstileReset] = useState(0)
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  // 응답을 마치면 브라우저에서 계산해 보여 준다. 서버에는 보내지 않는다.
+  const [devType, setDevType] = useState<DevType>()
   useEffect(() => {
     setHydrated(true)
-    if (localStorage.getItem(DONE_KEY)) setPhase('already')
+    const done = localStorage.getItem(DONE_KEY)
+    if (done) {
+      setDevType(findDevType(done))
+      setPhase('already')
+    }
     return () => clearTimeout(timer.current)
   }, [])
 
@@ -65,7 +74,10 @@ function Survey() {
     setPhase('sending')
     try {
       await submitResponse({ data: { answers: final, ref, consented: true, turnstileToken } })
-      localStorage.setItem(DONE_KEY, '1')
+      const type = devTypeOf(final)
+      // 다시 들어와도 유형을 보여 줄 수 있게 유형 이름만 남긴다
+      localStorage.setItem(DONE_KEY, type.slug)
+      setDevType(type)
       setPhase('done')
     } catch {
       setPhase('question')
@@ -94,9 +106,16 @@ function Survey() {
   if (phase === 'done') {
     return (
       <main style={page}>
-        <div style={column}>
+        <div style={{ ...column, alignItems: 'flex-start' }}>
           <Heading level={1}>고마워요</Heading>
           <Text size="lg">응답이 익명으로 저장됐어요. 결과는 12월 21일에 누구나 볼 수 있게 공개할게요.</Text>
+          {devType && (
+            <>
+              <DevTypeCard type={devType} label="나의 개발자 유형" />
+              <Text>주변 개발자에게도 알려 주세요. 다양한 분들이 답할수록 결과가 정확해져요.</Text>
+              <ShareButton type={devType} />
+            </>
+          )}
         </div>
       </main>
     )
@@ -117,9 +136,15 @@ function Survey() {
   if (phase === 'already') {
     return (
       <main style={page}>
-        <div style={column}>
+        <div style={{ ...column, alignItems: 'flex-start' }}>
           <Heading level={1}>이미 답해 주셨어요</Heading>
           <Text size="lg">이 브라우저에서는 응답을 마쳤어요. 결과는 12월 21일에 누구나 볼 수 있게 공개할게요.</Text>
+          {devType && (
+            <>
+              <DevTypeCard type={devType} label="나의 개발자 유형" />
+              <ShareButton type={devType} />
+            </>
+          )}
         </div>
       </main>
     )
