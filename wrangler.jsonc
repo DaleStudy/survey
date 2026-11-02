@@ -7,11 +7,8 @@
   "main": "@tanstack/react-start/server-entry",
   "observability": { "enabled": true },
   "upload_source_maps": true,
-  "routes": [
-    { "pattern": "survey.dalestudy.com", "custom_domain": true },
-    // 미리보기 전용 도메인: 프로덕션 트래픽은 받지 않는다(enabled: false)
-    { "pattern": "survey-preview.dalestudy.com", "custom_domain": true, "previews_enabled": true, "enabled": false }
-  ],
+  // 운영 도메인이 미리보기도 받는다(previews_enabled). 미리보기는 그 하위 도메인에 뜬다.
+  "routes": [{ "pattern": "survey.dalestudy.com", "custom_domain": true, "previews_enabled": true }],
   // Turnstile 토큰을 받아 줄 프런트엔드 호스트. 로컬 개발은 .dev.vars 에서 localhost 로 덮는다.
   "vars": { "TURNSTILE_HOSTNAMES": "survey.dalestudy.com" },
   "d1_databases": [
@@ -22,10 +19,10 @@
       "migrations_dir": "drizzle"
     }
   ],
-  // PR 미리보기(Workers Previews). PR마다 pr-<번호>.survey-preview.dalestudy.com 에 뜬다.
+  // PR 미리보기(Workers Previews). PR마다 pr-<번호>.survey.dalestudy.com 에 뜬다.
   // D1 은 미리보기끼리 함께 쓰는 survey-preview 로 — 프로덕션 응답을 건드리지 않게.
   "previews": {
-    "vars": { "TURNSTILE_HOSTNAMES": ".survey-preview.dalestudy.com" },
+    "vars": { "TURNSTILE_HOSTNAMES": ".survey.dalestudy.com" },
     "d1_databases": [
       {
         "binding": "DB",
