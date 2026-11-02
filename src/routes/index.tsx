@@ -156,7 +156,7 @@ function Landing() {
               <Card.Body>
                 <Card.Title>익명으로 답해요</Card.Title>
                 <Card.Description>
-                  이름, 이메일, 로그인을 받지 않아요. 연봉처럼 답하기 망설여지는 질문은 건너뛰어도 돼요.
+                  연봉처럼 답하기 망설여지는 질문은 건너뛰어도 돼요.
                 </Card.Description>
               </Card.Body>
             </Card>
@@ -174,7 +174,7 @@ function Landing() {
               <Card.Body>
                 <Card.Title>통계에만 써요</Card.Title>
                 <Card.Description>
-                  광고나 채용 영업에 쓰지 않아요.
+                  회사가 아니라 개발자 커뮤니티가 하는 설문조사라서, 광고나 채용 영업에 쓸 일이 없어요.
                 </Card.Description>
               </Card.Body>
             </Card>
