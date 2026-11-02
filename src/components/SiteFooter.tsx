@@ -17,6 +17,7 @@ export function SiteFooter() {
           justifyContent: 'space-between',
         }}
       >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
         <Text size="sm" muted>
           개발자 커뮤니티{' '}
           <DaleLink href="https://dalestudy.com/?ref=survey" external size="sm" tone="brand" underline>
@@ -28,6 +29,10 @@ export function SiteFooter() {
           </DaleLink>
           로 만들었어요.
         </Text>
+        <Text size="xs" muted>
+          © 2026 DaleStudy
+        </Text>
+        </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-24)' }}>
           <Link to="/privacy">개인정보 처리방침</Link>
         </div>
