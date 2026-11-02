@@ -1,10 +1,13 @@
 import { Link } from '@tanstack/react-router'
 import { Icon, Text } from 'daleui'
-import { openEditions } from '@/editions'
+import { EDITIONS, openEditions } from '@/editions'
+import { RESULTS } from '@/results'
 
 // 어느 화면에서든 처음(/)과 결과 아카이브(/results)로 갈 수 있게 한다. 설문 진행 화면에는 두지 않는다.
 export function SiteHeader() {
   const open = openEditions().length > 0
+  // 예시가 아닌 결과가 생기기 전에는 결과 메뉴가 가리킬 곳이 없다
+  const hasResults = EDITIONS.some((e) => !e.sample && RESULTS[e.id])
   return (
     <header style={{ borderBottom: '1px solid var(--colors-bg-neutral-hover)', background: 'var(--colors-app-bg)' }}>
       <div
@@ -27,7 +30,7 @@ export function SiteHeader() {
           </Text>
         </Link>
         <nav aria-label="주요 메뉴" style={{ display: 'flex', gap: 'var(--spacing-16)', alignItems: 'center' }}>
-          <Link to="/results">결과</Link>
+          {hasResults && <Link to="/results">결과</Link>}
           {open && <Link to="/survey">참여하기</Link>}
           <a
             href="https://github.com/DaleStudy/survey"

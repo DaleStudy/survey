@@ -71,11 +71,12 @@ function Landing() {
       <SiteHeader />
 
       <section style={{ background: 'var(--colors-bg-brand)' }}>
-        <div style={{ ...section, gap: 'var(--spacing-24)', alignItems: 'flex-start' }}>
+        <div style={{ ...wrap, padding: '72px 24px', display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-48)', alignItems: 'center' }}>
+          <div style={{ flex: '1 1 420px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)', alignItems: 'flex-start' }}>
           <Heading level={1} style={{ maxWidth: 820 }}>
             한국 개발자의 오늘을 함께 기록해요
           </Heading>
-          <Text size="xl" style={{ maxWidth: 680, lineHeight: 1.6 }}>
+          <Text size="lg" style={{ maxWidth: 560, lineHeight: 1.6 }}>
             한국 개발자가 어떻게 일하고 성장하는지, 해외 설문조사가 놓친 이야기를 함께 모아요. 응답 하나하나가 모여 누구나 볼 수 있는 공개 데이터가 돼요.
           </Text>
           {open ? (
@@ -100,6 +101,14 @@ function Landing() {
               결과 보기
             </Link>
           )}
+          </div>
+          <img
+            src="/types/default.jpg"
+            alt=""
+            width={1200}
+            height={630}
+            style={{ flex: '1 1 420px', minWidth: 0, width: '100%', height: 'auto', borderRadius: 'var(--radii-lg)' }}
+          />
         </div>
       </section>
 
