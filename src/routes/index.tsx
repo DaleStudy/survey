@@ -103,7 +103,7 @@ function Landing() {
             >
               <div style={{ fontSize: '4.5rem', fontWeight: 700, lineHeight: 1 }}>86명</div>
               <div style={{ fontSize: '1.125rem', lineHeight: 1.5 }}>
-                Stack Overflow 2025 설문조사에 참여한 한국 개발자 수예요. 전체의 0.2%밖에 안 돼요.
+                Stack Overflow 2025 설문조사 응답자 49,009명 가운데 한국 개발자 수예요. 0.2%밖에 안 돼요.
               </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)' }}>
@@ -120,7 +120,7 @@ function Landing() {
                   한국 소프트웨어 개발 현실에 맞는 질문을 해요
                 </Heading>
                 <Text size="lg" style={{ lineHeight: 1.6 }}>
-                  SI와 SM, 원청과 하청 구조, 신입 공채, 원화 연봉처럼 글로벌 설문조사에서는 묻지 않는 것들이에요.
+                  SI와 SM, 원청과 하청 구조, 파견 근무, 신입 공채, 원화 연봉처럼 글로벌 설문조사에서는 묻지 않는 것들이에요.
                 </Text>
               </div>
             </div>
