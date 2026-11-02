@@ -30,7 +30,7 @@ export function SiteFooter() {
           로 만들었어요.
         </Text>
         <Text size="xs" muted>
-          © 2026 DaleStudy
+          © 2025-2026 DaleStudy. All rights reserved.
         </Text>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-24)' }}>
