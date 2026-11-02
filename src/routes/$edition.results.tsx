@@ -41,7 +41,7 @@ function QuestionResult({ q, breakdown }: { q: QuestionStat; breakdown?: Breakdo
           <Text size="sm">응답자가 {MIN_GROUP}명보다 적어서 숨겼어요. 누가 답했는지 알아볼 수 없게 하려고요.</Text>
         </div>
       ) : q.type === 'long' ? (
-        <Text size="sm">자유 의견은 이름이나 회사처럼 누군지 알 수 있는 내용을 지운 뒤 따로 정리해요.</Text>
+        <Text size="sm">자유 의견은 이름이나 회사명처럼 특정인을 알아볼 수 있는 정보를 지운 뒤 따로 정리해요.</Text>
       ) : (
         <>
           <ResultChart q={q} breakdown={breakdown} />
@@ -191,7 +191,7 @@ function Results() {
               어떻게 조사했나요
             </Heading>
             <Text style={{ lineHeight: 1.7 }}>
-              온라인 익명 설문이에요. 이름, 이메일, 로그인은 받지 않았고 만 14세 이상만 참여했어요. 응답자가 {MIN_GROUP}명보다 적은 문항은
+              온라인 익명 설문이에요. 이름, 이메일, 로그인 정보는 수집하지 않았고 만 14세 이상만 참여했어요. 응답자가 {MIN_GROUP}명보다 적은 문항은
               숨겼어요. 스스로 참여한 분들의 답이라서 한국 개발자 전체를 그대로 대표하지는 않아요.
             </Text>
           </section>

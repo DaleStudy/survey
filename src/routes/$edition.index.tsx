@@ -10,7 +10,7 @@ import { SITE_URL, ogImage } from '@/lib/og'
 import { questionsFor } from '@/questions/survey'
 import { RESULTS } from '@/results'
 
-const DESCRIPTION = '글로벌 설문조사에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 물어요. 결과를 분석해 누구나 볼 수 있는 인사이트로 공개해요.'
+const DESCRIPTION = '글로벌 설문조사에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 묻고, 결과를 분석해 누구나 볼 수 있는 인사이트로 공유해요.'
 
 // 회차 페이지. 그 회차의 일정과 주제를 보여 주고 설문이나 결과로 보낸다. 회차가 끝나도 그대로 남는다.
 export const Route = createFileRoute('/$edition/')({
@@ -178,7 +178,7 @@ function EditionPage() {
                   무엇을 묻나요
                 </Heading>
                 <Text style={{ lineHeight: 1.6 }}>
-                  {topics.length}가지 주제를 물어요. 지금 상황에 맞는 질문만 나와서 실제로 답할 문항은 {questions.length}개보다 적어요.
+                  {topics.length}가지 주제를 물어요. 본인 상황에 맞는 질문만 나와서 10분 안팎이면 끝나요.
                 </Text>
               </div>
               <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 'var(--spacing-12)' }}>
