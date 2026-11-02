@@ -8,7 +8,7 @@ import { ogImage } from '@/lib/og'
 
 const TITLE = '한국 개발자 설문조사'
 const DESCRIPTION =
-  '개발자 커뮤니티 달레 스터디가 주관해요. 해외 설문조사에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 묻고, 결과를 누구나 볼 수 있게 공개해요.'
+  '개발자 커뮤니티 달레 스터디가 주관해요. 글로벌 설문조사에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 묻고, 결과를 누구나 볼 수 있게 공개해요.'
 
 // 회차와 상관없는 소개 페이지. 회차마다 바뀌는 일정과 주제는 회차 페이지(/$edition)에 둔다.
 export const Route = createFileRoute('/')({
@@ -73,7 +73,7 @@ function Landing() {
             한국 개발자의 오늘을 함께 기록해요
           </Heading>
           <Text size="lg" style={{ maxWidth: 560, lineHeight: 1.6 }}>
-            한국 개발자가 어떻게 일하고 성장하는지, 해외 설문조사가 놓친 이야기를 함께 모아요. 응답 하나하나가 모여 누구나 볼 수 있는 공개 데이터가 돼요.
+            한국 개발자가 어떻게 일하고 성장하는지, 글로벌 설문조사가 놓친 이야기를 함께 모아요. 응답 하나하나가 모여 누구나 볼 수 있는 공개 데이터가 돼요.
           </Text>
           {open ? (
             <>
@@ -107,7 +107,7 @@ function Landing() {
 
       <section id="why">
         <div style={section}>
-          <SectionTitle label="왜 하나요" title="해외 설문조사 속 한국은 너무 작아요" />
+          <SectionTitle label="왜 하나요" title="글로벌 설문조사 속 한국은 너무 작아요" />
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'var(--spacing-32)', alignItems: 'start' }}>
             <div
               style={{
@@ -139,7 +139,7 @@ function Landing() {
                   한국 개발 현장에 맞는 질문을 해요
                 </Heading>
                 <Text size="lg" style={{ lineHeight: 1.6 }}>
-                  SI와 SM, 원청과 하청 구조, 코딩 테스트, 원화 연봉처럼 해외 설문조사에서는 묻지 않는 것들이에요.
+                  SI와 SM, 원청과 하청 구조, 코딩 테스트, 원화 연봉처럼 글로벌 설문조사에서는 묻지 않는 것들이에요.
                 </Text>
               </div>
             </div>
