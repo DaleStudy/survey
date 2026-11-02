@@ -1,6 +1,6 @@
 // 회차 목록. 근거: docs/decisions/0005-survey-editions.md
 export interface Edition {
-  // 주소와 DB 에 쓰는 ID: 2026(연례), 2027-q1(분기), 2027-frontend(트랙)
+  // 주소와 DB 에 쓰는 ID: 2026(연례), 2027-h1(반기), 2027-frontend(트랙)
   id: string
   title: string
   // 응답을 받는 회차인지. 문항 파일 questions/<id>.yaml 이 있어야 한다.

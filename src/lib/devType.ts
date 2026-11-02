@@ -1,7 +1,7 @@
 import type { Answers } from '@/questions/survey'
 
 // 완료 화면과 공유 페이지의 개발자 유형. 근거: docs/decisions/0004-developer-type-result.md
-// 응답 데이터가 아니라서 문구는 해마다 바꿔도 된다. 서버에는 저장하지 않는다.
+// 응답 데이터가 아니라서 문구는 회차마다 바꿔도 된다. 서버에는 저장하지 않는다.
 export interface DevType {
   slug: string
   name: string

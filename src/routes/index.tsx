@@ -5,7 +5,7 @@ import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 
 const TITLE = '2026 한국 개발자 설문'
-const DESCRIPTION = '해외 설문에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 매년 같은 질문으로 물어요. 결과와 응답 데이터는 누구나 볼 수 있게 공개해요.'
+const DESCRIPTION = '해외 설문에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 꾸준히 같은 질문으로 물어요. 결과와 응답 데이터는 누구나 볼 수 있게 공개해요.'
 
 export const Route = createFileRoute('/')({
   // 공유 링크의 ?ref= 를 설문 링크로 넘겨 유입 경로를 남긴다
@@ -153,9 +153,9 @@ function Landing() {
             <Card tone="neutral" outline>
               <Card.Icon name="clock" />
               <Card.Body>
-                <Card.Title>매년 같은 질문을 해요</Card.Title>
+                <Card.Title>같은 질문을 꾸준히 해요</Card.Title>
                 <Card.Description>
-                  핵심 문항은 해마다 바꾸지 않아요. 올해 답이 한국 개발자가 어떻게 달라지는지 보여 주는 기준이 돼요.
+                  핵심 문항은 회차가 바뀌어도 그대로예요. 이번 답이 한국 개발자가 어떻게 달라지는지 보여 주는 기준이 돼요.
                 </Card.Description>
               </Card.Body>
             </Card>
