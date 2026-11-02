@@ -44,7 +44,7 @@ OPENAI_API_KEY=$(op read op://dev/OpenAI-DaleStudy/credential) bun scripts/type-
 ## 베타와 오픈
 
 - 지금은 운영진 베타 중이다. `survey.dalestudy.com` 전체를 Cloudflare Access 앱 "한국 개발자 설문 (베타)"로 잠가, 정책 "베타 테스터"에 따라 GitHub `DaleStudy/maintainer`, `DaleStudy/daleui` 팀만 들어온다. 로그인은 Zero Trust(`dalestudy.cloudflareaccess.com`)의 GitHub 로그인 수단 — DaleStudy 조직 소유 OAuth 앱 "DaleStudy Cloudflare Access", 시크릿 원본은 1Password `dev/GITHUB_DALESTUDY_CF_ACCESS`.
-- 베타 응답은 `?ref=beta` 링크로 받아 운영 D1 에 함께 쌓는다.
+- 베타 응답도 운영 D1 에 쌓인다. 잠겨 있는 동안 들어온 응답은 모두 베타 응답이라 따로 표시하지 않고, 오픈 직전에 전부 지운다.
 - 오픈(11월 16일) 직전에 할 일:
   1. 베타 응답 지우기 (`DELETE FROM responses` — 확인 후 `bun run export` 로 먼저 받아 둘지 정한다)
   2. Access 앱 "한국 개발자 설문 (베타)" 끄기 또는 삭제
