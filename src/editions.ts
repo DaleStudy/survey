@@ -46,6 +46,11 @@ export function isClosed(edition: Edition, now: Date = new Date()): boolean {
   return edition.closesAt !== undefined && now.getTime() >= new Date(edition.closesAt).getTime()
 }
 
+// 시작일 전에 받는 응답은 베타다. 베타 동안에는 같은 브라우저에서 다시 답할 수 있게 한다.
+export function isBeta(edition: Edition, now: Date = new Date()): boolean {
+  return edition.opensAt !== undefined && now.getTime() < new Date(`${edition.opensAt}T00:00:00+09:00`).getTime()
+}
+
 // 지금 응답을 받는 회차들. /survey 짧은 주소가 본다.
 export function openEditions(now: Date = new Date()): Edition[] {
   return EDITIONS.filter((e) => e.survey && !isClosed(e, now))

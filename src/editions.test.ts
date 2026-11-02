@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { EDITIONS, type Edition, isClosed, openEditions } from './editions'
+import { EDITIONS, type Edition, isBeta, isClosed, openEditions } from './editions'
 import { QUESTION_EDITIONS, questionsFor } from './questions/survey'
 
 const edition = (closesAt?: string): Edition => ({ id: 'x', title: 'x', survey: true, devTypes: false, closesAt })
@@ -19,6 +19,13 @@ describe('회차', () => {
   test('회차 ID 는 주소에 쓸 수 있는 모양이다', () => {
     for (const e of EDITIONS) expect(e.id).toMatch(/^\d{4}(-[a-z0-9]+)?$/)
     expect(new Set(EDITIONS.map((e) => e.id)).size).toBe(EDITIONS.length)
+  })
+
+  test('시작일 전까지만 베타다', () => {
+    const e = { ...edition(), opensAt: '2026-11-16' }
+    expect(isBeta(e, new Date('2026-11-15T23:59:59+09:00'))).toBe(true)
+    expect(isBeta(e, new Date('2026-11-16T00:00:00+09:00'))).toBe(false)
+    expect(isBeta(edition(), new Date('2026-11-01T00:00:00+09:00'))).toBe(false)
   })
 
   test('마감이 지나면 열린 회차에서 빠진다', () => {

@@ -9,7 +9,7 @@ import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { ShareButton } from '@/components/ShareButton'
 import { type DevType, devTypeOf, findDevType } from '@/lib/devType'
-import { findEdition, isClosed } from '@/editions'
+import { findEdition, isBeta, isClosed } from '@/editions'
 import { koDate } from '@/lib/date'
 import { OTHER, isEmpty, otherKey, visibleQuestions } from '@/questions/logic'
 import { type Answers, questionsFor } from '@/questions/survey'
@@ -134,6 +134,16 @@ function Survey() {
     else setQid(list[i + 1].id)
   }
 
+  // 베타 테스트 중에는 문항을 고친 뒤 다시 답해 볼 수 있게 한다
+  function retake() {
+    localStorage.removeItem(DONE_KEY)
+    setAnswers({})
+    setQid(null)
+    setDevType(undefined)
+    setTurnstileToken(null)
+    setPhase('intro')
+  }
+
   function update(next: Answers) {
     clearTimeout(timer.current)
     setAnswers(next)
@@ -153,9 +163,16 @@ function Survey() {
               <ShareButton type={devType} edition={edition} />
             </>
           )}
-          <Link to="/" style={homeButton}>
-            <Icon name="chevronLeft" size="sm" /> 처음으로
-          </Link>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-12)', alignItems: 'center' }}>
+            <Link to="/" style={homeButton}>
+              <Icon name="chevronLeft" size="sm" /> 처음으로
+            </Link>
+            {isBeta(edition) && (
+              <Button tone="neutral" variant="ghost" onClick={retake}>
+                다시 답하기 (베타 테스트)
+              </Button>
+            )}
+          </div>
         </div>
       </EndPage>
     )
@@ -187,9 +204,16 @@ function Survey() {
               <ShareButton type={devType} edition={edition} />
             </>
           )}
-          <Link to="/" style={homeButton}>
-            <Icon name="chevronLeft" size="sm" /> 처음으로
-          </Link>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-12)', alignItems: 'center' }}>
+            <Link to="/" style={homeButton}>
+              <Icon name="chevronLeft" size="sm" /> 처음으로
+            </Link>
+            {isBeta(edition) && (
+              <Button tone="neutral" variant="ghost" onClick={retake}>
+                다시 답하기 (베타 테스트)
+              </Button>
+            )}
+          </div>
         </div>
       </EndPage>
     )
