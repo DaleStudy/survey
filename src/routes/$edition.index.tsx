@@ -77,7 +77,7 @@ function EditionPage() {
   const status = result
     ? `${result.total.toLocaleString()}명이 답했어요`
     : open
-      ? e.closesAt && `${koDate(e.closesAt)}까지 응답을 받아요`
+      ? e.closesAt && `${koDate(e.closesAt)} 마감`
       : e.resultsAt && `${koDate(e.resultsAt)}에 결과를 공개해요`
 
   return (
