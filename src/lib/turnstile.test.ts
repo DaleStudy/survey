@@ -22,6 +22,15 @@ describe('verifyTurnstile', () => {
     expect(await verifyTurnstile({ ...base, fetch: reply({ ...ok, hostname: 'localhost' }) })).toBe(false)
   })
 
+  test('점으로 시작하는 항목은 하위 도메인만 받는다', async () => {
+    const preview = { ...base, hostnames: '.survey-preview.dalestudy.com' }
+    const at = (hostname: string) => verifyTurnstile({ ...preview, fetch: reply({ ...ok, hostname }) })
+    expect(await at('pr-2.survey-preview.dalestudy.com')).toBe(true)
+    expect(await at('survey-preview.dalestudy.com')).toBe(false)
+    expect(await at('evilsurvey-preview.dalestudy.com')).toBe(false)
+    expect(await at('survey.dalestudy.com')).toBe(false)
+  })
+
   test('토큰, 시크릿, 허용 호스트가 없으면 siteverify 를 부르지 않고 거절한다', async () => {
     const never = (async () => {
       throw new Error('called')

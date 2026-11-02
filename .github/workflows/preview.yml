@@ -1,0 +1,67 @@
+name: Preview 🔍
+
+on:
+  pull_request:
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: oven-sh/setup-bun@v2
+
+      - run: bun install --frozen-lockfile
+
+      # tsc 가 읽는 worker-configuration.d.ts 와 routeTree.gen.ts 는 커밋하지 않으므로 여기서 만든다
+      - run: bun run cf-typegen
+
+      - run: bun run build
+
+      - run: bun run test
+
+  preview:
+    # 포크 PR에는 secret이 전달되지 않으므로 같은 저장소의 PR만 미리보기를 만든다
+    if: >
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    # 미리보기 주소는 GitHub 배포(preview 환경)로 PR에 표시된다. 오래된 미리보기는 Cloudflare가 정리한다
+    environment:
+      name: preview
+      url: ${{ steps.preview.outputs.preview-url }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: oven-sh/setup-bun@v2
+
+      - run: bun install --frozen-lockfile
+
+      # 미리보기끼리 함께 쓰는 D1(survey-preview)에 마이그레이션을 먼저 적용한다
+      - name: Migrate preview D1
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: bun run db:migrate:preview
+
+      - run: bun run build
+
+      - name: Write secrets file
+        env:
+          TURNSTILE_SECRET: ${{ secrets.TURNSTILE_SECRET }}
+        run: printf 'TURNSTILE_SECRET=%s\n' "$TURNSTILE_SECRET" > "$RUNNER_TEMP/secrets.env"
+
+      - name: Deploy preview
+        id: preview
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          packageManager: bun
+          command: preview --name pr-${{ github.event.pull_request.number }} --ignore-base-config --secrets-file ${{ runner.temp }}/secrets.env
