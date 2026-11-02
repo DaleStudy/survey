@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { Icon, Text } from 'daleui'
 import { EDITIONS } from '@/editions'
 import { RESULTS } from '@/results'
+import { Logo } from '@/components/Logo'
 
 // 어느 화면에서든 처음(/)으로 가고, 결과가 생기면 결과 아카이브(/results)로 갈 수 있게 한다. 설문 진행 화면에는 두지 않는다.
 export function SiteHeader() {
@@ -22,8 +23,8 @@ export function SiteHeader() {
           justifyContent: 'space-between',
         }}
       >
-        <Link to="/" style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center', color: 'inherit', textDecoration: 'none' }}>
-          <Icon name="codeXml" tone="brand" />
+        <Link to="/" style={{ display: 'flex', gap: 'var(--spacing-12)', alignItems: 'center', color: 'inherit', textDecoration: 'none' }}>
+          <Logo />
           <Text size="lg" weight="bold">
             한국 개발자 설문조사
           </Text>
