@@ -130,7 +130,7 @@ function Landing() {
 
       <section id="promise" style={{ background: 'var(--colors-bg-neutral-hover)' }}>
         <div style={section}>
-          <Heading level={2}>안심하고 답할 수 있어요</Heading>
+          <Heading level={2}>커뮤니티 설문조사라서 안심할 수 있어요</Heading>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--spacing-24)' }}>
             <Card tone="neutral" outline>
               <Card.Icon name="eyeOff" />
@@ -155,7 +155,7 @@ function Landing() {
               <Card.Body>
                 <Card.Title>통계에만 써요</Card.Title>
                 <Card.Description>
-                  개발자 커뮤니티가 하는 설문조사라서, 광고나 채용 영업에 쓸 일이 없어요.
+                  응답은 통계를 내는 데만 쓰고, 광고나 채용 영업에는 쓰지 않아요.
                 </Card.Description>
               </Card.Body>
             </Card>
