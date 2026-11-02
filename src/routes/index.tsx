@@ -163,7 +163,7 @@ function Landing() {
 
       <section id="results">
         <div style={section}>
-          <Heading level={2}>회차마다 결과를 모두 공개해요</Heading>
+          <Heading level={2}>설문 결과를 투명하게 공유해요</Heading>
           <EditionList />
         </div>
       </section>
