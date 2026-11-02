@@ -23,7 +23,7 @@ export function SiteHeader() {
         <Link to="/" style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center', color: 'inherit', textDecoration: 'none' }}>
           <Icon name="codeXml" tone="brand" />
           <Text size="lg" weight="bold">
-            한국 개발자 설문
+            한국 개발자 설문조사
           </Text>
         </Link>
         <nav aria-label="주요 메뉴" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-24)', alignItems: 'center' }}>

@@ -4,8 +4,8 @@ import { EditionList } from '@/components/EditionList'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 
-const TITLE = '2026 한국 개발자 설문'
-const DESCRIPTION = '해외 설문에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 꾸준히 같은 질문으로 물어요. 결과와 응답 데이터는 누구나 볼 수 있게 공개해요.'
+const TITLE = '2026 한국 개발자 설문조사'
+const DESCRIPTION = '해외 설문조사에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 물어요. 결과는 누구나 볼 수 있게 공개해요.'
 
 export const Route = createFileRoute('/')({
   // 공유 링크의 ?ref= 를 설문 링크로 넘겨 유입 경로를 남긴다
@@ -20,7 +20,7 @@ export const Route = createFileRoute('/')({
       { property: 'og:url', content: 'https://survey.dalestudy.com/' },
       { property: 'og:type', content: 'website' },
       { property: 'og:locale', content: 'ko_KR' },
-      { property: 'og:site_name', content: '한국 개발자 설문' },
+      { property: 'og:site_name', content: '한국 개발자 설문조사' },
     ],
   }),
   component: Landing,
@@ -67,7 +67,7 @@ function Landing() {
 
       <section style={{ background: 'var(--colors-bg-brand)' }}>
         <div style={{ ...section, gap: 'var(--spacing-24)', alignItems: 'flex-start' }}>
-          <Tag tone="brand">2026 · 1회차</Tag>
+          <Tag tone="brand">{TITLE}</Tag>
           <Heading level={1} style={{ maxWidth: 820 }}>
             한국 개발자의 오늘을 함께 기록해요
           </Heading>
@@ -88,7 +88,7 @@ function Landing() {
 
       <section id="why">
         <div style={section}>
-          <SectionTitle label="왜 하나요" title="해외 설문 속 한국은 너무 작아요" />
+          <SectionTitle label="왜 하나요" title="해외 설문조사 속 한국은 너무 작아요" />
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'var(--spacing-32)', alignItems: 'start' }}>
             <div
               style={{
@@ -103,16 +103,16 @@ function Landing() {
             >
               <div style={{ fontSize: '4.5rem', fontWeight: 700, lineHeight: 1 }}>86명</div>
               <div style={{ fontSize: '1.125rem', lineHeight: 1.5 }}>
-                Stack Overflow 2025 설문에서 나라를 밝힌 35,369명 가운데 한국 응답자 수예요. 전체의 0.2%밖에 안 돼요.
+                Stack Overflow 2025 설문조사에서 나라를 밝힌 35,369명 가운데 한국 응답자 수예요. 전체의 0.2%밖에 안 돼요.
               </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
                 <Heading level={3} size={4}>
-                  국내 연례 설문은 2023년에 멈췄어요
+                  국내 개발자 설문조사는 2023년에 멈췄어요
                 </Heading>
                 <Text size="lg" style={{ lineHeight: 1.6 }}>
-                  가장 컸던 프로그래머스 개발자 설문(2018~2023)이 끝난 뒤로, 국내 개발자 전체를 매년 조사하는 곳이 없어요.
+                  가장 컸던 프로그래머스 개발자 설문조사(2018~2023)가 끝난 뒤로, 국내 개발자 전체를 매년 조사하는 곳이 없어요.
                 </Text>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
@@ -120,7 +120,7 @@ function Landing() {
                   한국에만 있는 질문이 있어요
                 </Heading>
                 <Text size="lg" style={{ lineHeight: 1.6 }}>
-                  SI·SM과 원청·하청 구조, 코딩 테스트, 원화 연봉처럼 해외 설문에서는 묻지 않는 것들이에요.
+                  SI와 SM, 원청과 하청 구조, 코딩 테스트, 원화 연봉처럼 해외 설문조사에서는 묻지 않는 것들이에요.
                 </Text>
               </div>
             </div>
@@ -137,7 +137,7 @@ function Landing() {
               <Card.Body>
                 <Card.Title>익명으로 답해요</Card.Title>
                 <Card.Description>
-                  이름, 이메일, 로그인을 받지 않아요. 연봉이나 지역처럼 민감한 건 구간으로만 묻고, 답하지 않아도 돼요.
+                  이름, 이메일, 로그인을 받지 않아요. 연봉처럼 답하기 망설여지는 질문은 건너뛰어도 돼요.
                 </Card.Description>
               </Card.Body>
             </Card>
@@ -146,16 +146,16 @@ function Landing() {
               <Card.Body>
                 <Card.Title>결과는 모두 공개해요</Card.Title>
                 <Card.Description>
-                  12월 21일에 결과 리포트를 누구나 볼 수 있게 내요. 누군지 알 수 없게 처리한 응답 데이터도 CSV로 함께 올려요.
+                  12월 21일에 결과를 누구나 볼 수 있게 공개해요. 응답자가 적은 문항은 누군지 짐작할 수 없게 숨겨요.
                 </Card.Description>
               </Card.Body>
             </Card>
             <Card tone="neutral" outline>
-              <Card.Icon name="clock" />
+              <Card.Icon name="heartHandshake" />
               <Card.Body>
-                <Card.Title>같은 질문을 꾸준히 해요</Card.Title>
+                <Card.Title>통계에만 써요</Card.Title>
                 <Card.Description>
-                  핵심 문항은 회차가 바뀌어도 그대로예요. 이번 답이 한국 개발자가 어떻게 달라지는지 보여 주는 기준이 돼요.
+                  광고나 채용 영업에 쓰지 않아요. 원본 응답은 2027년 말에 지우고, 통계만 남겨요.
                 </Card.Description>
               </Card.Body>
             </Card>
@@ -176,7 +176,7 @@ function Landing() {
                 {t}
               </Tag>
             ))}
-            <Tag tone="brand">올해의 주제 · AI</Tag>
+            <Tag tone="brand">올해의 주제 AI</Tag>
           </div>
         </div>
       </section>
@@ -191,7 +191,7 @@ function Landing() {
       <section style={{ background: 'var(--colors-bg-solid-brand)', color: 'var(--colors-fg-solid-brand)' }}>
         <div style={{ ...section, padding: '80px 24px', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--spacing-24)' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)', maxWidth: 640 }}>
-            <div style={{ fontSize: '2.25rem', fontWeight: 700, lineHeight: 1.2 }}>10분이면 한국 개발자 지도에 점 하나를 더할 수 있어요</div>
+            <div style={{ fontSize: '2.25rem', fontWeight: 700, lineHeight: 1.2 }}>10분이면 참여할 수 있어요</div>
             <div style={{ fontSize: '1.125rem', lineHeight: 1.5 }}>주변 개발자에게도 알려 주세요. 다양한 사람이 답할수록 결과가 정확해져요.</div>
           </div>
           <Link

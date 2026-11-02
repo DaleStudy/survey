@@ -17,7 +17,7 @@ export interface Edition {
 export const EDITIONS: Edition[] = [
   {
     id: '2026',
-    title: '2026 한국 개발자 설문',
+    title: '2026 한국 개발자 설문조사',
     survey: true,
     // 계획서 일정: 11월 16일 시작, 12월 6일 마감, 12월 21일 발표
     closesAt: '2026-12-06T23:59:59+09:00',
@@ -26,7 +26,7 @@ export const EDITIONS: Edition[] = [
   },
   {
     id: '2025',
-    title: '2025 한국 개발자 설문 (예시)',
+    title: '2025 한국 개발자 설문조사 (예시)',
     survey: false,
     devTypes: false,
     sample: true,

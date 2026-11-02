@@ -1,5 +1,5 @@
 import { Link, createFileRoute, notFound } from '@tanstack/react-router'
-import { Button, Heading, Icon, Tag, Text } from 'daleui'
+import { Button, Heading, Icon, Text } from 'daleui'
 import { useEffect, useRef, useState } from 'react'
 import { ConsentStep } from '@/components/ConsentStep'
 import { QuestionStep } from '@/components/QuestionStep'
@@ -189,10 +189,9 @@ function Survey() {
     return (
       <main style={page}>
         <div style={{ ...column, alignItems: 'flex-start' }}>
-          <Tag tone="brand">2026 · 1회차</Tag>
-          <Heading level={1}>2026 한국 개발자 설문</Heading>
+          <Heading level={1}>{edition.title}</Heading>
           <Text size="lg">
-            해외 설문에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 묻는 설문이에요. 같은 질문을 꾸준히 드리고, 결과는
+            해외 설문조사에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 묻는 설문조사예요. 결과는
             12월 21일에 누구나 볼 수 있게 공개해요.
           </Text>
           <Text>이름도 이메일도 로그인도 필요 없어요. 10분 안팎이면 끝나요.</Text>

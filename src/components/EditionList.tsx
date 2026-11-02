@@ -34,10 +34,10 @@ export function EditionList() {
               </div>
               <Text size="sm" muted>
                 {result
-                  ? `${result.total.toLocaleString()}명 응답`
+                  ? `${result.total.toLocaleString()}명이 답했어요`
                   : open
-                    ? `응답 받는 중${e.closesAt ? ` · ${day(e.closesAt)} 마감` : ''}`
-                    : `결과 준비 중${e.resultsAt ? ` · ${day(e.resultsAt)} 공개 예정` : ''}`}
+                    ? e.closesAt ? `${day(e.closesAt)}까지 응답을 받아요` : '응답을 받고 있어요'
+                    : e.resultsAt ? `${day(e.resultsAt)}에 결과를 공개해요` : '결과를 준비하고 있어요'}
               </Text>
             </div>
             <div style={{ display: 'flex', gap: 'var(--spacing-24)' }}>

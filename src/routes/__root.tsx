@@ -7,7 +7,7 @@ export const Route = createRootRoute({
     meta: [
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: '2026 한국 개발자 설문' },
+      { title: '2026 한국 개발자 설문조사' },
       ...ogImage('default', '여러 세대의 한국 개발자들이 함께 서 있는 그림'),
       // 오픈 전이라 검색에 나오지 않게 한다
       { name: 'robots', content: 'noindex' },

@@ -1,4 +1,4 @@
-# 2026 한국 개발자 설문 문항 원본
+# 2026 한국 개발자 설문조사 문항 원본
 #
 # id 와 선택지 code 는 연도별 비교의 키다. fixed: true 문항은 문구·선택지·순서를 바꾸지 않는다.
 # 선택지를 늘릴 때는 기존 code 를 지우지 않고 "기타"를 쪼개는 식으로 새 code 를 더한다.
@@ -336,7 +336,7 @@ sections:
           - { code: unknown, label: "잘 모르겠어요" }
 
   - id: ai
-    title: 올해의 주제 · AI
+    title: 올해의 주제 AI
     questions:
       - id: ai_frequency
         fixed: true

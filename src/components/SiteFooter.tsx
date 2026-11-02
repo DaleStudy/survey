@@ -22,7 +22,7 @@ export function SiteFooter() {
           <DaleLink href="https://dalestudy.com/?ref=survey" external size="sm" tone="brand" underline>
             달레 스터디
           </DaleLink>
-          가 주관하는 설문이에요. 한국어 환경에 맞는 디자인 시스템{' '}
+          가 주관하는 설문조사예요. 한국어 환경에 맞는 디자인 시스템{' '}
           <DaleLink href="https://www.daleui.com/?ref=survey" external size="sm" tone="brand" underline>
             달레 UI
           </DaleLink>

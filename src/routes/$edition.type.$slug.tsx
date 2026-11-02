@@ -17,7 +17,7 @@ export const Route = createFileRoute('/$edition/type/$slug')({
   },
   head: ({ loaderData }) => {
     if (!loaderData) return {}
-    const title = `나는 '${loaderData.name}' 개발자 · ${loaderData.editionTitle}`
+    const title = `나는 '${loaderData.name}' 개발자 | ${loaderData.editionTitle}`
     return {
       meta: [
         { title },
@@ -27,7 +27,7 @@ export const Route = createFileRoute('/$edition/type/$slug')({
         { property: 'og:url', content: `${SITE_URL}/${loaderData.edition}/type/${loaderData.slug}` },
         { property: 'og:type', content: 'website' },
         { property: 'og:locale', content: 'ko_KR' },
-        { property: 'og:site_name', content: '한국 개발자 설문' },
+        { property: 'og:site_name', content: '한국 개발자 설문조사' },
         ...ogImage(loaderData.slug, loaderData.name),
       ],
     }
@@ -43,7 +43,7 @@ function TypePage() {
       <main style={{ flex: 1 }}>
         <div style={{ maxWidth: 840, margin: '0 auto', padding: '96px 24px', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)', alignItems: 'flex-start' }}>
           <DevTypeCard type={type} label="친구의 개발자 유형" />
-          <Text size="lg">한국 개발자의 일과 커리어를 묻는 설문이에요. 10분이면 나의 유형도 알 수 있어요.</Text>
+          <Text size="lg">한국 개발자의 일과 커리어를 묻는 설문조사예요. 10분이면 나의 유형도 알 수 있어요.</Text>
           <Link
             to="/"
             search={{ ref: 'share' }}

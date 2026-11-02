@@ -28,8 +28,8 @@ function QuestionResult({ q }: { q: QuestionStat }) {
           {q.label}
         </Heading>
         <Text size="sm" muted>
-          {q.answered.toLocaleString()}명 응답{q.type === 'multi' ? ' · 여러 개 고를 수 있어서 합이 100%를 넘어요' : ''}
-          {q.mean !== undefined ? ` · 평균 ${q.mean.toFixed(1)}점` : ''}
+          {q.answered.toLocaleString()}명이 답했어요.{q.type === 'multi' ? ' 여러 개 고를 수 있어서 합이 100%를 넘어요.' : ''}
+          {q.mean !== undefined ? ` 평균 ${q.mean.toFixed(1)}점이에요.` : ''}
         </Text>
       </div>
       {q.hidden ? (
@@ -48,7 +48,7 @@ function QuestionResult({ q }: { q: QuestionStat }) {
               aria-label={`${o.label} ${percent(o.share)}`}
               style={{ display: 'grid', gridTemplateColumns: 'minmax(120px, 220px) minmax(0, 1fr) 48px', gap: 'var(--spacing-12)', alignItems: 'center' }}
             >
-              <Text size="sm">{q.type === 'scale' && q.scale ? `${o.label}${o.label === '1' ? ` · ${q.scale.min}` : o.label === '5' ? ` · ${q.scale.max}` : ''}` : o.label}</Text>
+              <Text size="sm">{q.type === 'scale' && q.scale ? `${o.label}${o.label === '1' ? ` (${q.scale.min})` : o.label === '5' ? ` (${q.scale.max})` : ''}` : o.label}</Text>
               <div style={{ height: 20, borderRadius: 'var(--radii-sm)', background: 'var(--colors-bg-neutral-hover)', overflow: 'hidden' }}>
                 <div style={{ height: '100%', width: percent(o.share), background: 'var(--colors-bg-solid-brand)', borderRadius: 'var(--radii-sm)' }} />
               </div>
