@@ -45,6 +45,18 @@ const column: React.CSSProperties = {
   gap: 'var(--spacing-24)',
 }
 
+const homeButton: React.CSSProperties = {
+  display: 'inline-flex',
+  gap: 'var(--spacing-4)',
+  alignItems: 'center',
+  minHeight: 40,
+  padding: '0 var(--spacing-16)',
+  border: '1px solid var(--colors-border-neutral)',
+  borderRadius: 'var(--radii-md)',
+  color: 'inherit',
+  textDecoration: 'none',
+}
+
 // 응답을 마쳤거나 마감된 화면. 설문 진행 중이 아니라서 다른 화면으로 갈 수 있게 헤더와 하단을 둔다.
 function EndPage({ children }: { children: React.ReactNode }) {
   return (
@@ -141,6 +153,9 @@ function Survey() {
               <ShareButton type={devType} edition={edition} />
             </>
           )}
+          <Link to="/" style={homeButton}>
+            <Icon name="chevronLeft" size="sm" /> 처음으로
+          </Link>
         </div>
       </EndPage>
     )
@@ -152,7 +167,9 @@ function Survey() {
         <div style={column}>
           <Heading level={1}>설문이 마감됐어요</Heading>
           <Text size="lg">참여해 주신 분들 고마워요. {resultsNote}</Text>
-          <Link to="/">설문 소개로 돌아가기</Link>
+          <Link to="/" style={homeButton}>
+            <Icon name="chevronLeft" size="sm" /> 처음으로
+          </Link>
         </div>
       </EndPage>
     )
@@ -170,6 +187,9 @@ function Survey() {
               <ShareButton type={devType} edition={edition} />
             </>
           )}
+          <Link to="/" style={homeButton}>
+            <Icon name="chevronLeft" size="sm" /> 처음으로
+          </Link>
         </div>
       </EndPage>
     )
