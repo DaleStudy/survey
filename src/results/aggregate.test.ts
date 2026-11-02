@@ -34,4 +34,17 @@ describe('aggregate', () => {
   test('척도 문항은 평균을 낸다', () => {
     expect(stat('job_satisfaction').mean).toBe(2)
   })
+
+  test(`집단별 결과도 ${MIN_GROUP}명보다 적은 칸은 숨기고 비율을 내보내지 않는다`, () => {
+    const status = result.breakdowns.find((b) => b.id === 'status')!
+    expect(status.groups.map((g) => g.count)).toEqual([20, 40])
+    const ai = status.questions.ai_frequency
+    expect(ai.find((g) => g.group === 'employed')).toMatchObject({ answered: 20, hidden: true, shares: {} })
+    expect(ai.find((g) => g.group === 'others')?.shares.daily).toBeCloseTo(1)
+  })
+
+  test('집단을 나누는 문항 자체는 집단별로 보여 주지 않는다', () => {
+    const status = result.breakdowns.find((b) => b.id === 'status')!
+    expect(status.questions.status).toBeUndefined()
+  })
 })

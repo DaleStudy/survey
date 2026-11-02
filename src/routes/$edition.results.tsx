@@ -3,11 +3,13 @@ import { Heading, Icon, Tag, Text } from 'daleui'
 import { findEdition } from '@/editions'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
+import { ResultChart } from '@/components/ResultChart'
 import { RESULTS } from '@/results'
-import { MIN_GROUP, type QuestionStat } from '@/results/aggregate'
+import { type Breakdown, MIN_GROUP, type QuestionStat } from '@/results/aggregate'
 
 // 화면은 집계(src/results/<회차>.json)만 읽는다. 원본 응답은 여기로 오지 않는다.
 export const Route = createFileRoute('/$edition/results')({
+  validateSearch: (search: Record<string, unknown>): { by?: string } => (typeof search.by === 'string' ? { by: search.by } : {}),
   loader: ({ params }) => {
     const edition = findEdition(params.edition)
     const result = RESULTS[params.edition]
@@ -20,7 +22,8 @@ export const Route = createFileRoute('/$edition/results')({
 
 const percent = (share: number) => `${Math.round(share * 100)}%`
 
-function QuestionResult({ q }: { q: QuestionStat }) {
+function QuestionResult({ q, breakdown }: { q: QuestionStat; breakdown?: Breakdown }) {
+  const groups = breakdown?.questions[q.id]
   return (
     <article style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-12)' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
@@ -40,31 +43,104 @@ function QuestionResult({ q }: { q: QuestionStat }) {
       ) : q.type === 'long' ? (
         <Text size="sm">자유 의견은 이름이나 회사처럼 누군지 알 수 있는 내용을 지운 뒤 따로 정리해요.</Text>
       ) : (
-        <div role="list" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
-          {q.options.map((o) => (
-            <div
-              role="listitem"
-              key={o.code}
-              aria-label={`${o.label} ${percent(o.share)}`}
-              style={{ display: 'grid', gridTemplateColumns: 'minmax(120px, 220px) minmax(0, 1fr) 48px', gap: 'var(--spacing-12)', alignItems: 'center' }}
-            >
-              <Text size="sm">{q.type === 'scale' && q.scale ? `${o.label}${o.label === '1' ? ` (${q.scale.min})` : o.label === '5' ? ` (${q.scale.max})` : ''}` : o.label}</Text>
-              <div style={{ height: 20, borderRadius: 'var(--radii-sm)', background: 'var(--colors-bg-neutral-hover)', overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: percent(o.share), background: 'var(--colors-bg-solid-brand)', borderRadius: 'var(--radii-sm)' }} />
-              </div>
-              <Text size="sm" weight="semibold" style={{ textAlign: 'right' }}>
-                {percent(o.share)}
-              </Text>
-            </div>
-          ))}
-        </div>
+        <>
+          <ResultChart q={q} breakdown={breakdown} />
+          <details>
+            <summary style={{ cursor: 'pointer', fontSize: 14 }}>표로 보기</summary>
+            <table style={{ marginTop: 'var(--spacing-8)', borderCollapse: 'collapse', fontSize: 14 }}>
+              <thead>
+                <tr>
+                  <th scope="col" style={cell}>
+                    선택지
+                  </th>
+                  {groups ? (
+                    groups.map((g) => (
+                      <th key={g.group} scope="col" style={cell}>
+                        {breakdown?.groups.find((x) => x.code === g.group)?.label}
+                      </th>
+                    ))
+                  ) : (
+                    <th scope="col" style={cell}>
+                      비율
+                    </th>
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {q.options.map((o) => (
+                  <tr key={o.code}>
+                    <th scope="row" style={{ ...cell, fontWeight: 400 }}>
+                      {o.label}
+                    </th>
+                    {groups ? (
+                      groups.map((g) => (
+                        <td key={g.group} style={cell}>
+                          {g.hidden ? '숨김' : percent(g.shares[o.code] ?? 0)}
+                        </td>
+                      ))
+                    ) : (
+                      <td style={cell}>
+                        {percent(o.share)} ({o.count.toLocaleString()}명)
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </details>
+        </>
       )}
     </article>
   )
 }
 
+const cell: React.CSSProperties = {
+  padding: 'var(--spacing-4) var(--spacing-12)',
+  borderBottom: '1px solid var(--colors-bg-neutral-hover)',
+  textAlign: 'left',
+}
+
+// 집단별 보기 선택. 주소(?by=)에 남겨 그 상태 그대로 공유할 수 있게 한다.
+function BreakdownPicker({ breakdowns, active }: { breakdowns: Breakdown[]; active?: string }) {
+  const options = [{ id: undefined, label: '전체' }, ...breakdowns.map((b) => ({ id: b.id, label: b.label }))]
+  return (
+    <nav aria-label="집단별로 보기" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-8)', alignItems: 'center' }}>
+      <Text size="sm" weight="semibold">
+        나눠 보기
+      </Text>
+      {options.map((o) => {
+        const on = o.id === active
+        return (
+          <Link
+            key={o.label}
+            from="/$edition/results"
+            search={o.id ? { by: o.id } : {}}
+            replace
+            resetScroll={false}
+            aria-current={on ? 'true' : undefined}
+            style={{
+              padding: 'var(--spacing-8) var(--spacing-16)',
+              borderRadius: 'var(--radii-full)',
+              border: `1px solid ${on ? 'var(--colors-bg-solid-brand)' : 'var(--colors-border-neutral)'}`,
+              background: on ? 'var(--colors-bg-solid-brand)' : 'var(--colors-app-bg)',
+              color: on ? 'var(--colors-fg-solid-brand)' : 'inherit',
+              textDecoration: 'none',
+              fontSize: 14,
+              fontWeight: 500,
+            }}
+          >
+            {o.label}
+          </Link>
+        )
+      })}
+    </nav>
+  )
+}
+
 function Results() {
   const { title, result } = Route.useLoaderData()
+  const { by } = Route.useSearch()
+  const breakdown = result.breakdowns.find((b) => b.id === by)
   const sections = [...new Set(result.questions.map((q) => q.section))]
 
   return (
@@ -94,6 +170,7 @@ function Results() {
             {result.sample && <Tag tone="warning">예시</Tag>}
             <Heading level={1}>{title} 결과</Heading>
             <Text size="xl">{result.total.toLocaleString()}명이 답해 주셨어요.</Text>
+            <BreakdownPicker breakdowns={result.breakdowns} active={breakdown?.id} />
           </section>
 
           {sections.map((section) => (
@@ -104,7 +181,7 @@ function Results() {
               {result.questions
                 .filter((q) => q.section === section)
                 .map((q) => (
-                  <QuestionResult key={q.id} q={q} />
+                  <QuestionResult key={q.id} q={q} breakdown={breakdown} />
                 ))}
             </section>
           ))}
