@@ -155,7 +155,7 @@ function Landing() {
               <Card.Body>
                 <Card.Title>통계에만 써요</Card.Title>
                 <Card.Description>
-                  응답은 통계를 내는 데만 쓰고, 영리 목적으로는 쓰지 않아요.
+                  집계된 응답은 분석과 통계를 내는 데만 쓰고, 영리 목적으로는 쓰지 않아요.
                 </Card.Description>
               </Card.Body>
             </Card>
