@@ -115,7 +115,7 @@ function Landing() {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
                 <Heading level={3} size={4}>
-                  한국 개발 현장에 맞는 질문을 해요
+                  한국 소프트웨어 개발 현실에 맞는 질문을 해요
                 </Heading>
                 <Text size="lg" style={{ lineHeight: 1.6 }}>
                   SI와 SM, 원청과 하청 구조, 코딩 테스트, 원화 연봉처럼 글로벌 설문조사에서는 묻지 않는 것들이에요.
