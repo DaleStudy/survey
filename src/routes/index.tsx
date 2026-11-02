@@ -4,6 +4,7 @@ import { EditionList } from '@/components/EditionList'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { openEditions } from '@/editions'
+import { ogImage } from '@/lib/og'
 
 const TITLE = '한국 개발자 설문조사'
 const DESCRIPTION =
@@ -24,6 +25,7 @@ export const Route = createFileRoute('/')({
       { property: 'og:type', content: 'website' },
       { property: 'og:locale', content: 'ko_KR' },
       { property: 'og:site_name', content: '한국 개발자 설문조사' },
+      ...ogImage('home', '개발자들이 모여 화이트보드에 응답을 붙여 그래프를 만드는 그림'),
     ],
   }),
   component: Landing,
@@ -94,7 +96,7 @@ function Landing() {
           )}
           </div>
           <img
-            src="/types/default.jpg"
+            src="/types/home.jpg"
             alt=""
             width={1200}
             height={630}

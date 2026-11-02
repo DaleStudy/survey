@@ -24,6 +24,8 @@ const SCENES: Record<string, string> = {
     'A Korean man developer in his twenties as a craftsman with rolled-up sleeves and an apron at a wooden workbench typing on a mechanical keyboard, handcraft tools neatly arranged, focused and proud, no robots.',
   'steady-veteran':
     'A Korean woman developer in her late forties with shoulder-length hair and a few gray streaks, holding a warm mug and standing calmly beside a sturdy server rack shaped like a small mountain, reliable and composed, no robots.',
+  home:
+    'A cozy developer community meetup: about eight Korean developers of different ages and genders (women and men, twenties to fifties) sitting around a long shared table with laptops covered in small stickers, coffee mugs and snacks, chatting and smiling. On the wall behind them, a large whiteboard where colorful sticky notes are stacked into a friendly bar chart, and one person is adding a sticky note to it. Warm, collaborative study-group mood.',
   default:
     'Six diverse Korean developers of different ages and genders (women and men, from twenties to fifties) standing together in a friendly row, some with laptops, one with a small cute robot, a few speech-bubble shapes with check marks above them, welcoming mood.',
 }
