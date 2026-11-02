@@ -9,7 +9,7 @@ import { ogImage } from '@/lib/og'
 
 const TITLE = '달레 스터디 개발자 설문조사'
 const DESCRIPTION =
-  '개발자 커뮤니티 달레 스터디가 진행해요. 글로벌 설문조사에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 묻고, 결과를 분석해 누구나 볼 수 있는 인사이트로 공개해요.'
+  '개발자 커뮤니티 달레 스터디가 진행해요. 글로벌 설문조사에서는 잘 보이지 않는 한국 개발자의 일과 커리어에 대해 질문해요. 결과를 분석해 누구나 볼 수 있는 인사이트로 공유해요.'
 
 // 회차와 상관없는 소개 페이지. 회차마다 바뀌는 일정과 주제는 회차 페이지(/$edition)에 둔다.
 export const Route = createFileRoute('/')({
@@ -137,7 +137,7 @@ function Landing() {
               <Card.Body>
                 <Card.Title>익명으로 답해요</Card.Title>
                 <Card.Description>
-                  이름, 이메일, 로그인을 받지 않아요. 연봉처럼 답하기 망설여지는 질문은 건너뛰어도 돼요.
+                  이름, 이메일, 로그인 정보를 수집하지 않아요. 연봉처럼 답하기 망설여지는 질문은 건너뛰어도 돼요.
                 </Card.Description>
               </Card.Body>
             </Card>
@@ -146,7 +146,7 @@ function Landing() {
               <Card.Body>
                 <Card.Title>결과는 모두 공개해요</Card.Title>
                 <Card.Description>
-                  응답을 마감하면 결과를 누구나 볼 수 있게 공개하고, 분석한 인사이트도 함께 나눠요.
+                  응답이 마감되면 결과를 누구나 볼 수 있게 공개하고, 분석한 인사이트도 함께 나눠요.
                 </Card.Description>
               </Card.Body>
             </Card>
