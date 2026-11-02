@@ -120,21 +120,21 @@ function Landing() {
             >
               <div style={{ fontSize: '4.5rem', fontWeight: 700, lineHeight: 1 }}>86명</div>
               <div style={{ fontSize: '1.125rem', lineHeight: 1.5 }}>
-                Stack Overflow 2025 설문조사에서 나라를 밝힌 35,369명 가운데 한국 응답자 수예요. 전체의 0.2%밖에 안 돼요.
+                Stack Overflow 2025 설문조사에 참여한 한국 개발자 수예요. 전체의 0.2%밖에 안 돼요.
               </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
                 <Heading level={3} size={4}>
-                  국내 개발자 설문조사는 2023년에 멈췄어요
+                  국내 개발자 설문조사는 명맥이 끊겼어요
                 </Heading>
                 <Text size="lg" style={{ lineHeight: 1.6 }}>
-                  가장 컸던 프로그래머스 개발자 설문조사(2018~2023)가 끝난 뒤로, 국내 개발자 전체를 매년 조사하는 곳이 없어요.
+                  2023년 이후로 국내 개발자 전체를 꾸준히 조사하는 곳이 없어요.
                 </Text>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
                 <Heading level={3} size={4}>
-                  한국에만 있는 질문이 있어요
+                  한국에 맞는 질문을 해요
                 </Heading>
                 <Text size="lg" style={{ lineHeight: 1.6 }}>
                   SI와 SM, 원청과 하청 구조, 코딩 테스트, 원화 연봉처럼 해외 설문조사에서는 묻지 않는 것들이에요.
@@ -163,7 +163,7 @@ function Landing() {
               <Card.Body>
                 <Card.Title>결과는 모두 공개해요</Card.Title>
                 <Card.Description>
-                  응답을 마감하면 결과를 누구나 볼 수 있게 공개해요. 응답자가 적은 문항은 누군지 짐작할 수 없게 숨겨요.
+                  응답을 마감하면 결과를 누구나 볼 수 있게 공개해요.
                 </Card.Description>
               </Card.Body>
             </Card>
@@ -172,7 +172,7 @@ function Landing() {
               <Card.Body>
                 <Card.Title>통계에만 써요</Card.Title>
                 <Card.Description>
-                  광고나 채용 영업에 쓰지 않아요. 원본 응답은 정해진 날에 지우고, 통계만 남겨요.
+                  광고나 채용 영업에 쓰지 않아요.
                 </Card.Description>
               </Card.Body>
             </Card>
