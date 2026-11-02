@@ -31,7 +31,7 @@ export const EDITIONS: Edition[] = [
   },
   {
     id: '2025',
-    title: '2025 한국 개발자 설문조사 (예시)',
+    title: '2025 한국 개발자 설문조사',
     survey: false,
     devTypes: false,
     sample: true,

@@ -87,7 +87,10 @@ function EditionPage() {
         <section style={{ background: 'var(--colors-bg-brand)' }}>
           <div style={{ ...wrap, padding: '72px 24px', display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-48)', alignItems: 'center' }}>
             <div style={{ flex: '1 1 420px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-20)', alignItems: 'flex-start' }}>
-              {status && <Tag tone={e.sample ? 'warning' : 'brand'}>{status}</Tag>}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-8)' }}>
+                {e.sample && <Tag tone="warning">예시</Tag>}
+                {status && <Tag tone="brand">{status}</Tag>}
+              </div>
               <Heading level={1}>{e.title}</Heading>
               <Text size="lg" style={{ maxWidth: 520, lineHeight: 1.6 }}>
                 {DESCRIPTION}
