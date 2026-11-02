@@ -164,7 +164,7 @@ function Landing() {
               <Card.Body>
                 <Card.Title>통계에만 써요</Card.Title>
                 <Card.Description>
-                  회사가 아니라 개발자 커뮤니티가 하는 설문조사라서, 광고나 채용 영업에 쓸 일이 없어요.
+                  개발자 커뮤니티가 하는 설문조사라서, 광고나 채용 영업에 쓸 일이 없어요.
                 </Card.Description>
               </Card.Body>
             </Card>
