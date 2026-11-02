@@ -1,15 +1,20 @@
 import { Link } from '@tanstack/react-router'
 import { Button, Checkbox, Heading, Icon, Text } from 'daleui'
 import { useState } from 'react'
+import { koDate } from '@/lib/date'
 
 const ITEMS = [
   { term: '어디에 쓰나요', desc: '한국 개발자 현황을 통계로 정리하고, 결과와 응답 데이터를 공개하는 데 써요.' },
   { term: '무엇을 받나요', desc: '경력, 직무, 회사, 지역(시·도), 연봉 구간, 기술, AI 사용 경험이에요. 이름, 이메일, IP는 받지 않아요.' },
-  { term: '언제까지 두나요', desc: '원본은 2027년 12월 31일까지만 두고 지워요.' },
   { term: '동의하지 않으면요', desc: '설문에 참여할 수 없을 뿐, 그 밖의 불이익은 없어요.' },
 ]
 
-export function ConsentStep({ onAgree }: { onAgree: () => void }) {
+export function ConsentStep({ deleteAt, onAgree }: { deleteAt?: string; onAgree: () => void }) {
+  const items = [
+    ...ITEMS.slice(0, 2),
+    { term: '언제까지 두나요', desc: deleteAt ? `원본은 ${koDate(deleteAt, true)}까지만 두고 지워요.` : '통계를 낸 뒤 원본은 지워요.' },
+    ...ITEMS.slice(2),
+  ]
   const [agree, setAgree] = useState({ age: false, collect: false, abroad: false })
   const [error, setError] = useState(false)
   const set = (key: keyof typeof agree) => (checked: boolean) => {
@@ -35,7 +40,7 @@ export function ConsentStep({ onAgree }: { onAgree: () => void }) {
           lineHeight: 1.5,
         }}
       >
-        {ITEMS.map((item) => (
+        {items.map((item) => (
           <div key={item.term}>
             <dt style={{ fontWeight: 600 }}>{item.term}</dt>
             <dd style={{ margin: 0 }}>{item.desc}</dd>

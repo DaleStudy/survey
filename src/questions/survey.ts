@@ -9,6 +9,7 @@ export type Answers = Record<string, Answer>
 
 export interface Question {
   id: string
+  sectionId: string
   section: string
   fixed: boolean
   type: QuestionType
@@ -47,6 +48,7 @@ export function normalize(survey: RawSurvey): Question[] {
     const options = q.options ?? (q.options_from ? byId.get(q.options_from)?.options : undefined) ?? []
     return {
       id: q.id,
+      sectionId: s.id,
       section: s.title,
       fixed: q.fixed,
       type: q.type,

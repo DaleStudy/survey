@@ -4,7 +4,7 @@ import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 
 export const Route = createFileRoute('/privacy')({
-  head: () => ({ meta: [{ title: '개인정보 처리방침 | 2026 한국 개발자 설문조사' }] }),
+  head: () => ({ meta: [{ title: '개인정보 처리방침 | 한국 개발자 설문조사' }] }),
   component: Privacy,
 })
 

@@ -10,6 +10,7 @@ import { SiteHeader } from '@/components/SiteHeader'
 import { ShareButton } from '@/components/ShareButton'
 import { type DevType, devTypeOf, findDevType } from '@/lib/devType'
 import { findEdition, isClosed } from '@/editions'
+import { koDate } from '@/lib/date'
 import { OTHER, isEmpty, otherKey, visibleQuestions } from '@/questions/logic'
 import { type Answers, questionsFor } from '@/questions/survey'
 import { submitResponse } from '@/server/functions/responses'
@@ -20,6 +21,7 @@ export const Route = createFileRoute('/$edition/survey')({
     if (!edition?.survey || !questionsFor(edition.id)) throw notFound()
     return edition
   },
+  head: ({ loaderData }) => ({ meta: loaderData ? [{ title: loaderData.title }] : [] }),
   validateSearch: (search: Record<string, unknown>): { ref?: string } =>
     typeof search.ref === 'string' ? { ref: search.ref } : {},
   component: Survey,
@@ -58,6 +60,9 @@ function Survey() {
   const { ref } = Route.useSearch()
   const edition = Route.useLoaderData()
   const QUESTIONS = questionsFor(edition.id)!
+  const resultsNote = edition.resultsAt
+    ? `결과는 ${koDate(edition.resultsAt)}에 누구나 볼 수 있게 공개할게요.`
+    : '결과는 정리되는 대로 누구나 볼 수 있게 공개할게요.'
   // 같은 브라우저에서 다시 답하지 않게 남기는 표시. 서버로는 보내지 않는다.
   const DONE_KEY = `survey-${edition.id}-done`
   const [answers, setAnswers] = useState<Answers>({})
@@ -128,7 +133,7 @@ function Survey() {
       <EndPage>
         <div style={{ ...column, alignItems: 'flex-start' }}>
           <Heading level={1}>고마워요</Heading>
-          <Text size="lg">응답이 익명으로 저장됐어요. 결과는 12월 21일에 누구나 볼 수 있게 공개할게요.</Text>
+          <Text size="lg">응답이 익명으로 저장됐어요. {resultsNote}</Text>
           {devType && (
             <>
               <DevTypeCard type={devType} label="나의 개발자 유형" />
@@ -146,7 +151,7 @@ function Survey() {
       <EndPage>
         <div style={column}>
           <Heading level={1}>설문이 마감됐어요</Heading>
-          <Text size="lg">참여해 주신 분들 고마워요. 결과는 12월 21일에 누구나 볼 수 있게 공개할게요.</Text>
+          <Text size="lg">참여해 주신 분들 고마워요. {resultsNote}</Text>
           <Link to="/">설문 소개로 돌아가기</Link>
         </div>
       </EndPage>
@@ -158,7 +163,7 @@ function Survey() {
       <EndPage>
         <div style={{ ...column, alignItems: 'flex-start' }}>
           <Heading level={1}>이미 답해 주셨어요</Heading>
-          <Text size="lg">이 브라우저에서는 응답을 마쳤어요. 결과는 12월 21일에 누구나 볼 수 있게 공개할게요.</Text>
+          <Text size="lg">이 브라우저에서는 응답을 마쳤어요. {resultsNote}</Text>
           {devType && (
             <>
               <DevTypeCard type={devType} label="나의 개발자 유형" />
@@ -175,6 +180,7 @@ function Survey() {
       <main style={page}>
         <div style={column}>
           <ConsentStep
+            deleteAt={edition.deleteAt}
             onAgree={() => {
               setQid(visible[0].id)
               setPhase('question')
@@ -191,8 +197,7 @@ function Survey() {
         <div style={{ ...column, alignItems: 'flex-start' }}>
           <Heading level={1}>{edition.title}</Heading>
           <Text size="lg">
-            해외 설문조사에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 묻는 설문조사예요. 결과는
-            12월 21일에 누구나 볼 수 있게 공개해요.
+            해외 설문조사에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 묻는 설문조사예요. {resultsNote}
           </Text>
           <Text>이름도 이메일도 로그인도 필요 없어요. 10분 안팎이면 끝나요.</Text>
           <Button tone="brand" size="lg" disabled={!hydrated} onClick={() => setPhase('consent')}>

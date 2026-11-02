@@ -5,9 +5,13 @@ export interface Edition {
   title: string
   // 응답을 받는 회차인지. 문항 파일 questions/<id>.yaml 이 있어야 한다.
   survey: boolean
-  // 응답 마감 (ISO 8601, 한국 시간). 이 시각부터 화면과 서버가 응답을 막는다.
+  // 날짜는 ISO 8601, 한국 시간. 회차 페이지와 설문 화면의 안내 문구가 이 값을 쓴다.
+  opensAt?: string
+  // 응답 마감. 이 시각부터 화면과 서버가 응답을 막는다.
   closesAt?: string
   resultsAt?: string
+  // 원본 응답을 지우는 날. 동의 화면과 처리방침에 공개한 약속이다.
+  deleteAt?: string
   // 완료 화면에서 개발자 유형을 보여 주는지 (ADR 0004)
   devTypes: boolean
   // 결과 화면을 시험하려고 만든 예시 데이터. 실제 설문이 아니다. 오픈 전에 지운다.
@@ -19,9 +23,10 @@ export const EDITIONS: Edition[] = [
     id: '2026',
     title: '2026 한국 개발자 설문조사',
     survey: true,
-    // 계획서 일정: 11월 16일 시작, 12월 6일 마감, 12월 21일 발표
+    opensAt: '2026-11-16',
     closesAt: '2026-12-06T23:59:59+09:00',
     resultsAt: '2026-12-21',
+    deleteAt: '2027-12-31',
     devTypes: true,
   },
   {

@@ -1,12 +1,15 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
-import { Card, Heading, Icon, Tag, Text } from 'daleui'
+import { Card, Heading, Icon, Text } from 'daleui'
 import { EditionList } from '@/components/EditionList'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
+import { openEditions } from '@/editions'
 
-const TITLE = '2026 한국 개발자 설문조사'
-const DESCRIPTION = '해외 설문조사에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 물어요. 결과는 누구나 볼 수 있게 공개해요.'
+const TITLE = '한국 개발자 설문조사'
+const DESCRIPTION =
+  '개발자 커뮤니티 달레 스터디가 주관해요. 해외 설문조사에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 묻고, 결과를 누구나 볼 수 있게 공개해요.'
 
+// 회차와 상관없는 소개 페이지. 회차마다 바뀌는 일정과 주제는 회차 페이지(/$edition)에 둔다.
 export const Route = createFileRoute('/')({
   // 공유 링크의 ?ref= 를 설문 링크로 넘겨 유입 경로를 남긴다
   validateSearch: (search: Record<string, unknown>): { ref?: string } =>
@@ -55,6 +58,8 @@ function SectionTitle({ label, title }: { label: string; title: string }) {
 
 function Landing() {
   const { ref } = Route.useSearch()
+  // 지금 응답을 받는 회차. 없으면 결과로 안내한다.
+  const open = openEditions()[0]
   const start = (
     <Link to="/survey" search={ref ? { ref } : {}} style={cta}>
       설문 시작하기
@@ -67,22 +72,34 @@ function Landing() {
 
       <section style={{ background: 'var(--colors-bg-brand)' }}>
         <div style={{ ...section, gap: 'var(--spacing-24)', alignItems: 'flex-start' }}>
-          <Tag tone="brand">12월 6일까지 응답을 받아요</Tag>
           <Heading level={1} style={{ maxWidth: 820 }}>
             한국 개발자의 오늘을 함께 기록해요
           </Heading>
           <Text size="xl" style={{ maxWidth: 680, lineHeight: 1.6 }}>
             {DESCRIPTION}
           </Text>
-          {start}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-24)' }}>
-            <span style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
-              <Icon name="clock" size="sm" /> <Text>10분 안팎</Text>
-            </span>
-            <span style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
-              <Icon name="eyeOff" size="sm" /> <Text>로그인도 이메일도 필요 없어요</Text>
-            </span>
-          </div>
+          {open ? (
+            <>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-24)', alignItems: 'center' }}>
+                {start}
+                <Link to="/$edition" params={{ edition: open.id }} search={ref ? { ref } : {}}>
+                  {open.title} 자세히 보기
+                </Link>
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-24)' }}>
+                <span style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
+                  <Icon name="clock" size="sm" /> <Text>10분 안팎</Text>
+                </span>
+                <span style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
+                  <Icon name="eyeOff" size="sm" /> <Text>로그인도 이메일도 필요 없어요</Text>
+                </span>
+              </div>
+            </>
+          ) : (
+            <Link to="/results" style={cta}>
+              결과 보기
+            </Link>
+          )}
         </div>
       </section>
 
@@ -146,7 +163,7 @@ function Landing() {
               <Card.Body>
                 <Card.Title>결과는 모두 공개해요</Card.Title>
                 <Card.Description>
-                  12월 21일에 결과를 누구나 볼 수 있게 공개해요. 응답자가 적은 문항은 누군지 짐작할 수 없게 숨겨요.
+                  응답을 마감하면 결과를 누구나 볼 수 있게 공개해요. 응답자가 적은 문항은 누군지 짐작할 수 없게 숨겨요.
                 </Card.Description>
               </Card.Body>
             </Card>
@@ -155,28 +172,10 @@ function Landing() {
               <Card.Body>
                 <Card.Title>통계에만 써요</Card.Title>
                 <Card.Description>
-                  광고나 채용 영업에 쓰지 않아요. 원본 응답은 2027년 말에 지우고, 통계만 남겨요.
+                  광고나 채용 영업에 쓰지 않아요. 원본 응답은 정해진 날에 지우고, 통계만 남겨요.
                 </Card.Description>
               </Card.Body>
             </Card>
-          </div>
-        </div>
-      </section>
-
-      <section id="schedule">
-        <div style={section}>
-          <SectionTitle label="무엇을 묻나요" title="여섯 가지 주제, 30문항 안팎" />
-          <Text size="lg" style={{ maxWidth: 720, lineHeight: 1.6 }}>
-            지금 상황에 맞는 질문만 나와서, 실제로 답할 문항은 이보다 적을 수 있어요. 응답은 11월 16일부터 12월 6일까지 받고, 결과는 12월
-            21일에 공개해요.
-          </Text>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-12)' }}>
-            {['나에 대해', '일하는 곳', '보상', '커리어', '기술'].map((t) => (
-              <Tag key={t} tone="neutral">
-                {t}
-              </Tag>
-            ))}
-            <Tag tone="brand">올해의 주제 AI</Tag>
           </div>
         </div>
       </section>
@@ -188,21 +187,23 @@ function Landing() {
         </div>
       </section>
 
-      <section style={{ background: 'var(--colors-bg-solid-brand)', color: 'var(--colors-fg-solid-brand)' }}>
-        <div style={{ ...section, padding: '80px 24px', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--spacing-24)' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)', maxWidth: 640 }}>
-            <div style={{ fontSize: '2.25rem', fontWeight: 700, lineHeight: 1.2 }}>10분이면 참여할 수 있어요</div>
-            <div style={{ fontSize: '1.125rem', lineHeight: 1.5 }}>주변 개발자에게도 알려 주세요. 다양한 사람이 답할수록 결과가 정확해져요.</div>
+      {open && (
+        <section style={{ background: 'var(--colors-bg-solid-brand)', color: 'var(--colors-fg-solid-brand)' }}>
+          <div style={{ ...section, padding: '80px 24px', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--spacing-24)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)', maxWidth: 640 }}>
+              <div style={{ fontSize: '2.25rem', fontWeight: 700, lineHeight: 1.2 }}>10분이면 참여할 수 있어요</div>
+              <div style={{ fontSize: '1.125rem', lineHeight: 1.5 }}>주변 개발자에게도 알려 주세요. 다양한 사람이 답할수록 결과가 정확해져요.</div>
+            </div>
+            <Link
+              to="/survey"
+              search={ref ? { ref } : {}}
+              style={{ ...cta, background: 'var(--colors-fg-solid-brand)', color: 'var(--colors-bg-solid-brand)', fontWeight: 600 }}
+            >
+              설문 시작하기
+            </Link>
           </div>
-          <Link
-            to="/survey"
-            search={ref ? { ref } : {}}
-            style={{ ...cta, background: 'var(--colors-fg-solid-brand)', color: 'var(--colors-bg-solid-brand)', fontWeight: 600 }}
-          >
-            설문 시작하기
-          </Link>
-        </div>
-      </section>
+        </section>
+      )}
 
       <SiteFooter />
     </div>
