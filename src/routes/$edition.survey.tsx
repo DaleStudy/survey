@@ -272,7 +272,7 @@ function Survey() {
         <div style={{ ...column, alignItems: 'flex-start' }}>
           <Heading level={1}>{edition.title}</Heading>
           <Text size="lg">
-            글로벌 설문조사에서는 잘 보이지 않는 한국 개발자의 일과 커리어에 대해 질문하는 설문조사예요. {resultsNote}
+            글로벌 설문조사에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 묻는 설문조사예요. {resultsNote}
           </Text>
           <Text>이름도 이메일도 로그인도 필요 없어요. 10분 안팎이면 끝나요.</Text>
           <Button tone="brand" size="lg" disabled={!hydrated} onClick={() => setPhase('consent')}>
