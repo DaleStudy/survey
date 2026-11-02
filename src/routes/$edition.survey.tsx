@@ -144,8 +144,8 @@ function Survey() {
   const edition = Route.useLoaderData()
   const QUESTIONS = questionsFor(edition.id)!
   const resultsNote = edition.resultsAt
-    ? `결과는 ${koDate(edition.resultsAt)}에 누구나 볼 수 있게 공개할게요.`
-    : '결과는 정리되는 대로 누구나 볼 수 있게 공개할게요.'
+    ? `결과와 분석한 인사이트는 ${koDate(edition.resultsAt)}에 누구나 볼 수 있게 공개할게요.`
+    : '결과와 분석한 인사이트는 정리되는 대로 누구나 볼 수 있게 공개할게요.'
   // 같은 브라우저에서 다시 답하지 않게 남기는 표시. 서버로는 보내지 않는다.
   const DONE_KEY = `survey-${edition.id}-done`
   const [answers, setAnswers] = useState<Answers>({})

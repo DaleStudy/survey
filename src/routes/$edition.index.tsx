@@ -10,7 +10,7 @@ import { SITE_URL, ogImage } from '@/lib/og'
 import { questionsFor } from '@/questions/survey'
 import { RESULTS } from '@/results'
 
-const DESCRIPTION = '글로벌 설문조사에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 물어요. 결과는 누구나 볼 수 있게 공개해요.'
+const DESCRIPTION = '글로벌 설문조사에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 물어요. 결과를 분석해 누구나 볼 수 있는 인사이트로 공개해요.'
 
 // 회차 페이지. 그 회차의 일정과 주제를 보여 주고 설문이나 결과로 보낸다. 회차가 끝나도 그대로 남는다.
 export const Route = createFileRoute('/$edition/')({
