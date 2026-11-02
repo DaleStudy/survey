@@ -178,7 +178,7 @@ function EditionPage() {
                   무엇을 묻나요
                 </Heading>
                 <Text style={{ lineHeight: 1.6 }}>
-                  {topics.length}가지 주제에 대해 질문해요. 본인 상황에 맞는 질문만 나와서 10분 안팎이면 끝나요.
+                  {topics.length}가지 주제를 물어요. 본인 상황에 맞는 질문만 나와서 10분 안팎이면 끝나요.
                 </Text>
               </div>
               <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 'var(--spacing-12)' }}>
