@@ -5,6 +5,7 @@ import { SiteHeader } from '@/components/SiteHeader'
 import { findEdition, isClosed } from '@/editions'
 import { koDate } from '@/lib/date'
 import { DEV_TYPES } from '@/lib/devType'
+import { gradientBorder, gradientText, heroImage, heroWash } from '@/lib/brand'
 import { SITE_URL, ogImage } from '@/lib/og'
 import { questionsFor } from '@/questions/survey'
 import { RESULTS } from '@/results'
@@ -85,14 +86,23 @@ function EditionPage() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--colors-app-bg)', color: 'var(--colors-fg-neutral)' }}>
       <SiteHeader />
       <main style={{ flex: 1 }}>
-        <section style={{ background: 'var(--colors-bg-brand)' }}>
-          <div style={{ ...wrap, padding: '72px 24px', display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-48)', alignItems: 'center' }}>
+        <section style={{ position: 'relative', overflow: 'hidden' }}>
+          <div aria-hidden="true" style={heroWash} />
+          <div style={{ ...wrap, position: 'relative', padding: '88px 24px 72px', display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-48)', alignItems: 'center' }}>
             <div style={{ flex: '1 1 420px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-20)', alignItems: 'flex-start' }}>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-8)' }}>
                 {e.sample && <Tag tone="warning">예시</Tag>}
                 {status && <Tag tone="brand">{status}</Tag>}
               </div>
-              <Heading level={1}>{e.title}</Heading>
+              <Heading level={1}>
+                {/^\d{4}/.test(e.title) ? (
+                  <>
+                    <span style={gradientText}>{e.title.split(' ')[0]}</span> {e.title.split(' ').slice(1).join(' ')}
+                  </>
+                ) : (
+                  e.title
+                )}
+              </Heading>
               <Text size="lg" style={{ maxWidth: 520, lineHeight: 1.6 }}>
                 {DESCRIPTION}
               </Text>
@@ -122,7 +132,7 @@ function EditionPage() {
               alt=""
               width={1200}
               height={630}
-              style={{ flex: '1 1 420px', minWidth: 0, width: '100%', height: 'auto', borderRadius: 'var(--radii-lg)' }}
+              style={heroImage}
             />
           </div>
         </section>
@@ -140,8 +150,7 @@ function EditionPage() {
                     style={{
                       padding: 'var(--spacing-20)',
                       borderRadius: 'var(--radii-md)',
-                      border: `1px solid ${i === current ? 'var(--colors-border-brand)' : 'var(--colors-bg-neutral-hover)'}`,
-                      background: i === current ? 'var(--colors-bg-brand)' : 'var(--colors-app-bg)',
+                      ...(i === current ? gradientBorder : { border: '1px solid var(--colors-bg-neutral-hover)', background: 'var(--colors-app-bg)' }),
                       display: 'flex',
                       flexDirection: 'column',
                       gap: 'var(--spacing-4)',

@@ -4,6 +4,7 @@ import { EditionList } from '@/components/EditionList'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { openEditions } from '@/editions'
+import { gradientBanner, gradientText, heroImage, heroWash } from '@/lib/brand'
 import { ogImage } from '@/lib/og'
 
 const TITLE = '한국 개발자 설문조사'
@@ -55,11 +56,12 @@ function Landing() {
     <div style={{ background: 'var(--colors-app-bg)', color: 'var(--colors-fg-neutral)' }}>
       <SiteHeader />
 
-      <section style={{ background: 'var(--colors-bg-brand)' }}>
-        <div style={{ ...wrap, padding: '72px 24px', display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-48)', alignItems: 'center' }}>
+      <section style={{ position: 'relative', overflow: 'hidden' }}>
+        <div aria-hidden="true" style={heroWash} />
+        <div style={{ ...wrap, position: 'relative', padding: '88px 24px 72px', display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-48)', alignItems: 'center' }}>
           <div style={{ flex: '1 1 420px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)', alignItems: 'flex-start' }}>
           <Heading level={1} style={{ maxWidth: 820 }}>
-            한국 개발자의 오늘을 함께 기록해요
+            한국 개발자의 <span style={gradientText}>오늘</span>을 함께 기록해요
           </Heading>
           <Text size="lg" style={{ maxWidth: 560, lineHeight: 1.6 }}>
             한국 개발자가 어떻게 일하고 성장하는지, 글로벌 설문조사가 놓친 이야기를 함께 모아요. 응답 하나하나가 모여 누구나 볼 수 있는 공개 데이터가 돼요.
@@ -79,7 +81,7 @@ function Landing() {
             alt=""
             width={1200}
             height={630}
-            style={{ flex: '1 1 420px', minWidth: 0, width: '100%', height: 'auto', borderRadius: 'var(--radii-lg)' }}
+            style={heroImage}
           />
         </div>
       </section>
@@ -95,8 +97,8 @@ function Landing() {
                 gap: 'var(--spacing-8)',
                 padding: 'var(--spacing-32)',
                 borderRadius: 'var(--radii-lg)',
-                background: 'var(--colors-bg-solid-brand)',
-                color: 'var(--colors-fg-solid-brand)',
+                background: gradientBanner,
+                color: '#ffffff',
               }}
             >
               <div style={{ fontSize: '4.5rem', fontWeight: 700, lineHeight: 1 }}>86명</div>
@@ -169,7 +171,7 @@ function Landing() {
       </section>
 
       {open && (
-        <section style={{ background: 'var(--colors-bg-solid-brand)', color: 'var(--colors-fg-solid-brand)' }}>
+        <section style={{ background: gradientBanner, color: '#ffffff' }}>
           <div style={{ ...section, padding: '80px 24px', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--spacing-24)' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)', maxWidth: 640 }}>
               <div style={{ fontSize: '2.25rem', fontWeight: 700, lineHeight: 1.2 }}>10분이면 참여할 수 있어요</div>
@@ -179,7 +181,7 @@ function Landing() {
               to="/$edition"
               params={{ edition: open.id }}
               search={ref ? { ref } : {}}
-              style={{ ...cta, background: 'var(--colors-fg-solid-brand)', color: 'var(--colors-bg-solid-brand)', fontWeight: 600 }}
+              style={{ ...cta, background: '#ffffff', color: 'var(--colors-fg-brand)', fontWeight: 600 }}
             >
               참여하기
             </Link>

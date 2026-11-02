@@ -40,6 +40,15 @@ export function SiteHeader() {
             <Icon name="Discord" size="md" />
           </a>
           <a
+            href="https://linkedin.com/company/dalestudy"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="달레 스터디 링크드인"
+            style={{ display: 'inline-flex', padding: 'var(--spacing-8)', margin: 'calc(var(--spacing-8) * -1)', color: 'inherit' }}
+          >
+            <Icon name="LinkedIn" size="md" />
+          </a>
+          <a
             href="https://github.com/DaleStudy/survey"
             target="_blank"
             rel="noopener noreferrer"
