@@ -7,7 +7,11 @@
   "main": "@tanstack/react-start/server-entry",
   "observability": { "enabled": true },
   "upload_source_maps": true,
-  "routes": [{ "pattern": "survey.dalestudy.com", "custom_domain": true }],
+  "routes": [
+    { "pattern": "survey.dalestudy.com", "custom_domain": true },
+    // 미리보기 전용 도메인: 프로덕션 트래픽은 받지 않는다(enabled: false)
+    { "pattern": "survey-preview.dalestudy.com", "custom_domain": true, "previews_enabled": true, "enabled": false }
+  ],
   // Turnstile 토큰을 받아 줄 프런트엔드 호스트. 로컬 개발은 .dev.vars 에서 localhost 로 덮는다.
   "vars": { "TURNSTILE_HOSTNAMES": "survey.dalestudy.com" },
   "d1_databases": [
@@ -17,5 +21,31 @@
       "database_id": "5b7f5ecb-24de-4b7e-b3b9-3c50f8265c42",
       "migrations_dir": "drizzle"
     }
-  ]
+  ],
+  // PR 미리보기(Workers Previews). PR마다 pr-<번호>.survey-preview.dalestudy.com 에 뜬다.
+  // D1 은 미리보기끼리 함께 쓰는 survey-preview 로 — 프로덕션 응답을 건드리지 않게.
+  "previews": {
+    "vars": { "TURNSTILE_HOSTNAMES": ".survey-preview.dalestudy.com" },
+    "d1_databases": [
+      {
+        "binding": "DB",
+        "database_name": "survey-preview",
+        "database_id": "28d5a9d6-3e57-48e5-bd91-3e17227f360f",
+        "migrations_dir": "drizzle"
+      }
+    ]
+  },
+  // 미리보기 D1 마이그레이션 전용(`db:migrate:preview`). `d1 migrations apply` 는 `previews` 블록의 D1 을 못 찾는다.
+  "env": {
+    "migrate-preview": {
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "survey-preview",
+          "database_id": "28d5a9d6-3e57-48e5-bd91-3e17227f360f",
+          "migrations_dir": "drizzle"
+        }
+      ]
+    }
+  }
 }
