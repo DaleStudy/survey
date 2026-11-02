@@ -223,6 +223,21 @@ sections:
           - { code: applied, label: "지원해 봤어요" }
           - { code: moved, label: "지원해서 옮기거나 취업했어요" }
 
+      - id: first_job_route
+        fixed: false
+        type: single
+        label: 첫 개발 일자리는 어떻게 구했나요?
+        show_if: { experience: ["0_2", "3_5", "6_9", "10_14", "15_plus"] }
+        options:
+          - { code: open_recruit, label: "신입 공채" }
+          - { code: rolling, label: "수시 채용" }
+          - { code: intern, label: "인턴에서 전환" }
+          - { code: referral, label: "지인 추천" }
+          - { code: bootcamp, label: "부트캠프나 교육 과정 연계" }
+          - { code: alt_service, label: "산업기능요원·전문연구요원" }
+          - { code: founder, label: "창업하거나 프리랜서로 시작" }
+          - { code: other, label: "기타" }
+
       - id: coding_test
         fixed: true
         type: single

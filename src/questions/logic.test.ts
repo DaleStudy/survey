@@ -19,6 +19,7 @@ const employed = {
   weekly_hours: '41_45',
   job_satisfaction: '4',
   job_search: 'browsed',
+  first_job_route: 'open_recruit',
   coding_test: '0',
   company_criteria: ['pay', 'growth'],
   next_workplace: 'stay',
@@ -34,8 +35,8 @@ const employed = {
 }
 
 describe('문항 원본', () => {
-  test('29문항, 고정 19개', () => {
-    expect(QUESTIONS.length).toBe(29)
+  test('30문항, 고정 19개', () => {
+    expect(QUESTIONS.length).toBe(30)
     expect(QUESTIONS.filter((q) => q.fixed).length).toBe(19)
   })
 
