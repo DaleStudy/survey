@@ -49,7 +49,7 @@ OPENAI_API_KEY=$(op read op://dev/OpenAI-DaleStudy/credential) bun scripts/type-
   1. 베타 응답 지우기 (`DELETE FROM responses` — 확인 후 `bun run export` 로 먼저 받아 둘지 정한다)
   2. Access 앱 "한국 개발자 설문 (베타)" 끄기 또는 삭제
   3. `src/routes/__root.tsx` 의 `noindex` 빼기
-  4. 링크 미리보기(og 태그)가 공유 채널에서 제대로 뜨는지 확인
+  4. 링크 미리보기(og 태그)가 공유 채널에서 제대로 뜨는지 확인. 잠겨 있는 동안 공유한 주소는 Cloudflare 로그인 화면으로 캐시되어 있으니 새로 고친다: 카카오 공유 디버거(캐시 초기화), LinkedIn Post Inspector, Facebook Sharing Debugger(Threads 포함). X, Slack, Discord 는 도구가 없어 `?v=1` 같은 쿼리를 붙인 주소로 공유한다. 오픈 전에는 주소를 소셜에 공유하지 않는다.
   5. 예시 회차 `2025` 지우기: `src/editions.ts` 의 항목, `src/results/2025.json`, `src/results/index.ts` 의 줄, `scripts/sample-results.ts`
   6. D1 주 저장소가 아직 홍콩인지 확인 (바뀌었으면 동의 화면과 처리방침을 고친다)
 
