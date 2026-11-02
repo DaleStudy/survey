@@ -5,7 +5,7 @@ import { useState } from 'react'
 const ITEMS = [
   { term: '어디에 쓰나요', desc: '한국 개발자 현황을 통계로 정리하고, 결과와 응답 데이터를 공개하는 데 써요.' },
   { term: '무엇을 받나요', desc: '경력, 직무, 회사, 지역(시·도), 연봉 구간, 기술, AI 사용 경험이에요. 이름, 이메일, IP는 받지 않아요.' },
-  { term: '언제까지 두나요', desc: '원본은 [파기일]까지만 두고 지워요.' },
+  { term: '언제까지 두나요', desc: '원본은 2027년 6월 30일까지만 두고 지워요.' },
   { term: '동의하지 않으면요', desc: '설문에 참여할 수 없을 뿐, 그 밖의 불이익은 없어요.' },
 ]
 
@@ -51,7 +51,7 @@ export function ConsentStep({ onAgree }: { onAgree: () => void }) {
           required
           checked={agree.abroad}
           onChange={set('abroad')}
-          helperText="받는 곳: Cloudflare, Inc. · 보관 위치: [국가]"
+          helperText="Cloudflare, Inc.(미국)의 홍콩 데이터 센터에 보관해요."
         />
       </div>
       {error && (

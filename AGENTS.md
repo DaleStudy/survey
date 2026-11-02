@@ -37,7 +37,7 @@ OPENAI_API_KEY=$(op read op://dev/OpenAI-DaleStudy/credential) bun scripts/type-
 - 익명 설문이다. 로그인이 없고, 응답 1건이 `responses` 1행이다. IP·User-Agent 처럼 응답자를 알아볼 수 있는 값은 저장하지 않는다 — 스키마에 칸을 두지 않는 것으로 지킨다([개인정보 조사](docs/research/2026-10-privacy-law.md)).
 - 제출은 Turnstile(위젯 `survey`, Managed)로 막는다. 위젯은 마지막 문항 화면에만 띄운다 — 토큰이 5분이면 만료된다. 서버(`submitResponse`)는 저장 전에 `verifyTurnstile`(`src/lib/turnstile.ts`)로 `success`·action `survey_submit`·호스트 이름을 확인하고, 하나라도 어긋나면 거절한다(fail closed). 허용 호스트는 `wrangler.jsonc` 의 `TURNSTILE_HOSTNAMES`(운영에는 localhost 를 넣지 않는다), 로컬은 `.dev.vars` 가 덮는다.
 - 시크릿: Worker 시크릿 `TURNSTILE_SECRET`. 원본은 1Password `dev/CF_SURVEY_TURNSTILE`(위젯 대시보드 URL 포함). 배포 토큰 `CLOUDFLARE_API_TOKEN` 의 원본은 1Password `dev/CF_DALE_STUDY` — DaleStudy 계정 소유 토큰이고 Turnstile 권한도 있다. 로컬 개발을 하려면 `.dev.vars` 에 `TURNSTILE_SECRET`, `TURNSTILE_HOSTNAMES=localhost,127.0.0.1` 을 둔다.
-- D1 `survey` 는 `apac` 위치 힌트로 만들었지만 국내 저장은 보장되지 않는다. 동의 화면의 국외 보관 안내가 이 때문이다.
+- D1 `survey` 는 `apac` 위치 힌트로 만들었고, 주 저장소는 홍콩(`HKG`)이다. 동의 화면과 처리방침의 국외 보관 안내(홍콩)가 이 때문이다. 위치는 `npx wrangler d1 execute survey --remote --command "select 1" --json` 결과의 `served_by_colo` 로 확인한다.
 
 ## 베타와 오픈
 
@@ -49,6 +49,7 @@ OPENAI_API_KEY=$(op read op://dev/OpenAI-DaleStudy/credential) bun scripts/type-
   3. `src/routes/__root.tsx` 의 `noindex` 빼기
   4. 링크 미리보기(og 태그)가 공유 채널에서 제대로 뜨는지 확인
   5. 예시 회차 `2025` 지우기: `src/editions.ts` 의 항목, `src/results/2025.json`, `src/results/index.ts` 의 줄, `scripts/sample-results.ts`
+  6. D1 주 저장소가 아직 홍콩인지 확인 (바뀌었으면 동의 화면과 처리방침을 고친다)
 
 ## 작업 방식
 
