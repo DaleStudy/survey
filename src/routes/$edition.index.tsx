@@ -220,11 +220,6 @@ function EditionPage() {
                   </li>
                 ))}
               </ul>
-              {open && (
-                <Link to="/$edition/survey" params={{ edition: e.id }} search={ref ? { ref } : {}} style={{ ...cta, alignSelf: 'flex-start' }}>
-                  설문 시작하고 내 유형 알아보기
-                </Link>
-              )}
             </div>
           </section>
         )}
