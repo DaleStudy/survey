@@ -31,15 +31,6 @@ export function SiteHeader() {
         <nav aria-label="주요 메뉴" style={{ display: 'flex', gap: 'var(--spacing-16)', alignItems: 'center' }}>
           {hasResults && <Link to="/results">결과</Link>}
           <a
-            href="https://dales.link/discord"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="달레 스터디 디스코드"
-            style={{ display: 'inline-flex', padding: 'var(--spacing-8)', margin: 'calc(var(--spacing-8) * -1)', color: 'inherit' }}
-          >
-            <Icon name="Discord" size="md" />
-          </a>
-          <a
             href="https://linkedin.com/company/dalestudy"
             target="_blank"
             rel="noopener noreferrer"
@@ -47,6 +38,15 @@ export function SiteHeader() {
             style={{ display: 'inline-flex', padding: 'var(--spacing-8)', margin: 'calc(var(--spacing-8) * -1)', color: 'inherit' }}
           >
             <Icon name="LinkedIn" size="md" />
+          </a>
+          <a
+            href="https://dales.link/discord"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="달레 스터디 디스코드"
+            style={{ display: 'inline-flex', padding: 'var(--spacing-8)', margin: 'calc(var(--spacing-8) * -1)', color: 'inherit' }}
+          >
+            <Icon name="Discord" size="md" />
           </a>
           <a
             href="https://github.com/DaleStudy/survey"
