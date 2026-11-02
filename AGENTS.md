@@ -15,7 +15,7 @@
 bun install
 bun run dev                 # Dev server on port 3000
 bun run build
-bun run test                # tsc --noEmit
+bun run test                # 문항 생성 + tsc --noEmit + bun test (push 전에 통과시킨다)
 bun run cf-typegen          # wrangler.jsonc 변경 후 worker-configuration.d.ts 재생성
 bunx drizzle-kit generate --name <desc>   # 스키마 변경 후 마이그레이션 생성
 bun run db:migrate:local    # 로컬 D1 마이그레이션
@@ -29,10 +29,11 @@ OPENAI_API_KEY=$(op read op://dev/OpenAI-DaleStudy/credential) bun scripts/type-
 
 **TanStack Start** on **Cloudflare Workers**, D1 + Drizzle, 달레 UI. 구성은 `DaleStudy/feedback` 을 따른다.
 
-- 화면: `/` 회차와 상관없는 소개(열린 회차로 가는 버튼, 회차 목록), `/<회차>` 회차 페이지(일정, 주제, 설문 시작이나 결과로 가는 버튼. 날짜는 `editions.ts` 의 `opensAt`, `closesAt`, `resultsAt`, `deleteAt` 에서 읽는다), `/survey` → 열린 회차 설문(여럿이면 고르는 화면, `?ref=` 유지), `/results` 결과 아카이브(모든 회차를 최근 것부터, `src/components/EditionList.tsx`), `/privacy`. 회차별로 `/<회차>/survey`(시작 → 동의 → 문항 → 완료와 개발자 유형), `/<회차>/type/<유형>`(공유용, ADR 0004), `/<회차>/results`(집계만 읽는 결과 화면). 유형은 브라우저에서만 계산하고 저장하지 않는다. 설문 진행 화면을 뺀 모든 화면에 공통 헤더(`SiteHeader`, 결과·참여하기)와 하단(`SiteFooter`)을 둔다.
+- 화면: `/` 회차와 상관없는 소개(열린 회차로 가는 버튼, 회차 목록), `/<회차>` 회차 페이지(일정, 주제, 설문 시작이나 결과로 가는 버튼. 날짜는 `editions.ts` 의 `opensAt`, `closesAt`, `resultsAt`, `deleteAt` 에서 읽는다), `/survey` → 열린 회차 설문(여럿이면 고르는 화면, `?ref=` 유지), `/results` 결과 아카이브(모든 회차를 최근 것부터, `src/components/EditionList.tsx`), `/privacy`. 회차별로 `/<회차>/survey`(시작 → 동의 → 문항 → 완료와 개발자 유형), `/<회차>/type/<유형>`(공유용, ADR 0004), `/<회차>/results`(집계만 읽는 결과 화면). 유형은 브라우저에서만 계산하고 저장하지 않는다. 설문을 여는 버튼("설문 시작하기")은 회차 페이지에만 두고, 홈과 유형 공유 페이지의 참여 버튼은 회차 페이지로 보낸다. 설문 진행 화면을 뺀 모든 화면에 공통 헤더(`SiteHeader`: 로고, Discord, GitHub. "결과" 메뉴는 예시가 아닌 결과가 생기면 저절로 나온다)와 하단(`SiteFooter`)을 둔다. 응답 완료·이미 응답·마감 화면은 `$edition.survey.tsx` 의 `Finished` 하나로 그린다.
 - 마감은 회차의 `closesAt` 으로 정한다. 화면과 서버 함수가 함께 본다.
 - 결과는 응답 → 집계(`src/results/aggregate.ts`, 응답자 30명 미만 문항은 숨김) → 화면으로 나눈다. 집계는 `BREAKDOWNS`(경력별, 현업 여부별)에 따라 집단별 결과도 미리 계산하고, 집단별 칸에도 같은 30명 규칙을 적용한다. 한 번에 한 기준으로만 나눈다. 결과 화면은 TanStack Charts(`src/components/ResultChart.tsx`)로 그리고, 보기 기준은 `?by=` 에 남는다. 차트 색은 dataviz 검증 스크립트를 통과한 값이다. 결과 화면은 `src/results/<회차>.json` 만 읽고 원본 응답을 모른다. 회차끼리 비교할 수 있게 같은 문항 `id` 는 모든 회차에서 같은 선택지 `code` 를 쓴다.
 - 선택지에 `code: other`(기타)가 있는 문항은 "기타"를 고르면 직접 적을 수 있다(선택, 100자). 답에는 `<문항 id>_other` 키로 저장하고(`src/questions/logic.ts`), 집계와 결과 화면에는 쓰지 않으며 원본 CSV 에만 `<id>_other` 열로 나온다. 다음 회차 선택지를 고르는 데 쓴다(`docs/research/2026-11-trend-tracking.md`).
+- 공유 링크의 X, Threads 로고는 달레 UI 에 아이콘이 들어오기 전까지 `src/components/BrandIcon.tsx` 로 그린다(DaleStudy/daleui#1355, 이 저장소 #1).
 - 원본 응답 내보내기는 웹 관리자 화면 없이 `bun run export` 로 한다 — 로그인이 없는 사이트라 관리자 인증을 새로 만들지 않고, DaleStudy Cloudflare 계정 접근 권한으로 갈음한다.
 - `main` 에 push 하면 GitHub Actions(`.github/workflows/deploy.yml`)가 배포한다. 시크릿은 org secret `CLOUDFLARE_API_TOKEN` 하나.
 - 익명 설문이다. 로그인이 없고, 응답 1건이 `responses` 1행이다. IP·User-Agent 처럼 응답자를 알아볼 수 있는 값은 저장하지 않는다 — 스키마에 칸을 두지 않는 것으로 지킨다([개인정보 조사](docs/research/2026-10-privacy-law.md)).
@@ -45,6 +46,7 @@ OPENAI_API_KEY=$(op read op://dev/OpenAI-DaleStudy/credential) bun scripts/type-
 
 - 지금은 운영진 베타 중이다. Cloudflare Access 앱 "한국 개발자 설문 (베타)"가 응답과 결과 경로(`/survey`, `/2026/survey`, `/_serverFn`, `/results`, `/2025`, `/2026/results`)만 잠근다. 랜딩, 유형 공유, 처리방침, `/types/` 이미지는 링크 미리보기가 뜨도록 공개해 두었다(`noindex` 는 유지). 잠긴 경로는 정책 "베타 테스터"에 따라 GitHub `DaleStudy/maintainer`, `DaleStudy/daleui` 팀만 들어온다. 로그인은 Zero Trust(`dalestudy.cloudflareaccess.com`)의 GitHub 로그인 수단 — DaleStudy 조직 소유 OAuth 앱 "DaleStudy Cloudflare Access", 시크릿 원본은 1Password `dev/GITHUB_DALESTUDY_CF_ACCESS`.
 - 베타 응답도 운영 D1 에 쌓인다. 잠겨 있는 동안 들어온 응답은 모두 베타 응답이라 따로 표시하지 않고, 오픈 직전에 전부 지운다.
+- 회차의 `opensAt` 전(`isBeta`)에는 종료 화면에 "다시 답하기"가 나와 같은 브라우저에서 다시 응답할 수 있다. 오픈 날부터 저절로 사라진다.
 - 오픈(11월 16일) 직전에 할 일:
   1. 베타 응답 지우기 (`DELETE FROM responses` — 확인 후 `bun run export` 로 먼저 받아 둘지 정한다)
   2. Access 앱 "한국 개발자 설문 (베타)" 끄기 또는 삭제

@@ -1,4 +1,4 @@
-# survey
+# 한국 개발자 설문조사
 
 [![All Contributors](https://img.shields.io/github/all-contributors/DaleStudy/survey?color=ee8449&style=flat-square)](#contributors)
 
