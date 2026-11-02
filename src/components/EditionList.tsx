@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { Heading, Tag, Text } from 'daleui'
-import { EDITIONS, isClosed } from '@/editions'
+import { EDITIONS, isBeta, isClosed } from '@/editions'
 import { koDate as day } from '@/lib/date'
 import { RESULTS } from '@/results'
 
@@ -43,7 +43,7 @@ export function EditionList() {
             </div>
             <div style={{ display: 'flex', gap: 'var(--spacing-24)' }}>
               {open && (
-                <Link to="/$edition/survey" params={{ edition: e.id }}>
+                <Link to="/$edition/survey" params={{ edition: e.id }} reloadDocument={isBeta(e)}>
                   참여하기
                 </Link>
               )}

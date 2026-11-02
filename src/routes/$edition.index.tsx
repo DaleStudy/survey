@@ -2,7 +2,7 @@ import { Link, createFileRoute, notFound } from '@tanstack/react-router'
 import { Heading, Icon, Tag, Text } from 'daleui'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
-import { findEdition, isClosed } from '@/editions'
+import { findEdition, isBeta, isClosed } from '@/editions'
 import { koDate } from '@/lib/date'
 import { DEV_TYPES } from '@/lib/devType'
 import { gradientBorder, gradientText, heroImage, heroWash } from '@/lib/brand'
@@ -108,7 +108,7 @@ function EditionPage() {
               </Text>
               {open && (
                 <>
-                  <Link to="/$edition/survey" params={{ edition: e.id }} search={ref ? { ref } : {}} style={cta}>
+                  <Link to="/$edition/survey" params={{ edition: e.id }} search={ref ? { ref } : {}} reloadDocument={isBeta(e)} style={cta}>
                     설문 시작하기
                   </Link>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-20)' }}>

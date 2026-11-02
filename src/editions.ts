@@ -46,7 +46,8 @@ export function isClosed(edition: Edition, now: Date = new Date()): boolean {
   return edition.closesAt !== undefined && now.getTime() >= new Date(edition.closesAt).getTime()
 }
 
-// 시작일 전에 받는 응답은 베타다. 베타 동안에는 같은 브라우저에서 다시 답할 수 있게 한다.
+// 시작일 전에 받는 응답은 베타다. 베타 동안에는 같은 브라우저에서 다시 답할 수 있게 하고,
+// 설문으로 들어가는 링크는 페이지를 새로 불러 Cloudflare Access 가 로그인을 먼저 받게 한다.
 export function isBeta(edition: Edition, now: Date = new Date()): boolean {
   return edition.opensAt !== undefined && now.getTime() < new Date(`${edition.opensAt}T00:00:00+09:00`).getTime()
 }
