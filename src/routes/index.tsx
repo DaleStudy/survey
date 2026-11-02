@@ -64,7 +64,7 @@ function Landing() {
             한국 개발자의 <span style={gradientText}>오늘</span>을 함께 기록해요
           </Heading>
           <Text size="lg" style={{ maxWidth: 560, lineHeight: 1.6 }}>
-            한국 개발자가 어떻게 일하고 성장하는지, 그 이야기를 함께 모아요. 응답 하나하나가 모여 개발자 모두가 나눠 볼 수 있는 인사이트가 돼요.
+            한국 개발자가 어떻게 일하고 성장하는지, 그 이야기를 함께 모아요. 응답 하나하나가 모여 국내 개발 생태계를 읽는 인사이트가 돼요.
           </Text>
           {open ? (
             <Link to="/$edition" params={{ edition: open.id }} search={ref ? { ref } : {}} style={cta}>
