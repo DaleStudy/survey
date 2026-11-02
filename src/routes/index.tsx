@@ -60,12 +60,6 @@ function Landing() {
   const { ref } = Route.useSearch()
   // 지금 응답을 받는 회차. 없으면 결과로 안내한다.
   const open = openEditions()[0]
-  const start = (
-    <Link to="/survey" search={ref ? { ref } : {}} style={cta}>
-      설문 시작하기
-    </Link>
-  )
-
   return (
     <div style={{ background: 'var(--colors-app-bg)', color: 'var(--colors-fg-neutral)' }}>
       <SiteHeader />
@@ -81,12 +75,9 @@ function Landing() {
           </Text>
           {open ? (
             <>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-24)', alignItems: 'center' }}>
-                {start}
-                <Link to="/$edition" params={{ edition: open.id }} search={ref ? { ref } : {}}>
-                  {open.title} 자세히 보기
-                </Link>
-              </div>
+              <Link to="/$edition" params={{ edition: open.id }} search={ref ? { ref } : {}} style={cta}>
+                {open.title} 참여하기
+              </Link>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-24)' }}>
                 <span style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
                   <Icon name="clock" size="sm" /> <Text>10분 안팎</Text>
@@ -156,7 +147,7 @@ function Landing() {
 
       <section id="promise" style={{ background: 'var(--colors-bg-neutral-hover)' }}>
         <div style={section}>
-          <SectionTitle label="약속" title="답한 사람이 손해 보지 않게 할게요" />
+          <SectionTitle label="약속" title="안심하고 답할 수 있어요" />
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--spacing-24)' }}>
             <Card tone="neutral" outline>
               <Card.Icon name="eyeOff" />
@@ -204,11 +195,12 @@ function Landing() {
               <div style={{ fontSize: '1.125rem', lineHeight: 1.5 }}>주변 개발자에게도 알려 주세요. 다양한 사람이 답할수록 결과가 정확해져요.</div>
             </div>
             <Link
-              to="/survey"
+              to="/$edition"
+              params={{ edition: open.id }}
               search={ref ? { ref } : {}}
               style={{ ...cta, background: 'var(--colors-fg-solid-brand)', color: 'var(--colors-bg-solid-brand)', fontWeight: 600 }}
             >
-              설문 시작하기
+              참여하기
             </Link>
           </div>
         </section>
