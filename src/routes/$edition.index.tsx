@@ -4,6 +4,7 @@ import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { findEdition, isClosed } from '@/editions'
 import { koDate } from '@/lib/date'
+import { DEV_TYPES } from '@/lib/devType'
 import { SITE_URL, ogImage } from '@/lib/og'
 import { questionsFor } from '@/questions/survey'
 import { RESULTS } from '@/results'
@@ -162,7 +163,7 @@ function EditionPage() {
 
         {topics.length > 0 && (
           <section aria-labelledby="topics">
-            <div style={{ ...wrap, padding: '72px 24px 96px', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)' }}>
+            <div style={{ ...wrap, padding: '72px 24px', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
                 <Heading level={2} size={3} id="topics">
                   무엇을 묻나요
@@ -194,6 +195,36 @@ function EditionPage() {
                   )
                 })}
               </ul>
+            </div>
+          </section>
+        )}
+        {e.devTypes && (
+          <section aria-labelledby="types" style={{ background: 'var(--colors-bg-brand)' }}>
+            <div style={{ ...wrap, padding: '72px 24px', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
+                <Heading level={2} size={3} id="types">
+                  끝까지 답하면 나의 개발자 유형을 알려 드려요
+                </Heading>
+                <Text style={{ lineHeight: 1.6 }}>여섯 가지 유형 가운데 하나와 함께, 2027년 커리어를 내다보는 한 줄도 받아 볼 수 있어요. 친구에게 공유해 보세요.</Text>
+              </div>
+              <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 'var(--spacing-16)' }}>
+                {DEV_TYPES.map((t) => (
+                  <li
+                    key={t.slug}
+                    style={{ overflow: 'hidden', borderRadius: 'var(--radii-md)', background: 'var(--colors-app-bg)', border: '1px solid var(--colors-bg-neutral-hover)' }}
+                  >
+                    <img src={`/types/${t.slug}.jpg`} alt="" width={1200} height={630} loading="lazy" style={{ display: 'block', width: '100%', height: 'auto' }} />
+                    <Text weight="semibold" style={{ display: 'block', padding: 'var(--spacing-12) var(--spacing-16)' }}>
+                      {t.name}
+                    </Text>
+                  </li>
+                ))}
+              </ul>
+              {open && (
+                <Link to="/$edition/survey" params={{ edition: e.id }} search={ref ? { ref } : {}} style={{ ...cta, alignSelf: 'flex-start' }}>
+                  설문 시작하고 내 유형 알아보기
+                </Link>
+              )}
             </div>
           </section>
         )}
