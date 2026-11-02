@@ -146,7 +146,7 @@ function Landing() {
               <Card.Body>
                 <Card.Title>결과는 모두 공개해요</Card.Title>
                 <Card.Description>
-                  응답을 마감하면 결과를 누구나 볼 수 있게 공개해요.
+                  응답을 마감하면 결과를 누구나 볼 수 있게 공개하고, 분석한 인사이트도 함께 나눠요.
                 </Card.Description>
               </Card.Body>
             </Card>
