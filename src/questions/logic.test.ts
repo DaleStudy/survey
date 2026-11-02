@@ -98,4 +98,18 @@ describe('응답 검증', () => {
     expect(cleanAnswers(QUESTIONS, { ...employed, role: ['backend', 'frontend', 'devops'] }).ok).toBe(false)
     expect(cleanAnswers(QUESTIONS, { ...employed, job_satisfaction: '6' }).ok).toBe(false)
   })
+
+  test('기타를 고른 경우에만 직접 적은 내용을 남긴다', () => {
+    const picked = cleanAnswers(QUESTIONS, { ...employed, role: ['other'], role_other: '  게임 클라이언트 ' })
+    expect(picked.ok && picked.answers.role_other).toBe('게임 클라이언트')
+    const notPicked = cleanAnswers(QUESTIONS, { ...employed, role_other: '게임 클라이언트' })
+    expect(notPicked.ok && notPicked.answers.role_other).toBeUndefined()
+    const blank = cleanAnswers(QUESTIONS, { ...employed, role: ['other'], role_other: '  ' })
+    expect(blank.ok && 'role_other' in blank.answers).toBe(false)
+  })
+
+  test('기타 내용이 너무 길거나 글자가 아니면 거절한다', () => {
+    expect(cleanAnswers(QUESTIONS, { ...employed, role: ['other'], role_other: 'a'.repeat(101) }).ok).toBe(false)
+    expect(cleanAnswers(QUESTIONS, { ...employed, role: ['other'], role_other: ['x'] }).ok).toBe(false)
+  })
 })

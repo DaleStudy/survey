@@ -10,7 +10,7 @@ import { SiteHeader } from '@/components/SiteHeader'
 import { ShareButton } from '@/components/ShareButton'
 import { type DevType, devTypeOf, findDevType } from '@/lib/devType'
 import { findEdition, isClosed } from '@/editions'
-import { isEmpty, visibleQuestions } from '@/questions/logic'
+import { OTHER, isEmpty, otherKey, visibleQuestions } from '@/questions/logic'
 import { type Answers, questionsFor } from '@/questions/survey'
 import { submitResponse } from '@/server/functions/responses'
 
@@ -232,7 +232,8 @@ function Survey() {
           onPick={(code) => {
             const next = { ...answers, [current.id]: code }
             update(next)
-            timer.current = setTimeout(() => advance(next), AUTO_ADVANCE_MS)
+            // 기타는 직접 적을 수 있게 머문다
+            if (code !== OTHER) timer.current = setTimeout(() => advance(next), AUTO_ADVANCE_MS)
           }}
           onToggle={(code) => {
             const picked = Array.isArray(value) ? value : []
@@ -243,6 +244,8 @@ function Survey() {
             update({ ...answers, [current.id]: picked.includes(code) ? picked.filter((c) => c !== code) : [...picked, code] })
           }}
           onText={(text) => update({ ...answers, [current.id]: text })}
+          otherText={typeof answers[otherKey(current.id)] === 'string' ? (answers[otherKey(current.id)] as string) : ''}
+          onOtherText={(text) => update({ ...answers, [otherKey(current.id)]: text })}
         />
         {last && <Turnstile onToken={setTurnstileToken} resetKey={turnstileReset} />}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-12)', alignItems: 'center' }}>

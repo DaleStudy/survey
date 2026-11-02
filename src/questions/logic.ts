@@ -2,6 +2,16 @@ import type { Answer, Answers, Question } from './survey'
 
 export const LONG_MAX = 2000
 
+// "기타"를 고르면 직접 적을 수 있다(선택). 답은 <문항 id>_other 키에 따로 둔다.
+// 선택지에 없는 새 도구와 언어를 찾아 다음 회차 선택지로 올리려는 것이다.
+export const OTHER = 'other'
+export const OTHER_MAX = 100
+export const otherKey = (id: string) => `${id}_other`
+
+export function picksOther(a: Answer | undefined): boolean {
+  return a === OTHER || (Array.isArray(a) && a.includes(OTHER))
+}
+
 export function isEmpty(a: Answer | undefined): boolean {
   return a == null || a === '' || (Array.isArray(a) && a.length === 0)
 }
@@ -55,6 +65,11 @@ export function cleanAnswers(
     const error = answerError(q, a)
     if (error) return { ok: false, error: `${q.id}: ${error}` }
     clean[q.id] = typeof a === 'string' && q.type === 'long' ? a.trim() : a
+    const other = answers[otherKey(q.id)]
+    if (other === undefined || !picksOther(a)) continue
+    if (typeof other !== 'string' || other.trim().length > OTHER_MAX)
+      return { ok: false, error: `${q.id}: 기타 내용은 ${OTHER_MAX}자까지 쓸 수 있어요.` }
+    if (other.trim()) clean[otherKey(q.id)] = other.trim()
   }
   return { ok: true, answers: clean }
 }

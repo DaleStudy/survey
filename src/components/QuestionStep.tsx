@@ -1,4 +1,5 @@
-import { Button, Heading, Icon, Tag, Text } from 'daleui'
+import { Button, Heading, Icon, Tag, Text, TextInput } from 'daleui'
+import { OTHER, OTHER_MAX, picksOther } from '@/questions/logic'
 import type { Answer, Question } from '@/questions/survey'
 
 interface Props {
@@ -8,9 +9,11 @@ interface Props {
   onPick: (code: string) => void
   onToggle: (code: string) => void
   onText: (text: string) => void
+  otherText: string
+  onOtherText: (text: string) => void
 }
 
-export function QuestionStep({ question: q, value, error, onPick, onToggle, onText }: Props) {
+export function QuestionStep({ question: q, value, error, onPick, onToggle, onText, otherText, onOtherText }: Props) {
   const picked = Array.isArray(value) ? value : []
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)' }}>
@@ -57,6 +60,19 @@ export function QuestionStep({ question: q, value, error, onPick, onToggle, onTe
               </Button>
             )
           })}
+        </div>
+      )}
+
+      {q.options.some((o) => o.code === OTHER) && picksOther(value) && (
+        <div style={{ maxWidth: 440 }}>
+          <TextInput
+            label="기타 (선택)"
+            placeholder="무엇인지 적어 주세요"
+            value={otherText}
+            maxLength={OTHER_MAX}
+            autoFocus
+            onChange={(e) => onOtherText(e.target.value)}
+          />
         </div>
       )}
 

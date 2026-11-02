@@ -1,5 +1,5 @@
 // 운영 D1 의 원본 응답을 CSV 로 내려받는다. DaleStudy Cloudflare 계정에 wrangler 로그인이 되어 있어야 한다.
-// 원본에는 자유 의견과 제출 시각이 들어 있다. 공개용 데이터가 아니니 exports/ 밖으로 옮기거나 커밋하지 않는다.
+// 원본에는 자유 의견, 기타에 직접 적은 내용, 제출 시각이 들어 있다. 공개용 데이터가 아니니 exports/ 밖으로 옮기거나 커밋하지 않는다.
 import { mkdir } from 'node:fs/promises'
 import { toCsv, type ResponseRow } from '../src/lib/csv'
 import { questionsFor } from '../src/questions/survey'
