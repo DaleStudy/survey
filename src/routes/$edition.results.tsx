@@ -41,7 +41,7 @@ function QuestionResult({ q, breakdown }: { q: QuestionStat; breakdown?: Breakdo
           <Text size="sm">응답자가 {MIN_GROUP}명보다 적어서 숨겼어요. 누가 답했는지 알아볼 수 없게 하려고요.</Text>
         </div>
       ) : q.type === 'long' ? (
-        <Text size="sm">자유 의견은 이름이나 회사처럼 누군지 알 수 있는 내용을 지운 뒤 따로 정리해요.</Text>
+        <Text size="sm">자유 의견은 이름이나 회사명처럼 특정인을 알아볼 수 있는 정보를 지운 뒤 따로 정리해요.</Text>
       ) : (
         <>
           <ResultChart q={q} breakdown={breakdown} />
