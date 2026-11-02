@@ -36,7 +36,7 @@ export function SiteFooter() {
         }}
       >
         <div style={{ gridColumn: 'span 2', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
-          <Text weight="bold">한국 개발자 설문조사</Text>
+          <Text weight="bold">달레 스터디 개발자 설문조사</Text>
           <Text size="sm" muted style={{ lineHeight: 1.6 }}>
             개발자 커뮤니티{' '}
             <DaleLink href="https://dalestudy.com/?ref=survey" external size="sm" tone="brand" underline>

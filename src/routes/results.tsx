@@ -6,7 +6,7 @@ import { SiteHeader } from '@/components/SiteHeader'
 
 // 결과 아카이브: 지난 회차까지 모든 회차를 한곳에서 찾는다.
 export const Route = createFileRoute('/results')({
-  head: () => ({ meta: [{ title: '결과 | 한국 개발자 설문조사' }] }),
+  head: () => ({ meta: [{ title: '결과 | 달레 스터디 개발자 설문조사' }] }),
   component: Archive,
 })
 

@@ -1,6 +1,6 @@
 # AGENTS.md
 
-한국 개발자 설문조사(Korea Developer Survey) — 달레 스터디가 주관하는 정기 설문조사. 한국 개발자를 대상으로 회차마다 같은 핵심 질문을 하고 결과와 익명 데이터를 공개한다. https://survey.dalestudy.com
+달레 스터디 개발자 설문조사(DaleStudy Developer Survey) — 달레 스터디가 주관하는 정기 설문조사. 한국 개발자를 대상으로 회차마다 같은 핵심 질문을 하고 결과와 익명 데이터를 공개한다. https://survey.dalestudy.com
 
 ## Docs
 

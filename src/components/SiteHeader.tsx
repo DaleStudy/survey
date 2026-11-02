@@ -25,8 +25,10 @@ export function SiteHeader() {
       >
         <Link to="/" style={{ display: 'flex', gap: 'var(--spacing-12)', alignItems: 'center', color: 'inherit', textDecoration: 'none' }}>
           <Logo />
+          {/* 좁은 화면에서는 로고 마크가 달레 스터디를 대신한다 */}
+          <style>{'@media (max-width: 480px) { .site-name-brand { display: none } }'}</style>
           <Text size="lg" weight="bold">
-            한국 개발자 설문조사
+            <span className="site-name-brand">달레 스터디 </span>개발자 설문조사
           </Text>
         </Link>
         <nav aria-label="주요 메뉴" style={{ display: 'flex', gap: 'var(--spacing-16)', alignItems: 'center' }}>

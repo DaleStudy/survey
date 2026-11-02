@@ -7,7 +7,7 @@ import { openEditions } from '@/editions'
 import { gradientBanner, gradientText, heroImage, heroWash } from '@/lib/brand'
 import { ogImage } from '@/lib/og'
 
-const TITLE = '한국 개발자 설문조사'
+const TITLE = '달레 스터디 개발자 설문조사'
 const DESCRIPTION =
   '개발자 커뮤니티 달레 스터디가 주관해요. 글로벌 설문조사에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 묻고, 결과를 누구나 볼 수 있게 공개해요.'
 
@@ -25,7 +25,7 @@ export const Route = createFileRoute('/')({
       { property: 'og:url', content: 'https://survey.dalestudy.com/' },
       { property: 'og:type', content: 'website' },
       { property: 'og:locale', content: 'ko_KR' },
-      { property: 'og:site_name', content: '한국 개발자 설문조사' },
+      { property: 'og:site_name', content: '달레 스터디 개발자 설문조사' },
       ...ogImage('home', '개발자들이 모여 화이트보드에 응답을 붙여 그래프를 만드는 그림'),
     ],
   }),
@@ -68,7 +68,7 @@ function Landing() {
           </Text>
           {open ? (
             <Link to="/$edition" params={{ edition: open.id }} search={ref ? { ref } : {}} style={cta}>
-              {open.title.replace(' 한국 개발자 설문조사', ' 설문조사')} 참여하기
+              {open.title.replace(' 달레 스터디 개발자 설문조사', ' 설문조사')} 참여하기
             </Link>
           ) : (
             <Link to="/results" style={cta}>

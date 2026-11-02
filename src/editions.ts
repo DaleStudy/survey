@@ -21,7 +21,7 @@ export interface Edition {
 export const EDITIONS: Edition[] = [
   {
     id: '2026',
-    title: '2026 한국 개발자 설문조사',
+    title: '2026 달레 스터디 개발자 설문조사',
     survey: true,
     opensAt: '2026-11-16',
     closesAt: '2026-12-06T23:59:59+09:00',
@@ -31,7 +31,7 @@ export const EDITIONS: Edition[] = [
   },
   {
     id: '2025',
-    title: '2025 한국 개발자 설문조사',
+    title: '2025 달레 스터디 개발자 설문조사',
     survey: false,
     devTypes: false,
     sample: true,

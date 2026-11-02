@@ -237,7 +237,7 @@ function EditionPage() {
           <div style={{ ...wrap, padding: '48px 24px', display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-12)', alignItems: 'center', justifyContent: 'space-between' }}>
             <Text>이 설문조사를 왜 하는지, 응답을 어떻게 다루는지 궁금하다면</Text>
             <Link to="/" style={{ display: 'inline-flex', gap: 'var(--spacing-4)', alignItems: 'center', fontWeight: 600 }}>
-              한국 개발자 설문조사 소개 보기 <Icon name="chevronRight" size="sm" />
+              달레 스터디 개발자 설문조사 소개 보기 <Icon name="chevronRight" size="sm" />
             </Link>
           </div>
         </section>
