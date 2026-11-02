@@ -15,6 +15,7 @@
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/DaleSeo"><img src="https://avatars.githubusercontent.com/u/5466341?v=4?s=100" width="100px;" alt="Dale Seo"/><br /><sub><b>Dale Seo</b></sub></a><br /><a href="https://github.com/DaleStudy/survey/commits?author=DaleSeo" title="Code">💻</a> <a href="#design-DaleSeo" title="Design">🎨</a> <a href="https://github.com/DaleStudy/survey/commits?author=DaleSeo" title="Documentation">📖</a> <a href="#research-DaleSeo" title="Research">🔬</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://kwonnayeon.github.io"><img src="https://avatars.githubusercontent.com/u/53819606?v=4?s=100" width="100px;" alt="Nayeon (Anna)"/><br /><sub><b>Nayeon (Anna)</b></sub></a><br /><a href="https://github.com/DaleStudy/survey/commits?author=KwonNayeon" title="Code">💻</a> <a href="https://github.com/DaleStudy/survey/commits?author=KwonNayeon" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
