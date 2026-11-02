@@ -1,11 +1,30 @@
-import { Button, Icon, Link as DaleLink } from 'daleui'
+import { Button, Heading, Icon, Text } from 'daleui'
 import { useEffect, useState } from 'react'
 import { BrandIcon } from '@/components/BrandIcon'
 import type { DevType } from '@/lib/devType'
 import { SITE_URL } from '@/lib/og'
 
+// 테두리 버튼 모양의 링크. 공유 대상은 새 탭에서 열리는 주소라 <a> 로 둔다.
+const outline: React.CSSProperties = {
+  display: 'inline-flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  gap: 'var(--spacing-8)',
+  minHeight: 44,
+  padding: '0 var(--spacing-12)',
+  border: '1px solid var(--colors-border-neutral)',
+  borderRadius: 'var(--radii-md)',
+  background: 'var(--colors-app-bg)',
+  color: 'var(--colors-fg-neutral)',
+  font: 'inherit',
+  fontWeight: 500,
+  textDecoration: 'none',
+  whiteSpace: 'nowrap',
+  cursor: 'pointer',
+}
+
 // 공유 링크에는 유형 이름만 넣는다. 응답 내용은 담지 않는다.
-// 데스크톱의 OS 공유 창은 메시지·메모 같은 대상만 보여서, 터치 기기에서만 쓴다.
+// 데스크톱의 OS 공유 창은 메시지나 메모 같은 대상만 보여서, 터치 기기에서만 쓴다.
 export function ShareButton({ type, edition }: { type: DevType; edition: { id: string; title: string } }) {
   const [copied, setCopied] = useState(false)
   const [nativeShare, setNativeShare] = useState(false)
@@ -38,25 +57,31 @@ export function ShareButton({ type, edition }: { type: DevType; edition: { id: s
   ]
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-16)', alignItems: 'flex-start' }}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-12)' }}>
-        {nativeShare && (
-          <Button tone="brand" size="lg" onClick={share}>
-            결과 공유하기
-          </Button>
-        )}
-        <Button tone="brand" size="lg" variant={nativeShare ? 'outline' : 'solid'} onClick={copy}>
-          {copied ? '링크를 복사했어요' : '링크 복사하기'}
-        </Button>
+    <section aria-labelledby="share" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-16)' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
+        <Heading level={2} size={5} id="share">
+          주변 개발자에게도 알려 주세요
+        </Heading>
+        <Text size="sm" muted>
+          다양한 분들이 답할수록 결과가 정확해져요.
+        </Text>
       </div>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-24)' }}>
+      <Button tone="brand" size="lg" fullWidth onClick={nativeShare ? share : copy}>
+        {nativeShare ? '결과 공유하기' : copied ? '링크를 복사했어요' : '링크 복사하기'}
+      </Button>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${nativeShare ? 2 : 3}, minmax(0, 1fr))`, gap: 'var(--spacing-8)' }}>
+        {nativeShare && (
+          <button type="button" onClick={copy} style={outline}>
+            {copied ? '복사함' : '링크 복사'}
+          </button>
+        )}
         {targets.map((t) => (
-          <DaleLink key={t.name} href={t.href} external style={{ display: 'inline-flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
+          <a key={t.name} href={t.href} target="_blank" rel="noopener noreferrer" aria-label={`${t.name}에 공유`} style={outline}>
             {t.icon}
-            {t.name}에 공유
-          </DaleLink>
+            {t.name}
+          </a>
         ))}
       </div>
-    </div>
+    </section>
   )
 }

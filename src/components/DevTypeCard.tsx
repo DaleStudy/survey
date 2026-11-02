@@ -1,4 +1,4 @@
-import { Heading, Tag, Text } from 'daleui'
+import { Heading, Text } from 'daleui'
 import type { DevType } from '@/lib/devType'
 
 export function DevTypeCard({ type, label }: { type: DevType; label: string }) {
@@ -6,16 +6,13 @@ export function DevTypeCard({ type, label }: { type: DevType; label: string }) {
     <section
       aria-label="개발자 유형"
       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 'var(--spacing-12)',
-        alignItems: 'flex-start',
-        padding: 'var(--spacing-32)',
-        borderRadius: 'var(--radii-lg)',
-        background: 'var(--colors-app-bg)',
-        border: '1px solid var(--colors-border-brand)',
+        width: '100%',
         maxWidth: 560,
         boxSizing: 'border-box',
+        overflow: 'hidden',
+        borderRadius: 'var(--radii-lg)',
+        border: '1px solid var(--colors-border-brand)',
+        background: 'var(--colors-app-bg)',
       }}
     >
       <img
@@ -23,20 +20,34 @@ export function DevTypeCard({ type, label }: { type: DevType; label: string }) {
         alt=""
         width={1200}
         height={630}
-        style={{ width: '100%', height: 'auto', borderRadius: 'var(--radii-md)' }}
+        style={{ display: 'block', width: '100%', height: 'auto' }}
       />
-      <Text size="sm" weight="semibold" tone="brand">
-        {label}
-      </Text>
-      <Heading level={2} size={2}>
-        {type.name}
-      </Heading>
-      <Text size="lg" style={{ lineHeight: 1.6 }}>
-        {type.description}
-      </Text>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)', paddingTop: 'var(--spacing-8)' }}>
-        <Tag tone="brand">2027년 커리어 한 줄</Tag>
-        <Text style={{ lineHeight: 1.6 }}>{type.fortune}</Text>
+      <div style={{ padding: 'var(--spacing-24) var(--spacing-24) var(--spacing-32)', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
+        <Text size="sm" weight="semibold" tone="brand">
+          {label}
+        </Text>
+        <Heading level={2} size={2}>
+          {type.name}
+        </Heading>
+        <Text size="lg" style={{ lineHeight: 1.6 }}>
+          {type.description}
+        </Text>
+        <div
+          style={{
+            marginTop: 'var(--spacing-16)',
+            padding: 'var(--spacing-16) var(--spacing-20)',
+            borderRadius: 'var(--radii-md)',
+            background: 'var(--colors-bg-brand)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 'var(--spacing-4)',
+          }}
+        >
+          <Text size="sm" weight="semibold" tone="brand">
+            2027년 커리어 한 줄
+          </Text>
+          <Text style={{ lineHeight: 1.5 }}>{type.fortune}</Text>
+        </div>
       </div>
     </section>
   )

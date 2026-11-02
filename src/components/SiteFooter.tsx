@@ -30,9 +30,6 @@ export function SiteFooter() {
         </Text>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-24)' }}>
           <Link to="/privacy">개인정보 처리방침</Link>
-          <a href="https://github.com/DaleStudy/survey" target="_blank" rel="noreferrer">
-            GitHub
-          </a>
         </div>
       </div>
     </footer>

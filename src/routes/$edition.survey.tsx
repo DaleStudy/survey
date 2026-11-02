@@ -1,5 +1,5 @@
 import { Link, createFileRoute, notFound } from '@tanstack/react-router'
-import { Button, Heading, Icon, Text } from 'daleui'
+import { Button, Heading, Icon, Tag, Text } from 'daleui'
 import { useEffect, useRef, useState } from 'react'
 import { ConsentStep } from '@/components/ConsentStep'
 import { QuestionStep } from '@/components/QuestionStep'
@@ -45,16 +45,27 @@ const column: React.CSSProperties = {
   gap: 'var(--spacing-24)',
 }
 
-const homeButton: React.CSSProperties = {
+const finished: React.CSSProperties = {
+  maxWidth: 560,
+  margin: '0 auto',
+  padding: '72px 24px 96px',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 'var(--spacing-40)',
+}
+const quietAction: React.CSSProperties = {
   display: 'inline-flex',
   gap: 'var(--spacing-4)',
   alignItems: 'center',
-  minHeight: 40,
-  padding: '0 var(--spacing-16)',
-  border: '1px solid var(--colors-border-neutral)',
-  borderRadius: 'var(--radii-md)',
+  minHeight: 44,
+  padding: '0 var(--spacing-8)',
+  marginLeft: 'calc(var(--spacing-8) * -1)',
+  border: 0,
+  background: 'none',
   color: 'inherit',
+  font: 'inherit',
   textDecoration: 'none',
+  cursor: 'pointer',
 }
 
 // 응답을 마쳤거나 마감된 화면. 설문 진행 중이 아니라서 다른 화면으로 갈 수 있게 헤더와 하단을 둔다.
@@ -65,6 +76,66 @@ function EndPage({ children }: { children: React.ReactNode }) {
       <main style={{ flex: 1 }}>{children}</main>
       <SiteFooter />
     </div>
+  )
+}
+
+// 응답을 마친 뒤의 화면. 결과 안내 → 내 유형 → 공유 → 그 밖의 행동 순서로 한 번씩만 보여 준다.
+function Finished({ saved, title, lead, devType, edition, onRetake }: {
+  saved?: boolean
+  title: string
+  lead: string
+  devType?: DevType
+  edition: { id: string; title: string }
+  onRetake?: () => void
+}) {
+  return (
+    <EndPage>
+      <div style={finished}>
+        <section style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-12)' }}>
+          {saved && (
+            <div style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
+              <Icon name="check" size="sm" tone="success" />
+              <Text size="sm" weight="semibold" tone="success">
+                응답을 저장했어요
+              </Text>
+            </div>
+          )}
+          <Heading level={1}>{title}</Heading>
+          <Text size="lg" style={{ lineHeight: 1.6 }}>
+            {lead}
+          </Text>
+        </section>
+        {devType && (
+          <>
+            <DevTypeCard type={devType} label="나의 개발자 유형" />
+            <ShareButton type={devType} edition={edition} />
+          </>
+        )}
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 'var(--spacing-16)',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingTop: 'var(--spacing-24)',
+            borderTop: '1px solid var(--colors-bg-neutral-hover)',
+          }}
+        >
+          <Link to="/" style={quietAction}>
+            <Icon name="chevronLeft" size="sm" /> 처음으로
+          </Link>
+          {onRetake && (
+            <div style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
+              <Tag tone="warning">베타</Tag>
+              <button type="button" onClick={onRetake} style={{ ...quietAction, color: 'var(--colors-fg-brand)', textDecoration: 'underline' }}>
+                다시 답하기
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </EndPage>
   )
 }
 
@@ -152,70 +223,30 @@ function Survey() {
 
   if (phase === 'done') {
     return (
-      <EndPage>
-        <div style={{ ...column, alignItems: 'flex-start' }}>
-          <Heading level={1}>고마워요</Heading>
-          <Text size="lg">응답이 익명으로 저장됐어요. {resultsNote}</Text>
-          {devType && (
-            <>
-              <DevTypeCard type={devType} label="나의 개발자 유형" />
-              <Text>주변 개발자에게도 알려 주세요. 다양한 분들이 답할수록 결과가 정확해져요.</Text>
-              <ShareButton type={devType} edition={edition} />
-            </>
-          )}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-12)', alignItems: 'center' }}>
-            <Link to="/" style={homeButton}>
-              <Icon name="chevronLeft" size="sm" /> 처음으로
-            </Link>
-            {isBeta(edition) && (
-              <Button tone="neutral" variant="ghost" onClick={retake}>
-                다시 답하기 (베타 테스트)
-              </Button>
-            )}
-          </div>
-        </div>
-      </EndPage>
+      <Finished
+        saved
+        title="고마워요"
+        lead={`익명으로 저장했어요. ${resultsNote}`}
+        devType={devType}
+        edition={edition}
+        onRetake={isBeta(edition) ? retake : undefined}
+      />
     )
   }
 
   if (isClosed(edition)) {
-    return (
-      <EndPage>
-        <div style={column}>
-          <Heading level={1}>설문이 마감됐어요</Heading>
-          <Text size="lg">참여해 주신 분들 고마워요. {resultsNote}</Text>
-          <Link to="/" style={homeButton}>
-            <Icon name="chevronLeft" size="sm" /> 처음으로
-          </Link>
-        </div>
-      </EndPage>
-    )
+    return <Finished title="설문이 마감됐어요" lead={`참여해 주신 분들 고마워요. ${resultsNote}`} edition={edition} />
   }
 
   if (phase === 'already') {
     return (
-      <EndPage>
-        <div style={{ ...column, alignItems: 'flex-start' }}>
-          <Heading level={1}>이미 답해 주셨어요</Heading>
-          <Text size="lg">이 브라우저에서는 응답을 마쳤어요. {resultsNote}</Text>
-          {devType && (
-            <>
-              <DevTypeCard type={devType} label="나의 개발자 유형" />
-              <ShareButton type={devType} edition={edition} />
-            </>
-          )}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-12)', alignItems: 'center' }}>
-            <Link to="/" style={homeButton}>
-              <Icon name="chevronLeft" size="sm" /> 처음으로
-            </Link>
-            {isBeta(edition) && (
-              <Button tone="neutral" variant="ghost" onClick={retake}>
-                다시 답하기 (베타 테스트)
-              </Button>
-            )}
-          </div>
-        </div>
-      </EndPage>
+      <Finished
+        title="이미 답해 주셨어요"
+        lead={`이 브라우저에서는 응답을 마쳤어요. ${resultsNote}`}
+        devType={devType}
+        edition={edition}
+        onRetake={isBeta(edition) ? retake : undefined}
+      />
     )
   }
 

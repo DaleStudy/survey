@@ -35,6 +35,18 @@ export const Route = createFileRoute('/$edition/')({
   component: EditionPage,
 })
 
+// 회차 문항 파일의 섹션 id → 아이콘. 달레 UI 에 맞는 아이콘이 들어오면(DaleStudy/survey#1) 바꾼다.
+const TOPIC_ICONS: Record<string, React.ComponentProps<typeof Icon>['name']> = {
+  about: 'user',
+  workplace: 'laptop',
+  compensation: 'award',
+  career: 'star',
+  tech: 'codeXml',
+  ai: 'brain',
+}
+
+const wrap: React.CSSProperties = { maxWidth: 1120, margin: '0 auto', boxSizing: 'border-box' }
+
 const cta: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
@@ -54,7 +66,13 @@ function EditionPage() {
   const open = e.survey && !isClosed(e)
   const result = RESULTS[e.id]
   const questions = questionsFor(e.id) ?? []
-  const topics = [...new Map(questions.filter((q) => q.sectionId !== 'closing').map((q) => [q.sectionId, q.section])).values()]
+  const topics = [...new Map(questions.filter((q) => q.sectionId !== 'closing').map((q) => [q.sectionId, { id: q.sectionId, title: q.section }])).values()]
+  const steps = [
+    e.opensAt && { label: '시작', date: koDate(e.opensAt), note: '응답을 받기 시작해요' },
+    e.closesAt && { label: '마감', date: koDate(e.closesAt), note: '밤 11시 59분까지 받아요' },
+    e.resultsAt && { label: '결과 공개', date: koDate(e.resultsAt), note: '누구나 볼 수 있어요' },
+  ].filter((step) => !!step)
+  const current = open ? 0 : result ? steps.length - 1 : Math.min(1, steps.length - 1)
 
   const status = result
     ? `${result.total.toLocaleString()}명이 답했어요`
@@ -67,53 +85,112 @@ function EditionPage() {
       <SiteHeader />
       <main style={{ flex: 1 }}>
         <section style={{ background: 'var(--colors-bg-brand)' }}>
-          <div style={{ maxWidth: 1120, margin: '0 auto', padding: '96px 24px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)', alignItems: 'flex-start' }}>
-            {status && <Tag tone={e.sample ? 'warning' : 'brand'}>{status}</Tag>}
-            <Heading level={1}>{e.title}</Heading>
-            <Text size="xl" style={{ maxWidth: 680, lineHeight: 1.6 }}>
-              {DESCRIPTION}
-            </Text>
-            {open && (
-              <>
-                <Link to="/$edition/survey" params={{ edition: e.id }} search={ref ? { ref } : {}} style={cta}>
-                  설문 시작하기
+          <div style={{ ...wrap, padding: '72px 24px', display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-48)', alignItems: 'center' }}>
+            <div style={{ flex: '1 1 420px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-20)', alignItems: 'flex-start' }}>
+              {status && <Tag tone={e.sample ? 'warning' : 'brand'}>{status}</Tag>}
+              <Heading level={1}>{e.title}</Heading>
+              <Text size="lg" style={{ maxWidth: 520, lineHeight: 1.6 }}>
+                {DESCRIPTION}
+              </Text>
+              {open && (
+                <>
+                  <Link to="/$edition/survey" params={{ edition: e.id }} search={ref ? { ref } : {}} style={cta}>
+                    설문 시작하기
+                  </Link>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-20)' }}>
+                    <span style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
+                      <Icon name="clock" size="sm" /> <Text>10분 안팎</Text>
+                    </span>
+                    <span style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
+                      <Icon name="eyeOff" size="sm" /> <Text>로그인도 이메일도 필요 없어요</Text>
+                    </span>
+                  </div>
+                </>
+              )}
+              {result && (
+                <Link to="/$edition/results" params={{ edition: e.id }} style={cta}>
+                  결과 보기
                 </Link>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-24)' }}>
-                  <span style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
-                    <Icon name="clock" size="sm" /> <Text>10분 안팎</Text>
-                  </span>
-                  <span style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
-                    <Icon name="eyeOff" size="sm" /> <Text>로그인도 이메일도 필요 없어요</Text>
-                  </span>
-                </div>
-              </>
-            )}
-            {result && (
-              <Link to="/$edition/results" params={{ edition: e.id }} style={cta}>
-                결과 보기
-              </Link>
-            )}
+              )}
+            </div>
+            <img
+              src="/types/default.jpg"
+              alt=""
+              width={1200}
+              height={630}
+              style={{ flex: '1 1 420px', minWidth: 0, width: '100%', height: 'auto', borderRadius: 'var(--radii-lg)' }}
+            />
           </div>
         </section>
 
-        {questions.length > 0 && (
-          <section>
-            <div style={{ maxWidth: 1120, margin: '0 auto', padding: '96px 24px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)' }}>
-              <Heading level={2} size={3}>
-                무엇을 묻나요
+        {steps.length > 0 && (
+          <section aria-labelledby="schedule">
+            <div style={{ ...wrap, padding: '72px 24px 0', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)' }}>
+              <Heading level={2} size={3} id="schedule">
+                일정
               </Heading>
-              <Text size="lg" style={{ maxWidth: 720, lineHeight: 1.6 }}>
-                {topics.length}가지 주제를 물어요. 지금 상황에 맞는 질문만 나와서 실제로 답할 문항은 {questions.length}개보다 적어요.
-                {e.opensAt && e.closesAt && ` 응답은 ${koDate(e.opensAt)}부터 ${koDate(e.closesAt)}까지 받아요.`}
-                {e.resultsAt && ` 결과는 ${koDate(e.resultsAt)}에 공개해요.`}
-              </Text>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-12)' }}>
-                {topics.map((t) => (
-                  <Tag key={t} tone={t.includes('AI') ? 'brand' : 'neutral'}>
-                    {t}
-                  </Tag>
+              <ol style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 'var(--spacing-16)' }}>
+                {steps.map((step, i) => (
+                  <li
+                    key={step.label}
+                    style={{
+                      padding: 'var(--spacing-20)',
+                      borderRadius: 'var(--radii-md)',
+                      border: `1px solid ${i === current ? 'var(--colors-border-brand)' : 'var(--colors-bg-neutral-hover)'}`,
+                      background: i === current ? 'var(--colors-bg-brand)' : 'var(--colors-app-bg)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 'var(--spacing-4)',
+                    }}
+                  >
+                    <Text size="sm" weight="semibold" tone={i === current ? 'brand' : 'neutral'} muted={i !== current}>
+                      {i === current ? '지금' : step.label}
+                    </Text>
+                    <Text size="xl" weight="bold">
+                      {step.date}
+                    </Text>
+                    <Text>{step.note}</Text>
+                  </li>
                 ))}
+              </ol>
+            </div>
+          </section>
+        )}
+
+        {topics.length > 0 && (
+          <section aria-labelledby="topics">
+            <div style={{ ...wrap, padding: '72px 24px 96px', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
+                <Heading level={2} size={3} id="topics">
+                  무엇을 묻나요
+                </Heading>
+                <Text style={{ lineHeight: 1.6 }}>
+                  {topics.length}가지 주제를 물어요. 지금 상황에 맞는 질문만 나와서 실제로 답할 문항은 {questions.length}개보다 적어요.
+                </Text>
               </div>
+              <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 'var(--spacing-12)' }}>
+                {topics.map((t) => {
+                  const highlight = t.id === 'ai'
+                  return (
+                    <li
+                      key={t.id}
+                      style={{
+                        padding: 'var(--spacing-16) var(--spacing-20)',
+                        borderRadius: 'var(--radii-md)',
+                        background: highlight ? 'var(--colors-bg-solid-brand)' : 'var(--colors-bg-brand)',
+                        color: highlight ? 'var(--colors-fg-solid-brand)' : 'inherit',
+                        display: 'flex',
+                        gap: 'var(--spacing-12)',
+                        alignItems: 'center',
+                        fontWeight: 600,
+                      }}
+                    >
+                      <Icon name={TOPIC_ICONS[t.id] ?? 'puzzle'} tone={highlight ? undefined : 'brand'} />
+                      {t.title}
+                    </li>
+                  )
+                })}
+              </ul>
             </div>
           </section>
         )}
