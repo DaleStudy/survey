@@ -1,5 +1,5 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
-import { Card, Heading, Icon, Text } from 'daleui'
+import { Card, Heading, Text } from 'daleui'
 import { EditionList } from '@/components/EditionList'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
@@ -76,19 +76,9 @@ function Landing() {
             한국 개발자가 어떻게 일하고 성장하는지, 글로벌 설문조사가 놓친 이야기를 함께 모아요. 응답 하나하나가 모여 누구나 볼 수 있는 공개 데이터가 돼요.
           </Text>
           {open ? (
-            <>
-              <Link to="/$edition" params={{ edition: open.id }} search={ref ? { ref } : {}} style={cta}>
-                {open.title.replace(' 한국 개발자 설문조사', ' 설문조사')} 참여하기
-              </Link>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-24)' }}>
-                <span style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
-                  <Icon name="clock" size="sm" /> <Text>10분 안팎</Text>
-                </span>
-                <span style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
-                  <Icon name="eyeOff" size="sm" /> <Text>로그인도 이메일도 필요 없어요</Text>
-                </span>
-              </div>
-            </>
+            <Link to="/$edition" params={{ edition: open.id }} search={ref ? { ref } : {}} style={cta}>
+              {open.title.replace(' 한국 개발자 설문조사', ' 설문조사')} 참여하기
+            </Link>
           ) : (
             <Link to="/results" style={cta}>
               결과 보기
@@ -156,7 +146,7 @@ function Landing() {
               <Card.Body>
                 <Card.Title>익명으로 답해요</Card.Title>
                 <Card.Description>
-                  연봉처럼 답하기 망설여지는 질문은 건너뛰어도 돼요.
+                  이름, 이메일, 로그인을 받지 않아요. 연봉처럼 답하기 망설여지는 질문은 건너뛰어도 돼요.
                 </Card.Description>
               </Card.Body>
             </Card>
