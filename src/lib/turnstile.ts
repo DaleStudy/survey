@@ -9,7 +9,7 @@ interface VerifyInput {
   token: unknown
   secret: string | undefined
   // 이 배포에서 받아 줄 프런트엔드 호스트 이름. 운영에는 localhost 를 넣지 않는다.
-  // 점으로 시작하는 항목(.survey-preview.dalestudy.com)은 그 하위 도메인을 모두 받는다.
+  // 점으로 시작하는 항목(.survey.dalestudy.com)은 그 하위 도메인을 모두 받는다.
   hostnames: string | undefined
   fetch?: typeof fetch
 }
