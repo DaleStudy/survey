@@ -47,17 +47,6 @@ const cta: React.CSSProperties = {
   textDecoration: 'none',
 }
 
-function SectionTitle({ label, title }: { label: string; title: string }) {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-12)', maxWidth: 720 }}>
-      <Text weight="semibold" tone="brand">
-        {label}
-      </Text>
-      <Heading level={2}>{title}</Heading>
-    </div>
-  )
-}
-
 function Landing() {
   const { ref } = Route.useSearch()
   // 지금 응답을 받는 회차. 없으면 결과로 안내한다.
@@ -97,7 +86,7 @@ function Landing() {
 
       <section id="why">
         <div style={section}>
-          <SectionTitle label="왜 하나요" title="글로벌 설문조사 속 한국은 너무 작아요" />
+          <Heading level={2}>글로벌 설문조사 속 한국은 너무 작아요</Heading>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'var(--spacing-32)', alignItems: 'start' }}>
             <div
               style={{
@@ -139,7 +128,7 @@ function Landing() {
 
       <section id="promise" style={{ background: 'var(--colors-bg-neutral-hover)' }}>
         <div style={section}>
-          <SectionTitle label="약속" title="안심하고 답할 수 있어요" />
+          <Heading level={2}>안심하고 답할 수 있어요</Heading>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--spacing-24)' }}>
             <Card tone="neutral" outline>
               <Card.Icon name="eyeOff" />
@@ -174,7 +163,7 @@ function Landing() {
 
       <section id="results">
         <div style={section}>
-          <SectionTitle label="결과" title="회차마다 결과를 모두 공개해요" />
+          <Heading level={2}>회차마다 결과를 모두 공개해요</Heading>
           <EditionList />
         </div>
       </section>
