@@ -63,7 +63,7 @@ export function ShareButton({ type, edition }: { type: DevType; edition: { id: s
           주변 개발자에게도 알려 주세요
         </Heading>
         <Text size="sm" muted>
-          다양한 분들이 답할수록 결과가 정확해져요.
+          다양한 분들이 답할수록 결과가 더 의미 있어져요.
         </Text>
       </div>
       <Button tone="brand" size="lg" fullWidth onClick={nativeShare ? share : copy}>
