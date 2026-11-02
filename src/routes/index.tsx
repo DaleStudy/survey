@@ -76,7 +76,7 @@ function Landing() {
             한국 개발자의 오늘을 함께 기록해요
           </Heading>
           <Text size="xl" style={{ maxWidth: 680, lineHeight: 1.6 }}>
-            {DESCRIPTION}
+            한국 개발자가 어떻게 일하고 성장하는지, 해외 설문조사가 놓친 이야기를 함께 모아요. 응답 하나하나가 모여 누구나 볼 수 있는 공개 데이터가 돼요.
           </Text>
           {open ? (
             <>
