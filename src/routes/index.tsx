@@ -110,7 +110,7 @@ function Landing() {
                   국내 개발자 설문조사는 명맥이 끊겼어요
                 </Heading>
                 <Text size="lg" style={{ lineHeight: 1.6 }}>
-                  2023년 이후로 국내 개발자 전체를 꾸준히 조사하는 곳이 없어요. 그래서 국내 기술이나 업계 동향을 파악하기가 어려워졌어요.
+                  2023년 이후로 국내 개발자만을 대상으로 꾸준히 하는 설문조사가 없어요. 그래서 국내 기술이나 업계 동향을 파악하기가 어려워졌어요.
                 </Text>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
