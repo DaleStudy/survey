@@ -45,7 +45,8 @@ function TypePage() {
           <DevTypeCard type={type} label="친구의 개발자 유형" />
           <Text size="lg">한국 개발자의 일과 커리어를 묻는 설문조사예요. 10분이면 나의 유형도 알 수 있어요.</Text>
           <Link
-            to="/"
+            to="/$edition"
+            params={{ edition: type.edition }}
             search={{ ref: 'share' }}
             style={{
               display: 'inline-flex',
