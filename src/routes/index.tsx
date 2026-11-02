@@ -78,7 +78,7 @@ function Landing() {
           {open ? (
             <>
               <Link to="/$edition" params={{ edition: open.id }} search={ref ? { ref } : {}} style={cta}>
-                {open.title} 참여하기
+                {open.title.replace(' 한국 개발자 설문조사', ' 설문조사')} 참여하기
               </Link>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-24)' }}>
                 <span style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
