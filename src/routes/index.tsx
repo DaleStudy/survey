@@ -67,7 +67,7 @@ function Landing() {
 
       <section style={{ background: 'var(--colors-bg-brand)' }}>
         <div style={{ ...section, gap: 'var(--spacing-24)', alignItems: 'flex-start' }}>
-          <Tag tone="brand">{TITLE}</Tag>
+          <Tag tone="brand">12월 6일까지 응답을 받아요</Tag>
           <Heading level={1} style={{ maxWidth: 820 }}>
             한국 개발자의 오늘을 함께 기록해요
           </Heading>
