@@ -8,6 +8,7 @@ import { DevTypeCard } from '@/components/DevTypeCard'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { ShareButton } from '@/components/ShareButton'
+import { StarBurst } from '@/components/StarBurst'
 import { type DevType, devTypeOf, findDevType } from '@/lib/devType'
 import { findEdition, isBeta, isClosed } from '@/editions'
 import { koDate } from '@/lib/date'
@@ -68,6 +69,41 @@ const quietAction: React.CSSProperties = {
   cursor: 'pointer',
 }
 
+// 제출하는 동안 보여 주는 분석 화면. 유형을 정하는 두 문항(ai_frequency, company_criteria)을 짚어서
+// 결과가 내 답에서 나온다는 걸 보여 준다. 제출 대기와 겹치므로 실제로 늘어나는 시간은 짧다.
+const ANALYSIS_STEPS = ['AI 사용 습관 읽는 중', '커리어 우선순위 확인 중', '2027 운세 뽑는 중']
+const ANALYSIS_STEP_MS = 900
+const ANALYSIS_MIN_MS = ANALYSIS_STEPS.length * ANALYSIS_STEP_MS + 300
+
+function Analyzing() {
+  const [done, setDone] = useState(0)
+  useEffect(() => {
+    const t = setInterval(() => setDone((n) => Math.min(n + 1, ANALYSIS_STEPS.length)), ANALYSIS_STEP_MS)
+    return () => clearInterval(t)
+  }, [])
+  return (
+    <main style={page}>
+      <div role="status" aria-live="polite" style={{ ...column, maxWidth: 560 }}>
+        <Heading level={1}>두구두구…</Heading>
+        <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-12)' }}>
+          {ANALYSIS_STEPS.map((step, i) => (
+            <li
+              key={step}
+              style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center', opacity: i <= done ? 1 : 0.35, transition: 'opacity 200ms ease' }}
+            >
+              {/* 끝난 단계에만 체크. 자리는 비워 둬서 글자가 움직이지 않게 한다 */}
+              <span style={{ display: 'inline-flex', visibility: i < done ? 'visible' : 'hidden' }}>
+                <Icon name="check" size="sm" tone="success" />
+              </span>
+              <Text size="lg">{i === done ? `${step}…` : step}</Text>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </main>
+  )
+}
+
 // 응답을 마쳤거나 마감된 화면. 설문 진행 중이 아니라서 다른 화면으로 갈 수 있게 헤더와 하단을 둔다.
 function EndPage({ children }: { children: React.ReactNode }) {
   return (
@@ -96,7 +132,7 @@ function Finished({ saved, title, lead, devType, edition, onRetake }: {
             <div style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
               <Icon name="check" size="sm" tone="success" />
               <Text size="sm" weight="semibold" tone="success">
-                응답을 저장했어요
+                익명으로 저장했어요
               </Text>
             </div>
           )}
@@ -107,6 +143,8 @@ function Finished({ saved, title, lead, devType, edition, onRetake }: {
         </section>
         {devType && (
           <>
+            {/* 방금 응답을 마쳤을 때만. "이미 답했어요" 화면에서는 터뜨리지 않는다 */}
+            {saved && <StarBurst />}
             <DevTypeCard type={devType} label="나의 개발자 유형" />
             <ShareButton type={devType} edition={edition} />
           </>
@@ -181,7 +219,11 @@ function Survey() {
     }
     setPhase('sending')
     try {
-      await submitResponse({ data: { edition: edition.id, answers: final, ref, consented: true, turnstileToken } })
+      await Promise.all([
+        submitResponse({ data: { edition: edition.id, answers: final, ref, consented: true, turnstileToken } }),
+        // 분석 화면이 바로 사라지지 않게 최소 시간을 기다린다
+        edition.devTypes && new Promise((r) => setTimeout(r, ANALYSIS_MIN_MS)),
+      ])
       const type = edition.devTypes ? devTypeOf(final) : undefined
       // 다시 들어와도 유형을 보여 줄 수 있게 유형 이름만 남긴다
       localStorage.setItem(DONE_KEY, type?.slug ?? 'done')
@@ -225,8 +267,8 @@ function Survey() {
     return (
       <Finished
         saved
-        title="고마워요"
-        lead={`익명으로 저장했어요. ${resultsNote}`}
+        title={devType ? '내 유형이 나왔어요!' : '수고했어요!'}
+        lead={`전체 설문 ${resultsNote}`}
         devType={devType}
         edition={edition}
         onRetake={isBeta(edition) ? retake : undefined}
@@ -283,6 +325,8 @@ function Survey() {
       </main>
     )
   }
+
+  if (phase === 'sending' && edition.devTypes) return <Analyzing />
 
   const value = answers[current.id]
   const last = pos === visible.length - 1
@@ -344,19 +388,6 @@ function Survey() {
           >
             {last ? '제출하기' : '다음'}
           </Button>
-          {!current.required && (
-            <Button
-              tone="neutral"
-              variant="ghost"
-              onClick={() => {
-                const { [current.id]: _, ...rest } = answers
-                update(rest)
-                advance(rest)
-              }}
-            >
-              건너뛸게요
-            </Button>
-          )}
         </div>
       </div>
     </main>

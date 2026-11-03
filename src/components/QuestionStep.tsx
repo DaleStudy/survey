@@ -18,12 +18,18 @@ export function QuestionStep({ question: q, value, error, onPick, onToggle, onTe
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-12)', alignItems: 'flex-start' }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-8)' }}>
-          <Tag tone={q.section.includes('AI') ? 'brand' : 'neutral'}>{q.section}</Tag>
-          {!q.required && <Tag tone="neutral">건너뛰어도 돼요</Tag>}
-        </div>
+        <Tag tone={q.section.includes('AI') ? 'brand' : 'neutral'}>{q.section}</Tag>
         <Heading level={2} size={3} id="question">
           {q.label}
+          {q.required ? (
+            <Text as="span" size="lg" tone="danger" aria-hidden>
+              {' *'}
+            </Text>
+          ) : (
+            <Text as="span" size="sm" tone="neutral" muted style={{ fontWeight: 'normal', whiteSpace: 'nowrap' }}>
+              {' 선택'}
+            </Text>
+          )}
         </Heading>
         {q.help && (
           <Text tone="neutral" muted>
@@ -78,7 +84,7 @@ export function QuestionStep({ question: q, value, error, onPick, onToggle, onTe
 
       {q.type === 'multi' && (
         <Text size="sm" tone="neutral" muted>
-          {picked.length}개 골랐어요. {q.limit ? `최대 ${q.limit}개까지 고를 수 있어요.` : '여러 개 골라도 돼요.'}
+          {picked.length}개 골랐어요
         </Text>
       )}
 
