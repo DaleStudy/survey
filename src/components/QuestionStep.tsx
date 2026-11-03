@@ -1,5 +1,5 @@
 import { Button, Heading, Icon, Tag, Text, TextInput } from 'daleui'
-import { OTHER, OTHER_MAX, picksOther } from '@/questions/logic'
+import { LONG_MAX, OTHER, OTHER_MAX, picksOther } from '@/questions/logic'
 import type { Answer, Question } from '@/questions/survey'
 
 interface Props {
@@ -119,6 +119,7 @@ export function QuestionStep({ question: q, value, error, onPick, onToggle, onTe
         <textarea
           aria-labelledby="question"
           rows={5}
+          maxLength={LONG_MAX}
           value={typeof value === 'string' ? value : ''}
           onChange={(e) => onText(e.target.value)}
           placeholder="자유롭게 적어 주세요"
