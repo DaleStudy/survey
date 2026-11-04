@@ -182,8 +182,8 @@ function Survey() {
   const edition = Route.useLoaderData()
   const QUESTIONS = questionsFor(edition.id)!
   const resultsNote = edition.resultsAt
-    ? `결과와 분석한 인사이트는 ${koDate(edition.resultsAt)}에 누구나 볼 수 있게 공개할게요.`
-    : '결과와 분석한 인사이트는 정리되는 대로 누구나 볼 수 있게 공개할게요.'
+    ? `결과와 분석한 인사이트는 ${koDate(edition.resultsAt)}에 모두 공개해요.`
+    : '결과와 분석한 인사이트는 정리되는 대로 모두 공개해요.'
   // 같은 브라우저에서 다시 답하지 않게 남기는 표시. 서버로는 보내지 않는다.
   const DONE_KEY = `survey-${edition.id}-done`
   const [answers, setAnswers] = useState<Answers>({})
@@ -314,9 +314,24 @@ function Survey() {
         <div style={{ ...column, alignItems: 'flex-start' }}>
           <Heading level={1}>{edition.title}</Heading>
           <Text size="lg">
-            글로벌 설문조사에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 묻는 설문조사예요. {resultsNote}
+            글로벌 설문조사에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 물어요. {resultsNote}
           </Text>
-          <Text>이름도 이메일도 로그인도 필요 없어요. 10분 안팎이면 끝나요.</Text>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-8) var(--spacing-20)' }}>
+            {(
+              [
+                ['clock', '10분 안팎', 'neutral'],
+                ['eyeOff', '이름·이메일·로그인 없이 익명', 'neutral'],
+                ...(edition.devTypes ? [['star', '마지막엔 개발자 유형과 2027 운세', 'brand'] as const] : []),
+              ] as const
+            ).map(([icon, text, tone]) => (
+              <span key={icon} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
+                <Icon name={icon} size="sm" tone={tone} {...(icon === 'star' && { fill: 'currentColor' })} />
+                <Text size="sm" tone={tone} weight={tone === 'brand' ? 'semibold' : undefined}>
+                  {text}
+                </Text>
+              </span>
+            ))}
+          </div>
           <Button tone="brand" size="lg" disabled={!hydrated} onClick={() => setPhase('consent')}>
             시작하기 <Icon name="chevronRight" size="sm" />
           </Button>
