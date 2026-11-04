@@ -71,9 +71,11 @@ const quietAction: React.CSSProperties = {
 
 // 제출하는 동안 보여 주는 분석 화면. 유형을 정하는 두 문항(ai_frequency, company_criteria)을 짚어서
 // 결과가 내 답에서 나온다는 걸 보여 준다. 제출 대기와 겹치므로 실제로 늘어나는 시간은 짧다.
-const ANALYSIS_STEPS = ['AI 사용 습관 읽는 중', '커리어 우선순위 확인 중', '2027 운세 뽑는 중']
-const ANALYSIS_STEP_MS = 900
-const ANALYSIS_MIN_MS = ANALYSIS_STEPS.length * ANALYSIS_STEP_MS + 300
+const ANALYSIS_STEPS = ['응답을 익명으로 저장하는 중', 'AI 사용 습관 읽는 중', '커리어 우선순위 확인 중', '2027 운세 뽑는 중']
+const ANALYSIS_STEP_MS = 1200
+const ANALYSIS_MIN_MS = ANALYSIS_STEPS.length * ANALYSIS_STEP_MS + 400
+// 별 회전과 체크 표시에 쓰는, 살짝 지나쳤다 돌아오는 곡선
+const POP = 'cubic-bezier(0.34, 1.56, 0.64, 1)'
 
 function Analyzing() {
   const [done, setDone] = useState(0)
@@ -84,7 +86,24 @@ function Analyzing() {
   return (
     <main style={page}>
       <div role="status" aria-live="polite" style={{ ...column, maxWidth: 560 }}>
-        <Heading level={1}>두구두구…</Heading>
+        {/* 단계마다 별이 돈다. */}
+        <span
+          aria-hidden
+          style={{
+            display: 'inline-flex',
+            alignSelf: 'flex-start',
+            transform: `rotate(${done * 144}deg)`,
+            transition: `transform 700ms ${POP}`,
+          }}
+        >
+          <Icon name="star" size="lg" tone="brand" fill="currentColor" style={{ width: 40, height: 40 }} />
+        </span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
+          <Heading level={1}>두구두구…</Heading>
+          <Text size="lg" tone="neutral" muted>
+            내 답도 2026 한국 개발자 결과에 함께 담겨요!
+          </Text>
+        </div>
         <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-12)' }}>
           {ANALYSIS_STEPS.map((step, i) => (
             <li
@@ -92,7 +111,7 @@ function Analyzing() {
               style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center', opacity: i <= done ? 1 : 0.35, transition: 'opacity 200ms ease' }}
             >
               {/* 끝난 단계에만 체크. 자리는 비워 둬서 글자가 움직이지 않게 한다 */}
-              <span style={{ display: 'inline-flex', visibility: i < done ? 'visible' : 'hidden' }}>
+              <span style={{ display: 'inline-flex', transform: `scale(${i < done ? 1 : 0})`, transition: `transform 300ms ${POP}` }}>
                 <Icon name="check" size="sm" tone="success" />
               </span>
               <Text size="lg">{i === done ? `${step}…` : step}</Text>
