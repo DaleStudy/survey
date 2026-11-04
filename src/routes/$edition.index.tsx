@@ -214,7 +214,7 @@ function EditionPage() {
                 <Heading level={2} size={3} id="types">
                   끝까지 답하면 나의 개발자 유형을 알려 드려요
                 </Heading>
-                <Text style={{ lineHeight: 1.6 }}>여섯 가지 유형 가운데 하나와 함께, 2027년 커리어를 내다보는 한 줄도 받아 볼 수 있어요. 친구에게 공유해 보세요.</Text>
+                <Text style={{ lineHeight: 1.6 }}>여섯 가지 유형 가운데 하나와 함께, 2027 커리어 운세도 받아 볼 수 있어요. 친구에게 공유해 보세요!</Text>
               </div>
               <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 'var(--spacing-16)' }}>
                 {DEV_TYPES.map((t) => (
