@@ -4,6 +4,7 @@ import { findEdition } from '@/editions'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { ResultChart } from '@/components/ResultChart'
+import { sectionIcon } from '@/questions/sectionIcons'
 import { RESULTS } from '@/results'
 import { type Breakdown, MIN_GROUP, type QuestionStat } from '@/results/aggregate'
 
@@ -141,7 +142,7 @@ function Results() {
   const { title, result } = Route.useLoaderData()
   const { by } = Route.useSearch()
   const breakdown = result.breakdowns.find((b) => b.id === by)
-  const sections = [...new Set(result.questions.map((q) => q.section))]
+  const sections = [...new Map(result.questions.map((q) => [q.sectionId, q.section]))]
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--colors-app-bg)', color: 'var(--colors-fg-neutral)' }}>
@@ -173,13 +174,16 @@ function Results() {
             <BreakdownPicker breakdowns={result.breakdowns} active={breakdown?.id} />
           </section>
 
-          {sections.map((section) => (
-            <section key={section} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-32)' }}>
-              <Heading level={2} size={3}>
-                {section}
-              </Heading>
+          {sections.map(([sectionId, section]) => (
+            <section key={sectionId} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-32)' }}>
+              <div style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
+                <Icon name={sectionIcon(sectionId)} tone="brand" />
+                <Heading level={2} size={3}>
+                  {section}
+                </Heading>
+              </div>
               {result.questions
-                .filter((q) => q.section === section)
+                .filter((q) => q.sectionId === sectionId)
                 .map((q) => (
                   <QuestionResult key={q.id} q={q} breakdown={breakdown} />
                 ))}

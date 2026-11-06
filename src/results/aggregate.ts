@@ -14,6 +14,7 @@ export interface OptionStat {
 
 export interface QuestionStat {
   id: string
+  sectionId: string
   section: string
   label: string
   type: QuestionType
@@ -130,6 +131,7 @@ export function aggregate(questions: Question[], responses: Answers[], edition: 
     const mean = q.type === 'scale' && answered ? answers.reduce((sum, a) => sum + Number(a), 0) / answered : undefined
     return {
       id: q.id,
+      sectionId: q.sectionId,
       section: q.section,
       label: q.label,
       type: q.type,
