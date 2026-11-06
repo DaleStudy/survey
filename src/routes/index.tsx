@@ -133,7 +133,9 @@ function Landing() {
           <Heading level={2}>커뮤니티 설문조사라서 안심할 수 있어요</Heading>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--spacing-24)' }}>
             <Card tone="neutral" outline>
-              <Card.Icon name="eyeOff" />
+              <Card.Header>
+                <Card.Icon name="eyeOff" />
+              </Card.Header>
               <Card.Body>
                 <Card.Title>익명으로 답해요</Card.Title>
                 <Card.Description>
@@ -142,7 +144,9 @@ function Landing() {
               </Card.Body>
             </Card>
             <Card tone="neutral" outline>
-              <Card.Icon name="handHeart" />
+              <Card.Header>
+                <Card.Icon name="handHeart" />
+              </Card.Header>
               <Card.Body>
                 <Card.Title>결과는 모두 공개해요</Card.Title>
                 <Card.Description>
@@ -151,7 +155,9 @@ function Landing() {
               </Card.Body>
             </Card>
             <Card tone="neutral" outline>
-              <Card.Icon name="heartHandshake" />
+              <Card.Header>
+                <Card.Icon name="heartHandshake" />
+              </Card.Header>
               <Card.Body>
                 <Card.Title>통계에만 써요</Card.Title>
                 <Card.Description>
