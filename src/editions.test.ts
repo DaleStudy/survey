@@ -51,4 +51,14 @@ describe('회차 간 문항 일관성', () => {
       expect(new Set(codes).size).toBe(codes.length)
     }
   })
+
+  test('선택형 문항은 모두 order 를 적고, 같은 문항 id 는 모든 회차에서 order 가 같다', () => {
+    // 빠뜨리면 연봉 구간 같은 순서형 선택지가 비율 순으로 뒤섞일 수 있어서, 기본값을 두지 않고 꼭 적게 한다
+    const choice = all.filter(({ q }) => q.type === 'single' || q.type === 'multi')
+    const missing = choice.filter(({ q }) => q.order !== 'ordinal' && q.order !== 'nominal').map(({ edition, q }) => `${edition}/${q.id}`)
+    expect(missing).toEqual([])
+    for (const { q } of choice) {
+      for (const other of choice.filter((o) => o.q.id === q.id)) expect(other.q.order).toBe(q.order)
+    }
+  })
 })

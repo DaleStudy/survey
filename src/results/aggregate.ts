@@ -1,5 +1,5 @@
 import { visibleQuestions } from '@/questions/logic'
-import type { Answers, Question, QuestionType } from '@/questions/survey'
+import type { Answers, OptionOrder, Question, QuestionType } from '@/questions/survey'
 
 // 응답자가 이보다 적은 문항은 결과에서 숨긴다 (개인정보 조사의 k 출발점)
 export const MIN_GROUP = 30
@@ -17,6 +17,8 @@ export interface QuestionStat {
   section: string
   label: string
   type: QuestionType
+  // 결과 화면의 선택지 순서. 없으면(예전 집계) 원래 순서 그대로 보여 준다.
+  order?: OptionOrder
   // 이 문항이 보였던 사람 수와 실제로 답한 사람 수
   shown: number
   answered: number
@@ -133,6 +135,7 @@ export function aggregate(questions: Question[], responses: Answers[], edition: 
       section: q.section,
       label: q.label,
       type: q.type,
+      order: q.order,
       shown: shownTo.length,
       answered,
       hidden: answered < MIN_GROUP,

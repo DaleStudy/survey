@@ -7,6 +7,7 @@ import { tooltip } from '@tanstack/charts/tooltip'
 import { Text } from 'daleui'
 import { useMemo } from 'react'
 import type { Breakdown, QuestionStat } from '@/results/aggregate'
+import { displayOptions } from '@/results/order'
 
 // 색은 dataviz 검증 스크립트로 확인한 값이다. 밝은 테마 기준.
 const BRAND = '#5333e1'
@@ -70,14 +71,17 @@ export function ResultChart({ q, breakdown }: { q: QuestionStat; breakdown?: Bre
       }
     }
 
+    // 차트와 "표로 보기"가 같은 순서를 쓴다 (src/results/order.ts)
+    const options = displayOptions(q)
+
     if (groups) {
       const range = breakdown?.id === 'experience' ? ORDINAL : CATEGORICAL
       const domain = breakdown?.groups.map((g) => g.label) ?? []
-      const rows: Row[] = q.options.flatMap((o) =>
+      const rows: Row[] = options.flatMap((o) =>
         visibleGroups.map((g) => ({ label: o.label, share: g.shares[o.code] ?? 0, series: groupLabel(g.group) })),
       )
       return {
-        height: q.options.length * (visibleGroups.length * 14 + 18) + 80,
+        height: options.length * (visibleGroups.length * 14 + 18) + 80,
         definition: defineChart({
           marks: [barX(rows, { x: 'share', y: 'label', color: 'series', z: 'series', inset: 1, radius: 4, layout: group() })],
           scales: {
@@ -93,9 +97,9 @@ export function ResultChart({ q, breakdown }: { q: QuestionStat; breakdown?: Bre
       }
     }
 
-    const rows: Row[] = q.options.map((o) => ({ label: o.label, share: o.share, series: '전체' }))
+    const rows: Row[] = options.map((o) => ({ label: o.label, share: o.share, series: '전체' }))
     return {
-      height: q.options.length * 32 + 50,
+      height: options.length * 32 + 50,
       definition: defineChart({
         marks: [barX(rows, { x: 'share', y: 'label', fill: BRAND, inset: 2, radius: 4 })],
         scales: {
