@@ -1,5 +1,5 @@
-import { barX, colorLegend, colorLegendItems, defineChart, group, stack } from '@tanstack/charts'
-import { Chart } from '@tanstack/charts/react'
+import { barX, colorLegend, colorLegendItems, defineChart, group, stack, text } from '@tanstack/charts'
+import { Chart, type ChartDefinition } from '@tanstack/charts/react'
 import { scaleBand } from '@tanstack/charts/scales/band'
 import { scaleLinear } from '@tanstack/charts/scales/linear'
 import { scaleOrdinal } from '@tanstack/charts/scales/ordinal'
@@ -22,6 +22,14 @@ const percent = (share: number) => `${Math.round(share * 100)}%`
 
 type Row = { label: string; share: number; series: string }
 
+// 집단별 보기에서 % 라벨만 놓는 y축 이름
+const LABEL_Y = 'labelY'
+
+// 가장 긴 막대 끝의 % 라벨이 잘리지 않게 x축 끝에 여유를 둔다. 휴대폰 너비에서 "100%" 한 개가 들어갈 만큼.
+function withHeadroom(rows: Row[]) {
+  return scaleLinear().domain([0, Math.max(0.01, ...rows.map((r) => r.share)) * 1.18])
+}
+
 function likertRows(label: string, shares: Record<string, number>, scale?: { min: string; max: string }): Row[] {
   return ['1', '2', '3', '4', '5'].map((code) => ({
     label,
@@ -36,7 +44,8 @@ export function ResultChart({ q, breakdown }: { q: QuestionStat; breakdown?: Bre
   const groupLabel = (code: string) => breakdown?.groups.find((g) => g.code === code)?.label ?? code
   const hiddenGroups = groups?.filter((g) => g.hidden).map((g) => groupLabel(g.group)) ?? []
 
-  const { definition, height } = useMemo(() => {
+  // 분기마다 데이터와 y축 모양이 달라서(라벨용 숫자 y축 등) 정의 타입을 여기서 한 번 넓힌다
+  const { definition, height } = useMemo((): { definition: ChartDefinition<any, any, any>; height: number } => {
     const likert = q.type === 'scale'
     const likertSeries = likert ? likertRows('', {}, q.scale).map((r) => r.series) : []
 
@@ -80,13 +89,32 @@ export function ResultChart({ q, breakdown }: { q: QuestionStat; breakdown?: Bre
       const rows: Row[] = options.flatMap((o) =>
         visibleGroups.map((g) => ({ label: o.label, share: g.shares[o.code] ?? 0, series: groupLabel(g.group) })),
       )
+      // text 마크에는 group() 배치가 없어서, 라벨은 막대 중심을 따로 계산해 별도 y축(LABEL_Y)에 놓는다.
+      // 단위는 바깥 밴드 한 칸. y 밴드(paddingInner 0.2, paddingOuter 0)와 group() 기본 하위 밴드(padding 0.1)를 그대로 따른 식이다.
+      const n = visibleGroups.length
+      const labels = options.flatMap((_, k) =>
+        visibleGroups.map((g, i) => ({ ...rows[k * n + i], at: k + (0.8 * (i + 0.55)) / (n + 0.1), group: g.group })),
+      )
       return {
-        height: options.length * (visibleGroups.length * 14 + 18) + 80,
+        height: options.length * (n * 14 + 18) + 80,
         definition: defineChart({
-          marks: [barX(rows, { x: 'share', y: 'label', color: 'series', z: 'series', inset: 1, radius: 4, layout: group() })],
+          marks: [
+            barX(rows, { x: 'share', y: 'label', color: 'series', z: 'series', inset: 1, radius: 4, layout: group() }),
+            text(labels, {
+              x: 'share',
+              y: 'at',
+              yScale: LABEL_Y,
+              key: (d) => `${d.label}:${d.group}`,
+              text: (d) => percent(d.share),
+              anchor: 'start',
+              dx: 4,
+              fontSize: 11,
+            }),
+          ],
           scales: {
-            x: { scale: scaleLinear, nice: true, grid: true, axis: { ticks: { format: percent } } },
+            x: { scale: withHeadroom(rows), nice: true, grid: true, axis: { ticks: { format: percent } } },
             y: { scale: () => scaleBand<string>().paddingInner(0.2) },
+            [LABEL_Y]: { scale: scaleLinear().domain([0, options.length - 0.2]), channel: 'y', reverse: true, axis: false },
           },
           color: {
             scale: scaleOrdinal<string, string>().domain(domain).range(range),
@@ -101,9 +129,12 @@ export function ResultChart({ q, breakdown }: { q: QuestionStat; breakdown?: Bre
     return {
       height: options.length * 32 + 50,
       definition: defineChart({
-        marks: [barX(rows, { x: 'share', y: 'label', fill: BRAND, inset: 2, radius: 4 })],
+        marks: [
+          barX(rows, { x: 'share', y: 'label', fill: BRAND, inset: 2, radius: 4 }),
+          text(rows, { x: 'share', y: 'label', text: (d) => percent(d.share), anchor: 'start', dx: 6, fontSize: 12 }),
+        ],
         scales: {
-          x: { scale: scaleLinear, nice: true, grid: true, axis: { ticks: { format: percent } } },
+          x: { scale: withHeadroom(rows), nice: true, grid: true, axis: { ticks: { format: percent } } },
           y: { scale: () => scaleBand<string>().padding(0.2) },
         },
         tooltip: {
