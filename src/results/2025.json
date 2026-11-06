@@ -5,6 +5,7 @@
   "questions": [
     {
       "id": "status",
+      "sectionId": "about",
       "section": "나에 대해",
       "label": "지금 어떤 상황인가요?",
       "type": "single",
@@ -46,6 +47,7 @@
     },
     {
       "id": "experience",
+      "sectionId": "about",
       "section": "나에 대해",
       "label": "개발자로 일한 기간은 모두 합쳐 얼마나 되나요?",
       "type": "single",
@@ -93,6 +95,7 @@
     },
     {
       "id": "role",
+      "sectionId": "about",
       "section": "나에 대해",
       "label": "주로 맡은(또는 맡고 싶은) 직무는 무엇인가요?",
       "type": "multi",
@@ -182,6 +185,7 @@
     },
     {
       "id": "age",
+      "sectionId": "about",
       "section": "나에 대해",
       "label": "나이는 어떻게 되나요?",
       "type": "single",
@@ -241,6 +245,7 @@
     },
     {
       "id": "region",
+      "sectionId": "about",
       "section": "나에 대해",
       "label": "주로 어느 지역에서 일하나요?",
       "type": "single",
@@ -306,6 +311,7 @@
     },
     {
       "id": "employment_type",
+      "sectionId": "workplace",
       "section": "일하는 곳",
       "label": "어떤 형태로 일하고 있나요?",
       "type": "single",
@@ -353,6 +359,7 @@
     },
     {
       "id": "company_type",
+      "sectionId": "workplace",
       "section": "일하는 곳",
       "label": "지금 일하는 곳은 어떤 곳인가요?",
       "type": "single",
@@ -412,6 +419,7 @@
     },
     {
       "id": "company_size",
+      "sectionId": "workplace",
       "section": "일하는 곳",
       "label": "회사 직원은 모두 몇 명인가요?",
       "type": "single",
@@ -465,6 +473,7 @@
     },
     {
       "id": "contract_position",
+      "sectionId": "workplace",
       "section": "일하는 곳",
       "label": "지금 하는 일은 발주 구조에서 어디쯤인가요?",
       "type": "single",
@@ -506,6 +515,7 @@
     },
     {
       "id": "work_mode",
+      "sectionId": "workplace",
       "section": "일하는 곳",
       "label": "주로 어디서 일하나요?",
       "type": "single",
@@ -535,6 +545,7 @@
     },
     {
       "id": "weekly_hours",
+      "sectionId": "workplace",
       "section": "일하는 곳",
       "label": "지난 한 달 동안 일주일에 평균 몇 시간쯤 일했나요?",
       "type": "single",
@@ -570,6 +581,7 @@
     },
     {
       "id": "salary",
+      "sectionId": "compensation",
       "section": "보상",
       "label": "세전 연봉은 어느 구간인가요?",
       "type": "single",
@@ -659,6 +671,7 @@
     },
     {
       "id": "salary_change",
+      "sectionId": "compensation",
       "section": "보상",
       "label": "1년 전보다 연봉이 어떻게 바뀌었나요?",
       "type": "single",
@@ -706,6 +719,7 @@
     },
     {
       "id": "job_satisfaction",
+      "sectionId": "career",
       "section": "커리어",
       "label": "지금 하는 일에 얼마나 만족하나요?",
       "type": "scale",
@@ -752,6 +766,7 @@
     },
     {
       "id": "job_search",
+      "sectionId": "career",
       "section": "커리어",
       "label": "지난 1년 동안 이직이나 취업 준비를 해 봤나요?",
       "type": "single",
@@ -787,6 +802,7 @@
     },
     {
       "id": "coding_test",
+      "sectionId": "career",
       "section": "커리어",
       "label": "지난 1년 동안 채용 코딩 테스트를 몇 번 봤나요?",
       "type": "single",
@@ -822,6 +838,7 @@
     },
     {
       "id": "coding_test_burden",
+      "sectionId": "career",
       "section": "커리어",
       "label": "코딩 테스트 준비는 얼마나 부담됐나요?",
       "type": "scale",
@@ -868,6 +885,7 @@
     },
     {
       "id": "company_criteria",
+      "sectionId": "career",
       "section": "커리어",
       "label": "일할 곳을 고를 때 무엇을 가장 중요하게 보나요?",
       "type": "multi",
@@ -939,6 +957,7 @@
     },
     {
       "id": "next_workplace",
+      "sectionId": "career",
       "section": "커리어",
       "label": "다음에는 어떤 곳에서 일하고 싶나요?",
       "type": "single",
@@ -1004,6 +1023,7 @@
     },
     {
       "id": "career_concern",
+      "sectionId": "career",
       "section": "커리어",
       "label": "요즘 커리어에서 가장 큰 고민은 무엇인가요?",
       "type": "multi",
@@ -1057,6 +1077,7 @@
     },
     {
       "id": "main_language",
+      "sectionId": "tech",
       "section": "기술",
       "label": "지난 1년 동안 가장 많이 쓴 언어는 무엇인가요?",
       "type": "single",
@@ -1146,6 +1167,7 @@
     },
     {
       "id": "want_language",
+      "sectionId": "tech",
       "section": "기술",
       "label": "내년에 더 써 보고 싶은 언어는 무엇인가요?",
       "type": "multi",
@@ -1235,6 +1257,7 @@
     },
     {
       "id": "cloud",
+      "sectionId": "tech",
       "section": "기술",
       "label": "업무에서 어떤 클라우드를 쓰나요?",
       "type": "multi",
@@ -1294,6 +1317,7 @@
     },
     {
       "id": "ai_frequency",
+      "sectionId": "ai",
       "section": "올해의 주제 AI",
       "label": "개발할 때 AI 코딩 도구를 얼마나 자주 쓰나요?",
       "type": "single",
@@ -1335,6 +1359,7 @@
     },
     {
       "id": "ai_tools",
+      "sectionId": "ai",
       "section": "올해의 주제 AI",
       "label": "주로 어떤 AI 도구를 쓰나요?",
       "type": "multi",
@@ -1394,6 +1419,7 @@
     },
     {
       "id": "ai_policy",
+      "sectionId": "ai",
       "section": "올해의 주제 AI",
       "label": "회사에서는 AI 코딩 도구를 어떻게 다루나요?",
       "type": "single",
@@ -1435,6 +1461,7 @@
     },
     {
       "id": "ai_productivity",
+      "sectionId": "ai",
       "section": "올해의 주제 AI",
       "label": "AI 도구를 쓰고 나서 생산성은 어떻게 달라졌나요?",
       "type": "scale",
@@ -1481,6 +1508,7 @@
     },
     {
       "id": "ai_outlook",
+      "sectionId": "ai",
       "section": "올해의 주제 AI",
       "label": "앞으로 3년 동안 AI가 내 일을 얼마나 바꿀 것 같나요?",
       "type": "single",
@@ -1522,6 +1550,7 @@
     },
     {
       "id": "comment",
+      "sectionId": "closing",
       "section": "마무리",
       "label": "이 설문이 더 물어봤으면 하는 게 있나요?",
       "type": "long",

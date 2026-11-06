@@ -1,5 +1,6 @@
 import { Button, Heading, Icon, Tag, Text, TextInput } from 'daleui'
 import { LONG_MAX, OTHER, OTHER_MAX, picksOther } from '@/questions/logic'
+import { sectionIcon } from '@/questions/sectionIcons'
 import type { Answer, Question } from '@/questions/survey'
 
 interface Props {
@@ -19,7 +20,12 @@ export function QuestionStep({ question: q, value, error, onPick, onToggle, onTe
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-12)', alignItems: 'flex-start' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-8)' }}>
-          <Tag tone={q.section.includes('AI') ? 'brand' : 'neutral'}>{q.section}</Tag>
+          <Tag tone={q.section.includes('AI') ? 'brand' : 'neutral'}>
+            <span style={{ display: 'inline-flex', gap: 'var(--spacing-4)', alignItems: 'center' }}>
+              <Icon name={sectionIcon(q.sectionId)} size="sm" />
+              {q.section}
+            </span>
+          </Tag>
           {!q.required && <Tag tone="neutral">건너뛰어도 돼요</Tag>}
         </div>
         <Heading level={2} size={3} id="question">

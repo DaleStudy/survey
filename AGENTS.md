@@ -33,7 +33,6 @@ OPENAI_API_KEY=$(op read op://dev/OpenAI-DaleStudy/credential) bun scripts/type-
 - 마감은 회차의 `closesAt` 으로 정한다. 화면과 서버 함수가 함께 본다.
 - 결과는 응답 → 집계(`src/results/aggregate.ts`, 응답자 30명 미만 문항은 숨김) → 화면으로 나눈다. 집계는 `BREAKDOWNS`(경력별, 현업 여부별)에 따라 집단별 결과도 미리 계산하고, 집단별 칸에도 같은 30명 규칙을 적용한다. 한 번에 한 기준으로만 나눈다. 결과 화면은 TanStack Charts(`src/components/ResultChart.tsx`)로 그리고, 보기 기준은 `?by=` 에 남는다. 차트 색은 dataviz 검증 스크립트를 통과한 값이다. 결과 화면은 `src/results/<회차>.json` 만 읽고 원본 응답을 모른다. 회차끼리 비교할 수 있게 같은 문항 `id` 는 모든 회차에서 같은 선택지 `code` 를 쓴다.
 - 선택지에 `code: other`(기타)가 있는 문항은 "기타"를 고르면 직접 적을 수 있다(선택, 100자). 답에는 `<문항 id>_other` 키로 저장하고(`src/questions/logic.ts`), 집계와 결과 화면에는 쓰지 않으며 원본 CSV 에만 `<id>_other` 열로 나온다. 다음 회차 선택지를 고르는 데 쓴다(`docs/research/2026-11-trend-tracking.md`).
-- 공유 링크의 X, Threads 로고는 달레 UI 에 아이콘이 들어오기 전까지 `src/components/BrandIcon.tsx` 로 그린다(DaleStudy/daleui#1355, 이 저장소 #1).
 - 원본 응답 내보내기는 웹 관리자 화면 없이 `bun run export` 로 한다 — 로그인이 없는 사이트라 관리자 인증을 새로 만들지 않고, DaleStudy Cloudflare 계정 접근 권한으로 갈음한다.
 - `main` 에 push 하면 GitHub Actions(`.github/workflows/deploy.yml`)가 배포한다. 시크릿은 org secret `CLOUDFLARE_API_TOKEN` 하나.
 - 변경은 PR 로 올린다. PR 마다 `preview.yml` 이 테스트를 돌리고, 같은 저장소 브랜치면 `pr-<번호>.survey.dalestudy.com` 에 미리보기를 띄운다(운영 도메인 라우트에 `previews_enabled`)(GitHub `preview` 환경, 오래된 미리보기는 Cloudflare 가 정리한다). 미리보기는 운영 바인딩을 물려받지 않아서 `wrangler.jsonc` 의 `previews` 블록에 따로 적는다: D1 은 미리보기끼리 함께 쓰는 `survey-preview`, Turnstile 시크릿은 repo secret `TURNSTILE_SECRET` 를 `--secrets-file` 로 넘긴다.

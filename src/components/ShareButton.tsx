@@ -1,6 +1,5 @@
 import { Button, Heading, Icon, Text } from 'daleui'
 import { useEffect, useState } from 'react'
-import { BrandIcon } from '@/components/BrandIcon'
 import type { DevType } from '@/lib/devType'
 import { SITE_URL } from '@/lib/og'
 
@@ -51,9 +50,9 @@ export function ShareButton({ type, edition }: { type: DevType; edition: { id: s
 
   const q = encodeURIComponent
   const targets = [
-    { name: 'X', icon: <BrandIcon name="XTwitter" />, href: `https://x.com/intent/post?text=${q(text)}&url=${q(url)}` },
+    { name: 'X', icon: <Icon name="XTwitter" size="sm" />, href: `https://x.com/intent/post?text=${q(text)}&url=${q(url)}` },
     { name: 'LinkedIn', icon: <Icon name="LinkedIn" size="sm" />, href: `https://www.linkedin.com/sharing/share-offsite/?url=${q(url)}` },
-    { name: 'Threads', icon: <BrandIcon name="Threads" />, href: `https://www.threads.net/intent/post?text=${q(`${text}\n${url}`)}` },
+    { name: 'Threads', icon: <Icon name="Threads" size="sm" />, href: `https://www.threads.net/intent/post?text=${q(`${text}\n${url}`)}` },
   ]
 
   return (
@@ -67,11 +66,13 @@ export function ShareButton({ type, edition }: { type: DevType; edition: { id: s
         </Text>
       </div>
       <Button tone="brand" size="lg" fullWidth onClick={nativeShare ? share : copy}>
+        <Icon name={nativeShare ? 'share2' : 'copy'} size="sm" />
         {nativeShare ? '결과 공유하기' : copied ? '링크를 복사했어요' : '링크 복사하기'}
       </Button>
       <div style={{ display: 'grid', gridTemplateColumns: `repeat(${nativeShare ? 2 : 3}, minmax(0, 1fr))`, gap: 'var(--spacing-8)' }}>
         {nativeShare && (
           <button type="button" onClick={copy} style={outline}>
+            <Icon name="copy" size="sm" />
             {copied ? '복사함' : '링크 복사'}
           </button>
         )}

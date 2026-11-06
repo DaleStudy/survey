@@ -7,6 +7,7 @@ import { koDate } from '@/lib/date'
 import { DEV_TYPES } from '@/lib/devType'
 import { gradientBorder, gradientText, heroImage, heroWash } from '@/lib/brand'
 import { SITE_URL, ogImage } from '@/lib/og'
+import { sectionIcon } from '@/questions/sectionIcons'
 import { questionsFor } from '@/questions/survey'
 import { RESULTS } from '@/results'
 
@@ -36,16 +37,6 @@ export const Route = createFileRoute('/$edition/')({
       : {},
   component: EditionPage,
 })
-
-// 회차 문항 파일의 섹션 id → 아이콘. 달레 UI 에 맞는 아이콘이 들어오면(DaleStudy/survey#1) 바꾼다.
-const TOPIC_ICONS: Record<string, React.ComponentProps<typeof Icon>['name']> = {
-  about: 'user',
-  workplace: 'laptop',
-  compensation: 'award',
-  career: 'star',
-  tech: 'codeXml',
-  ai: 'brain',
-}
 
 const wrap: React.CSSProperties = { maxWidth: 1120, margin: '0 auto', boxSizing: 'border-box' }
 
@@ -198,7 +189,7 @@ function EditionPage() {
                         fontWeight: 600,
                       }}
                     >
-                      <Icon name={TOPIC_ICONS[t.id] ?? 'puzzle'} tone={highlight ? undefined : 'brand'} />
+                      <Icon name={sectionIcon(t.id)} tone={highlight ? undefined : 'brand'} />
                       {t.title}
                     </li>
                   )
