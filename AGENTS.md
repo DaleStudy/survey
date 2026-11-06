@@ -44,7 +44,7 @@ OPENAI_API_KEY=$(op read op://dev/OpenAI-DaleStudy/credential) bun scripts/type-
 
 ## 베타와 오픈
 
-- 지금은 운영진 베타 중이다. Cloudflare Access 앱 "한국 개발자 설문 (베타)"가 응답과 결과 경로(`/survey`, `/2026/survey`, `/_serverFn`, `/results`, `/2025`, `/2026/results`)만 잠근다. 랜딩, 유형 공유, 처리방침, `/types/` 이미지는 링크 미리보기가 뜨도록 공개해 두었다(`noindex` 는 유지). 잠긴 경로는 정책 "베타 테스터"에 따라 GitHub `DaleStudy/maintainer`, `DaleStudy/daleui` 팀만 들어온다. 로그인은 Zero Trust(`dalestudy.cloudflareaccess.com`)의 GitHub 로그인 수단 — DaleStudy 조직 소유 OAuth 앱 "DaleStudy Cloudflare Access", 시크릿 원본은 1Password `dev/GITHUB_DALESTUDY_CF_ACCESS`.
+- 지금은 베타 중이다. Cloudflare Access 앱 "한국 개발자 설문 (베타)"가 응답과 결과 경로(`/survey`, `/2026/survey`, `/_serverFn`, `/results`, `/2025`, `/2026/results`)만 잠근다. 랜딩, 유형 공유, 처리방침, `/types/` 이미지는 링크 미리보기가 뜨도록 공개해 두었다(`noindex` 는 유지). 잠긴 경로는 정책 "베타 테스터"에 따라 GitHub `DaleStudy` 조직 멤버만 들어온다. 로그인은 Zero Trust(`dalestudy.cloudflareaccess.com`)의 GitHub 로그인 수단 — DaleStudy 조직 소유 OAuth 앱 "DaleStudy Cloudflare Access", 시크릿 원본은 1Password `dev/GITHUB_DALESTUDY_CF_ACCESS`.
 - 베타 응답도 운영 D1 에 쌓인다. 잠겨 있는 동안 들어온 응답은 모두 베타 응답이라 따로 표시하지 않고, 오픈 직전에 전부 지운다.
 - 회차의 `opensAt` 전(`isBeta`)에는 종료 화면에 "다시 답하기"가 나와 같은 브라우저에서 다시 응답할 수 있다. 오픈 날부터 저절로 사라진다.
 - 오픈(11월 16일) 직전에 할 일:
