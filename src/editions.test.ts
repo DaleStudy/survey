@@ -53,7 +53,8 @@ describe('회차 간 문항 일관성', () => {
   })
 
   test('선택형 문항은 모두 order 를 적고, 같은 문항 id 는 모든 회차에서 order 가 같다', () => {
-    // 빠뜨리면 연봉 구간 같은 순서형 선택지가 비율 순으로 뒤섞일 수 있어서, 기본값을 두지 않고 꼭 적게 한다
+    // 빠뜨리면 원래 순서로 보여서 nominal 문항이 비율 순으로 정렬되지 않는다.
+    // 그렇다고 기본값을 nominal 로 두면 연봉 구간 같은 ordinal 문항이 뒤섞이므로, 기본값 없이 꼭 적게 한다.
     const choice = all.filter(({ q }) => q.type === 'single' || q.type === 'multi')
     const missing = choice.filter(({ q }) => q.order !== 'ordinal' && q.order !== 'nominal').map(({ edition, q }) => `${edition}/${q.id}`)
     expect(missing).toEqual([])
