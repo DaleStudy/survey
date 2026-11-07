@@ -7,7 +7,5 @@ export const responses = sqliteTable('responses', {
   edition: text('edition').notNull(),
   // 문항 id → 선택지 code (복수 선택은 code 배열, 서술형은 글)
   answers: text('answers', { mode: 'json' }).$type<Record<string, string | string[]>>().notNull(),
-  // 설문 링크의 ?ref= 값. 어느 채널로 들어왔는지만 남긴다.
-  ref: text('ref'),
   createdAt: text('created_at').notNull(),
 })

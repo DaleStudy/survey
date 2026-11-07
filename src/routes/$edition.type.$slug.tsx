@@ -7,7 +7,7 @@ import { findEdition } from '@/editions'
 import { findDevType } from '@/lib/devType'
 import { SITE_URL, ogImage } from '@/lib/og'
 
-// 공유 링크로 들어오는 페이지. 유형만 보여 주고, 설문은 랜딩에서 ref=share 로 시작하게 한다.
+// 공유 링크로 들어오는 페이지. 유형만 보여 주고, 설문은 회차 페이지에서 시작하게 한다.
 export const Route = createFileRoute('/$edition/type/$slug')({
   loader: ({ params }) => {
     const edition = findEdition(params.edition)
@@ -47,7 +47,6 @@ function TypePage() {
           <Link
             to="/$edition"
             params={{ edition: type.edition }}
-            search={{ ref: 'share' }}
             style={{
               display: 'inline-flex',
               alignItems: 'center',

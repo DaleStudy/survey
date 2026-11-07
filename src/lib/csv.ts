@@ -3,7 +3,6 @@ import type { Answers, Question } from '@/questions/survey'
 
 export interface ResponseRow {
   createdAt: string
-  ref: string | null
   answers: Answers
 }
 
@@ -12,14 +11,13 @@ export function csvCell(value: string): string {
   return /[",\r\n]/.test(value) ? `"${value.replaceAll('"', '""')}"` : value
 }
 
-// 원본 응답 내보내기. 열은 created_at, ref, 그다음 문항 id 순서. 값은 선택지 code 이고, 복수 선택은 ; 로 잇는다.
+// 원본 응답 내보내기. 열은 created_at, 그다음 문항 id 순서. 값은 선택지 code 이고, 복수 선택은 ; 로 잇는다.
 // 기타 선택지가 있는 문항은 바로 뒤에 <id>_other 열(직접 적은 내용)을 둔다.
 export function toCsv(questions: Question[], rows: ResponseRow[]): string {
   const columns = questions.flatMap((q) => (q.options.some((o) => o.code === OTHER) ? [q.id, otherKey(q.id)] : [q.id]))
-  const header = ['created_at', 'ref', ...columns]
+  const header = ['created_at', ...columns]
   const lines = rows.map((row) => [
     row.createdAt,
-    row.ref ?? '',
     ...columns.map((key) => {
       const a = row.answers[key]
       return a === undefined ? '' : Array.isArray(a) ? a.join(';') : a

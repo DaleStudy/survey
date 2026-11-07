@@ -23,8 +23,6 @@ export const Route = createFileRoute('/$edition/survey')({
     return edition
   },
   head: ({ loaderData }) => ({ meta: loaderData ? [{ title: loaderData.title }] : [] }),
-  validateSearch: (search: Record<string, unknown>): { ref?: string } =>
-    typeof search.ref === 'string' ? { ref: search.ref } : {},
   component: Survey,
 })
 
@@ -141,7 +139,6 @@ function Finished({ saved, title, lead, devType, edition, onRetake }: {
 }
 
 function Survey() {
-  const { ref } = Route.useSearch()
   const edition = Route.useLoaderData()
   const QUESTIONS = questionsFor(edition.id)!
   const resultsNote = edition.resultsAt
@@ -187,7 +184,7 @@ function Survey() {
     }
     setPhase('sending')
     try {
-      await submitResponse({ data: { edition: edition.id, answers: final, ref, consented: true, turnstileToken } })
+      await submitResponse({ data: { edition: edition.id, answers: final, consented: true, turnstileToken } })
       const type = edition.devTypes ? devTypeOf(final) : undefined
       // 다시 들어와도 유형을 보여 줄 수 있게 유형 이름만 남긴다
       localStorage.setItem(DONE_KEY, type?.slug ?? 'done')

@@ -17,16 +17,15 @@ describe('CSV', () => {
     const csv = toCsv(QUESTIONS, [
       {
         createdAt: '2026-11-16T00:00:00.000Z',
-        ref: 'geeknews',
         answers: { status: 'student', role: ['backend', 'other'], role_other: '게임 서버', comment: '좋아요, "또" 해요' },
       },
     ])
     const [header, row] = csv.trimEnd().split('\r\n')
     const columns = header.split(',')
-    expect(columns.slice(0, 4)).toEqual(['created_at', 'ref', 'status', 'experience'])
+    expect(columns.slice(0, 3)).toEqual(['created_at', 'status', 'experience'])
     expect(columns[columns.indexOf('role') + 1]).toBe('role_other')
-    expect(columns.length).toBe(2 + QUESTIONS.length + QUESTIONS.filter((q) => q.options.some((o) => o.code === 'other')).length)
-    expect(row).toContain('geeknews,student,,backend;other,게임 서버')
+    expect(columns.length).toBe(1 + QUESTIONS.length + QUESTIONS.filter((q) => q.options.some((o) => o.code === 'other')).length)
+    expect(row).toContain('Z,student,,backend;other,게임 서버')
     expect(row.endsWith('"좋아요, ""또"" 해요"')).toBe(true)
   })
 })
