@@ -25,6 +25,12 @@ type Row = { label: string; share: number; series: string }
 // 집단별 보기에서 % 라벨만 놓는 y축 이름
 const LABEL_Y = 'labelY'
 
+// 집단별 보기의 막대 배치. % 라벨 위치도 이 값으로 계산하므로 막대와 라벨이 함께 움직인다.
+// 선택지 줄 사이 틈 (y 밴드의 paddingInner, paddingOuter 는 0)
+const BAND_PADDING = 0.2
+// 한 줄 안 집단 막대 사이와 양 끝의 틈 (group() 하위 밴드의 padding)
+const GROUP_PADDING = 0.1
+
 // 가장 긴 막대 끝의 % 라벨이 잘리지 않게 x축 끝에 여유를 둔다. 휴대폰 너비에서 "100%" 한 개가 들어갈 만큼.
 function withHeadroom(rows: Row[]) {
   return scaleLinear().domain([0, Math.max(0.01, ...rows.map((r) => r.share)) * 1.18])
@@ -90,16 +96,19 @@ export function ResultChart({ q, breakdown }: { q: QuestionStat; breakdown?: Bre
         visibleGroups.map((g) => ({ label: o.label, share: g.shares[o.code] ?? 0, series: groupLabel(g.group) })),
       )
       // text 마크에는 group() 배치가 없어서, 라벨은 막대 중심을 따로 계산해 별도 y축(LABEL_Y)에 놓는다.
-      // 단위는 바깥 밴드 한 칸. y 밴드(paddingInner 0.2, paddingOuter 0)와 group() 기본 하위 밴드(padding 0.1)를 그대로 따른 식이다.
+      // 단위는 바깥 밴드 한 칸. 줄 k 는 k 에서 시작해 막대 영역(1 - BAND_PADDING)을 차지하고,
+      // 그 안을 group() 이 D3 band 처럼(양 끝 틈 포함, 가운데 정렬) n + GROUP_PADDING 칸으로 나눈다.
       const n = visibleGroups.length
+      const subStep = (1 - BAND_PADDING) / (n + GROUP_PADDING)
+      const subCenter = (i: number) => i + GROUP_PADDING + (1 - GROUP_PADDING) / 2
       const labels = options.flatMap((_, k) =>
-        visibleGroups.map((g, i) => ({ ...rows[k * n + i], at: k + (0.8 * (i + 0.55)) / (n + 0.1), group: g.group })),
+        visibleGroups.map((g, i) => ({ ...rows[k * n + i], at: k + subStep * subCenter(i), group: g.group })),
       )
       return {
         height: options.length * (n * 14 + 18) + 80,
         definition: defineChart({
           marks: [
-            barX(rows, { x: 'share', y: 'label', color: 'series', z: 'series', inset: 1, radius: 4, layout: group() }),
+            barX(rows, { x: 'share', y: 'label', color: 'series', z: 'series', inset: 1, radius: 4, layout: group({ padding: GROUP_PADDING }) }),
             text(labels, {
               x: 'share',
               y: 'at',
@@ -113,8 +122,8 @@ export function ResultChart({ q, breakdown }: { q: QuestionStat; breakdown?: Bre
           ],
           scales: {
             x: { scale: withHeadroom(rows), grid: true, axis: { ticks: { format: percent } } },
-            y: { scale: () => scaleBand<string>().paddingInner(0.2) },
-            [LABEL_Y]: { scale: scaleLinear().domain([0, options.length - 0.2]), channel: 'y', reverse: true, axis: false },
+            y: { scale: () => scaleBand<string>().paddingInner(BAND_PADDING) },
+            [LABEL_Y]: { scale: scaleLinear().domain([0, options.length - BAND_PADDING]), channel: 'y', reverse: true, axis: false },
           },
           color: {
             scale: scaleOrdinal<string, string>().domain(domain).range(range),
