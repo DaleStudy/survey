@@ -54,10 +54,7 @@ function Admin() {
         {edition} 응답 {data.total.toLocaleString()}건
       </Heading>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-32)', alignItems: 'flex-start' }}>
-        <CountTable title="날짜별" label="날짜" rows={data.daily.map((d) => [d.date, d.count])} />
-        <CountTable title="ref별" label="ref" rows={data.refs.map((r) => [r.ref ?? '(없음)', r.count])} />
-      </div>
+      <CountTable title="날짜별" label="날짜" rows={data.daily.map((d) => [d.date, d.count])} />
 
       <section style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
         <Heading level={2} size={5}>
@@ -71,7 +68,6 @@ function Admin() {
             <thead>
               <tr>
                 <th style={cell}>제출 시각</th>
-                <th style={cell}>ref</th>
                 {columns.map((key) => (
                   <th key={key} style={cell} title={questions.find((q) => q.id === key)?.label}>
                     {key}
@@ -83,7 +79,6 @@ function Admin() {
               {data.rows.map((row, i) => (
                 <tr key={`${row.createdAt}-${i}`}>
                   <td style={cell}>{new Date(row.createdAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })}</td>
-                  <td style={cell}>{row.ref ?? ''}</td>
                   {columns.map((key) => (
                     <td key={key} style={cell}>
                       {answerText(row.answers, key)}
