@@ -112,7 +112,7 @@ export function ResultChart({ q, breakdown }: { q: QuestionStat; breakdown?: Bre
             }),
           ],
           scales: {
-            x: { scale: withHeadroom(rows), nice: true, grid: true, axis: { ticks: { format: percent } } },
+            x: { scale: withHeadroom(rows), grid: true, axis: { ticks: { format: percent } } },
             y: { scale: () => scaleBand<string>().paddingInner(0.2) },
             [LABEL_Y]: { scale: scaleLinear().domain([0, options.length - 0.2]), channel: 'y', reverse: true, axis: false },
           },
@@ -134,7 +134,7 @@ export function ResultChart({ q, breakdown }: { q: QuestionStat; breakdown?: Bre
           text(rows, { x: 'share', y: 'label', text: (d) => percent(d.share), anchor: 'start', dx: 6, fontSize: 12 }),
         ],
         scales: {
-          x: { scale: withHeadroom(rows), nice: true, grid: true, axis: { ticks: { format: percent } } },
+          x: { scale: withHeadroom(rows), grid: true, axis: { ticks: { format: percent } } },
           y: { scale: () => scaleBand<string>().padding(0.2) },
         },
         tooltip: {
