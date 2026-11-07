@@ -3,6 +3,8 @@
 # id 와 선택지 code 는 연도별 비교의 키다. fixed: true 문항은 문구·선택지·순서를 바꾸지 않는다.
 # 선택지를 늘릴 때는 기존 code 를 지우지 않고 "기타"를 쪼개는 식으로 새 code 를 더한다.
 # show_if 는 키마다 AND, 값 목록은 OR 이다. required 를 적지 않으면 필수다.
+# order 는 single·multi 문항에 꼭 적는다. ordinal(경력, 연봉처럼 선택지에 순서가 있다)은 결과 화면에서 이 순서 그대로,
+# nominal(언어, 도구처럼 순서가 없다)은 비율이 높은 순으로 보여 준다. 화면에만 쓰는 값이라 fixed 문항에도 적을 수 있다.
 # 동의와 만 14세 확인은 문항이 아니라 설문 앞 단계에서 처리한다.
 
 edition: "2026"
@@ -15,6 +17,7 @@ sections:
       - id: status
         fixed: true
         type: single
+        order: nominal
         label: 지금 어떤 상황인가요?
         options:
           - { code: employed, label: "개발자로 일하고 있어요" }
@@ -26,6 +29,7 @@ sections:
       - id: experience
         fixed: true
         type: single
+        order: ordinal
         label: 개발자로 일한 기간은 모두 합쳐 얼마나 되나요?
         help: 인턴은 넣고, 학생 때 혼자 공부한 기간은 빼 주세요.
         options:
@@ -39,6 +43,7 @@ sections:
       - id: role
         fixed: true
         type: multi
+        order: nominal
         limit: 2
         label: 주로 맡은(또는 맡고 싶은) 직무는 무엇인가요?
         help: 두 개까지 고를 수 있어요.
@@ -60,6 +65,7 @@ sections:
       - id: age
         fixed: true
         type: single
+        order: ordinal
         required: false
         label: 나이는 어떻게 되나요?
         options:
@@ -75,6 +81,7 @@ sections:
       - id: region
         fixed: true
         type: single
+        order: nominal
         label: 주로 어느 지역에서 일하나요?
         help: 일하지 않는다면 사는 곳을 골라 주세요.
         options:
@@ -95,6 +102,7 @@ sections:
       - id: employment_type
         fixed: true
         type: single
+        order: nominal
         label: 어떤 형태로 일하고 있나요?
         options:
           - { code: permanent, label: "정규직" }
@@ -107,6 +115,7 @@ sections:
       - id: company_type
         fixed: true
         type: single
+        order: nominal
         label: 지금 일하는 곳은 어떤 곳인가요?
         options:
           - { code: large, label: "대기업" }
@@ -121,6 +130,7 @@ sections:
       - id: company_size
         fixed: true
         type: single
+        order: ordinal
         label: 회사 직원은 모두 몇 명인가요?
         show_if: { company_type: [large, midsize, small, startup, si_sm, public, foreign] }
         options:
@@ -135,6 +145,7 @@ sections:
       - id: contract_position
         fixed: false
         type: single
+        order: ordinal
         label: 지금 하는 일은 발주 구조에서 어디쯤인가요?
         help: 자사 서비스를 만든다면 첫 번째를 골라 주세요.
         show_if: { company_type: [si_sm, none] }
@@ -148,6 +159,7 @@ sections:
       - id: work_mode
         fixed: true
         type: single
+        order: ordinal
         label: 주로 어디서 일하나요?
         options:
           - { code: onsite, label: "매일 출근해요" }
@@ -157,6 +169,7 @@ sections:
       - id: weekly_hours
         fixed: true
         type: single
+        order: ordinal
         label: 지난 한 달 동안 일주일에 평균 몇 시간쯤 일했나요?
         options:
           - { code: lte_40, label: "40시간 이하" }
@@ -171,6 +184,7 @@ sections:
       - id: salary
         fixed: true
         type: single
+        order: ordinal
         required: false
         label: 세전 연봉은 어느 구간인가요?
         help: 성과급을 뺀 계약 연봉으로 골라 주세요. 프리랜서는 지난 1년 수입으로 답하면 돼요.
@@ -192,6 +206,7 @@ sections:
       - id: salary_change
         fixed: true
         type: single
+        order: ordinal
         required: false
         label: 1년 전보다 연봉이 어떻게 바뀌었나요?
         options:
@@ -216,6 +231,7 @@ sections:
       - id: job_search
         fixed: true
         type: single
+        order: ordinal
         label: 지난 1년 동안 이직이나 취업 준비를 해 봤나요?
         options:
           - { code: none, label: "하지 않았어요" }
@@ -226,6 +242,7 @@ sections:
       - id: first_job_route
         fixed: false
         type: single
+        order: nominal
         label: 첫 개발 일자리는 어떻게 구했나요?
         show_if: { experience: ["0_2", "3_5", "6_9", "10_14", "15_plus"] }
         options:
@@ -241,6 +258,7 @@ sections:
       - id: coding_test
         fixed: true
         type: single
+        order: ordinal
         label: 지난 1년 동안 채용 코딩 테스트를 몇 번 봤나요?
         options:
           - { code: "0", label: "보지 않았어요" }
@@ -259,6 +277,7 @@ sections:
       - id: company_criteria
         fixed: true
         type: multi
+        order: nominal
         limit: 3
         label: 일할 곳을 고를 때 무엇을 가장 중요하게 보나요?
         help: 세 개까지 고를 수 있어요.
@@ -277,6 +296,7 @@ sections:
       - id: next_workplace
         fixed: false
         type: single
+        order: nominal
         label: 다음에는 어떤 곳에서 일하고 싶나요?
         options:
           - { code: stay, label: "지금 일하는 곳" }
@@ -292,6 +312,7 @@ sections:
       - id: career_concern
         fixed: false
         type: multi
+        order: nominal
         limit: 2
         label: 요즘 커리어에서 가장 큰 고민은 무엇인가요?
         help: 두 개까지 고를 수 있어요.
@@ -310,6 +331,7 @@ sections:
       - id: main_language
         fixed: true
         type: single
+        order: nominal
         label: 지난 1년 동안 가장 많이 쓴 언어는 무엇인가요?
         options:
           - { code: java, label: "Java" }
@@ -329,6 +351,7 @@ sections:
       - id: want_language
         fixed: true
         type: multi
+        order: nominal
         limit: 2
         label: 내년에 더 써 보고 싶은 언어는 무엇인가요?
         help: 두 개까지 고를 수 있어요.
@@ -337,6 +360,7 @@ sections:
       - id: cloud
         fixed: false
         type: multi
+        order: nominal
         label: 업무에서 어떤 클라우드를 쓰나요?
         help: 해당하는 걸 모두 골라 주세요.
         show_if: { status: [employed] }
@@ -356,6 +380,7 @@ sections:
       - id: ai_frequency
         fixed: true
         type: single
+        order: ordinal
         label: 개발할 때 AI 코딩 도구를 얼마나 자주 쓰나요?
         options:
           - { code: daily, label: "매일 써요" }
@@ -367,6 +392,7 @@ sections:
       - id: ai_tools
         fixed: false
         type: multi
+        order: nominal
         label: 주로 어떤 AI 도구를 쓰나요?
         help: 해당하는 걸 모두 골라 주세요.
         show_if: { ai_frequency: [daily, weekly, monthly] }
@@ -383,6 +409,7 @@ sections:
       - id: ai_policy
         fixed: false
         type: single
+        order: ordinal
         label: 회사에서는 AI 코딩 도구를 어떻게 다루나요?
         help: 망분리 같은 보안 규정도 함께 떠올려 주세요.
         show_if: { status: [employed] }
@@ -404,6 +431,7 @@ sections:
       - id: ai_outlook
         fixed: false
         type: single
+        order: ordinal
         label: 앞으로 3년 동안 AI가 내 일을 얼마나 바꿀 것 같나요?
         options:
           - { code: threat, label: "일자리가 위태로울 것 같아요" }

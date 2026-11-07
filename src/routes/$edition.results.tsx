@@ -7,6 +7,7 @@ import { ResultChart } from '@/components/ResultChart'
 import { sectionIcon } from '@/questions/sectionIcons'
 import { RESULTS } from '@/results'
 import { type Breakdown, MIN_GROUP, type QuestionStat } from '@/results/aggregate'
+import { displayOptions } from '@/results/order'
 
 // 화면은 집계(src/results/<회차>.json)만 읽는다. 원본 응답은 여기로 오지 않는다.
 export const Route = createFileRoute('/$edition/results')({
@@ -68,7 +69,8 @@ function QuestionResult({ q, breakdown }: { q: QuestionStat; breakdown?: Breakdo
                 </tr>
               </thead>
               <tbody>
-                {q.options.map((o) => (
+                {/* 차트와 같은 순서 */}
+                {displayOptions(q).map((o) => (
                   <tr key={o.code}>
                     <th scope="row" style={{ ...cell, fontWeight: 400 }}>
                       {o.label}
