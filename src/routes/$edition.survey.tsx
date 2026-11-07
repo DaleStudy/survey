@@ -12,6 +12,7 @@ import { type DevType, devTypeOf, findDevType } from '@/lib/devType'
 import { findEdition, isBeta, isClosed } from '@/editions'
 import { koDate } from '@/lib/date'
 import { OTHER, isEmpty, otherKey, visibleQuestions } from '@/questions/logic'
+import { clearProgress, loadProgress, saveProgress } from '@/questions/progress'
 import { type Answers, questionsFor } from '@/questions/survey'
 import { submitResponse } from '@/server/functions/responses'
 
@@ -148,6 +149,7 @@ function Survey() {
     : '결과와 분석한 인사이트는 정리되는 대로 누구나 볼 수 있게 공개할게요.'
   // 같은 브라우저에서 다시 답하지 않게 남기는 표시. 서버로는 보내지 않는다.
   const DONE_KEY = `survey-${edition.id}-done`
+  const PROGRESS_KEY = `survey-${edition.id}-progress`
   const [answers, setAnswers] = useState<Answers>({})
   const [qid, setQid] = useState<string | null>(null)
   const [phase, setPhase] = useState<'intro' | 'consent' | 'question' | 'sending' | 'done' | 'already'>('intro')
@@ -170,6 +172,10 @@ function Survey() {
     return () => clearTimeout(timer.current)
   }, [])
 
+  useEffect(() => {
+    if (phase === 'question' && qid) saveProgress(PROGRESS_KEY, { answers, qid })
+  }, [phase, answers, qid])
+
   const visible = visibleQuestions(QUESTIONS, answers)
   const pos = visible.findIndex((q) => q.id === qid)
   const current = pos >= 0 ? visible[pos] : undefined
@@ -185,6 +191,7 @@ function Survey() {
       const type = edition.devTypes ? devTypeOf(final) : undefined
       // 다시 들어와도 유형을 보여 줄 수 있게 유형 이름만 남긴다
       localStorage.setItem(DONE_KEY, type?.slug ?? 'done')
+      clearProgress(PROGRESS_KEY)
       setDevType(type)
       setPhase('done')
     } catch {
@@ -208,6 +215,7 @@ function Survey() {
   // 베타 테스트 중에는 문항을 고친 뒤 다시 답해 볼 수 있게 한다
   function retake() {
     localStorage.removeItem(DONE_KEY)
+    clearProgress(PROGRESS_KEY)
     setAnswers({})
     setQid(null)
     setDevType(undefined)
@@ -257,7 +265,10 @@ function Survey() {
           <ConsentStep
             deleteAt={edition.deleteAt}
             onAgree={() => {
-              setQid(visible[0].id)
+              // 새로고침했다면 동의를 다시 받은 뒤 머물던 문항부터 잇는다
+              const saved = loadProgress(PROGRESS_KEY, QUESTIONS)
+              if (saved) setAnswers(saved.answers)
+              setQid(saved?.qid ?? visible[0].id)
               setPhase('question')
             }}
           />
