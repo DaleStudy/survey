@@ -29,11 +29,11 @@ OPENAI_API_KEY=$(op read op://dev/OpenAI-DaleStudy/credential) bun scripts/type-
 
 **TanStack Start** on **Cloudflare Workers**, D1 + Drizzle, 달레 UI. 구성은 `DaleStudy/feedback` 을 따른다.
 
-- 화면: `/` 회차와 상관없는 소개(열린 회차로 가는 버튼, 회차 목록), `/<회차>` 회차 페이지(일정, 주제, 설문 시작이나 결과로 가는 버튼. 날짜는 `editions.ts` 의 `opensAt`, `closesAt`, `resultsAt`, `deleteAt` 에서 읽는다), `/survey` → 열린 회차 설문(여럿이면 고르는 화면), `/results` 결과 아카이브(모든 회차를 최근 것부터, `src/components/EditionList.tsx`), `/privacy`. 회차별로 `/<회차>/survey`(시작 → 동의 → 문항 → 완료와 개발자 유형), `/<회차>/type/<유형>`(공유용, ADR 0004), `/<회차>/results`(집계만 읽는 결과 화면). 유형은 브라우저에서만 계산하고 저장하지 않는다. 설문을 여는 버튼("설문 시작하기")은 회차 페이지에만 두고, 홈과 유형 공유 페이지의 참여 버튼은 회차 페이지로 보낸다. 설문 진행 화면을 뺀 모든 화면에 공통 헤더(`SiteHeader`: 로고, Discord, GitHub. "결과" 메뉴는 예시가 아닌 결과가 생기면 저절로 나온다)와 하단(`SiteFooter`)을 둔다. 응답 완료·이미 응답·마감 화면은 `$edition.survey.tsx` 의 `Finished` 하나로 그린다.
+- 화면: `/` 회차와 상관없는 소개(열린 회차로 가는 버튼, 회차 목록), `/<회차>` 회차 페이지(일정, 주제, 설문 시작이나 결과로 가는 버튼. 날짜는 `editions.ts` 의 `opensAt`, `closesAt`, `resultsAt`, `deleteAt` 에서 읽는다), `/survey` → 열린 회차 설문(여럿이면 고르는 화면), `/results` 결과 아카이브(모든 회차를 최근 것부터, `src/components/EditionList.tsx`), `/privacy`. 회차별로 `/<회차>/survey`(시작 → 동의 → 문항 → 완료와 개발자 유형), `/<회차>/type/<유형>`(공유용, ADR 0004), `/<회차>/results`(집계만 읽는 결과 화면). 운영자 화면 `/admin`(응답 확인, 아래 참고)은 따로 둔다. 유형은 브라우저에서만 계산하고 저장하지 않는다. 설문을 여는 버튼("설문 시작하기")은 회차 페이지에만 두고, 홈과 유형 공유 페이지의 참여 버튼은 회차 페이지로 보낸다. 설문 진행 화면을 뺀 모든 화면에 공통 헤더(`SiteHeader`: 로고, Discord, GitHub. "결과" 메뉴는 예시가 아닌 결과가 생기면 저절로 나온다)와 하단(`SiteFooter`)을 둔다. 응답 완료·이미 응답·마감 화면은 `$edition.survey.tsx` 의 `Finished` 하나로 그린다.
 - 마감은 회차의 `closesAt` 으로 정한다. 화면과 서버 함수가 함께 본다.
 - 결과는 응답 → 집계(`src/results/aggregate.ts`, 응답자 30명 미만 문항은 숨김) → 화면으로 나눈다. 집계는 `BREAKDOWNS`(경력별, 현업 여부별)에 따라 집단별 결과도 미리 계산하고, 집단별 칸에도 같은 30명 규칙을 적용한다. 한 번에 한 기준으로만 나눈다. 결과 화면은 TanStack Charts(`src/components/ResultChart.tsx`)로 그리고, 보기 기준은 `?by=` 에 남는다. 차트 색은 dataviz 검증 스크립트를 통과한 값이다. 결과 화면은 `src/results/<회차>.json` 만 읽고 원본 응답을 모른다. 회차끼리 비교할 수 있게 같은 문항 `id` 는 모든 회차에서 같은 선택지 `code` 를 쓴다.
 - 선택지에 `code: other`(기타)가 있는 문항은 "기타"를 고르면 직접 적을 수 있다(선택, 100자). 답에는 `<문항 id>_other` 키로 저장하고(`src/questions/logic.ts`), 집계와 결과 화면에는 쓰지 않으며 원본 CSV 에만 `<id>_other` 열로 나온다. 다음 회차 선택지를 고르는 데 쓴다(`docs/research/2026-11-trend-tracking.md`).
-- 원본 응답 내보내기는 웹 관리자 화면 없이 `bun run export` 로 한다 — 로그인이 없는 사이트라 관리자 인증을 새로 만들지 않고, DaleStudy Cloudflare 계정 접근 권한으로 갈음한다.
+- 운영진은 `/admin` 에서 회차별 응답 수(날짜별, `ref`별)와 원본 응답을 읽기만 한다(ADR 0008, #10). 관리자 인증은 새로 만들지 않고, Cloudflare Access 앱 "달레 스터디 개발자 설문 (관리자)"(정책 "운영진")가 `/admin` 을 GitHub `DaleStudy/maintainer` 팀에게만 연다. 처리방침 8번("운영진만 로그인해서 접근")과 맞물리므로, 접근 대상을 바꾸면 처리방침도 함께 고친다. 미리보기 주소의 `/admin` 도 같은 앱이 잠그고 `survey-preview` 를 읽는다. Access 는 잠근 경로로 가는 요청에만 토큰을 붙이므로 데이터는 서버 함수가 아니라 `/admin/api` 가 주고, 요청마다 `verifyAccessToken`(`src/lib/access.ts`)으로 서명·팀 도메인·AUD·유효 기간을 확인해 하나라도 어긋나면 거절한다(fail closed). 로컬에서는 토큰이 없어 늘 거절된다. 원본 CSV 는 계속 `bun run export` 로 받는다.
 - `main` 에 push 하면 GitHub Actions(`.github/workflows/deploy.yml`)가 운영 D1 마이그레이션을 먼저 적용한 뒤 배포한다. 시크릿은 org secret `CLOUDFLARE_API_TOKEN` 하나.
 - 미리보기와 운영 모두 배포 직전에 마이그레이션을 자동으로 적용하므로, 마이그레이션은 이전 코드가 그대로 돌아가는 변경이어야 한다. 칸이나 테이블을 지울 때는 먼저 그것을 쓰지 않게 바꾸는 PR 을 병합해 배포하고, 삭제 마이그레이션은 다음 PR 로 올린다 — 한 PR 에 넣으면 운영에서는 배포 직전, 미리보기에서는 함께 쓰는 `survey-preview` 를 읽는 다른 PR 의 미리보기에서 이전 코드가 깨진다.
 - 변경은 PR 로 올린다. PR 마다 `preview.yml` 이 테스트를 돌리고, 같은 저장소 브랜치면 `pr-<번호>.survey.dalestudy.com` 에 미리보기를 띄운다(운영 도메인 라우트에 `previews_enabled`)(GitHub `preview` 환경, 오래된 미리보기는 Cloudflare 가 정리한다). 미리보기는 운영 바인딩을 물려받지 않아서 `wrangler.jsonc` 의 `previews` 블록에 따로 적는다: D1 은 미리보기끼리 함께 쓰는 `survey-preview`, Turnstile 시크릿은 repo secret `TURNSTILE_SECRET` 를 `--secrets-file` 로 넘긴다.
@@ -51,7 +51,7 @@ OPENAI_API_KEY=$(op read op://dev/OpenAI-DaleStudy/credential) bun scripts/type-
 - 회차의 `opensAt` 전(`isBeta`)에는 종료 화면에 "다시 답하기"가 나와 같은 브라우저에서 다시 응답할 수 있다. 오픈 날부터 저절로 사라진다.
 - 오픈(11월 16일) 직전에 할 일:
   1. 베타 응답 지우기 (`DELETE FROM responses` — 확인 후 `bun run export` 로 먼저 받아 둘지 정한다)
-  2. Access 앱 "한국 개발자 설문 (베타)" 끄기 또는 삭제
+  2. Access 앱 "한국 개발자 설문 (베타)" 끄기 또는 삭제. `/admin` 을 잠그는 관리자 앱은 남긴다
   3. `src/routes/__root.tsx` 의 `noindex` 빼기
   4. 링크 미리보기(og 태그)가 공유 채널에서 제대로 뜨는지 확인. 잠겨 있는 동안 공유한 주소는 Cloudflare 로그인 화면으로 캐시되어 있으니 새로 고친다: 카카오 공유 디버거(캐시 초기화), LinkedIn Post Inspector, Facebook Sharing Debugger(Threads 포함). X, Slack, Discord 는 도구가 없어 `?v=1` 같은 쿼리를 붙인 주소로 공유한다. 오픈 전에는 주소를 소셜에 공유하지 않는다.
   5. 예시 회차 `2025` 지우기: `src/editions.ts` 의 항목, `src/results/2025.json`, `src/results/index.ts` 의 줄, `scripts/sample-results.ts`
