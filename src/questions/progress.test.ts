@@ -31,6 +31,12 @@ describe('restoreProgress', () => {
     expect(restored?.qid).toBe('experience')
   })
 
+  test('머물던 문항 앞에 빈 필수 문항이 생기면 그 문항부터 잇는다', () => {
+    // 저장 뒤 선택지가 바뀌어 experience 답이 버려진 경우
+    const restored = restoreProgress(QUESTIONS, { answers: { status: 'employed', experience: 'nope', role: ['backend'] }, qid: 'age' })
+    expect(restored?.qid).toBe('experience')
+  })
+
   test('되살릴 답이 없거나 값이 깨졌으면 null', () => {
     for (const saved of [null, 'x', [], { answers: [] }, { answers: {} }, { answers: { status: 42 } }]) {
       expect(restoreProgress(QUESTIONS, saved)).toBeNull()

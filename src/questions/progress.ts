@@ -9,7 +9,7 @@ export interface Progress {
 }
 
 // 저장해 둔 값을 지금 문항에 맞춰 되살린다. 문항이 바뀌었으면 맞지 않는 답은 버리고,
-// 머물던 문항이 보이지 않으면 답하지 않은 첫 문항으로 보낸다. 되살릴 답이 없으면 null.
+// 머물던 문항 앞에 빈 필수 문항이 생겼거나 머물던 문항이 보이지 않으면 거기서 다시 잇는다. 되살릴 답이 없으면 null.
 export function restoreProgress(questions: Question[], saved: unknown): Progress | null {
   if (!saved || typeof saved !== 'object') return null
   const { answers: raw, qid } = saved as { answers?: unknown; qid?: unknown }
@@ -28,8 +28,11 @@ export function restoreProgress(questions: Question[], saved: unknown): Progress
   if (Object.keys(answers).length === 0) return null
 
   const visible = visibleQuestions(questions, answers)
-  const resume = visible.find((q) => q.id === qid) ?? visible.find((q) => isEmpty(answers[q.id])) ?? visible[visible.length - 1]
-  return { answers, qid: resume.id }
+  const stay = visible.findIndex((q) => q.id === qid)
+  // 빈 필수 문항을 건너뛰고 이으면 끝에서 제출이 거절되므로, 그 문항부터 다시 답하게 한다
+  const missing = visible.findIndex((q) => q.required && isEmpty(answers[q.id]))
+  const at = missing >= 0 && (stay < 0 || missing < stay) ? missing : stay >= 0 ? stay : visible.findIndex((q) => isEmpty(answers[q.id]))
+  return { answers, qid: visible[at >= 0 ? at : visible.length - 1].id }
 }
 
 // 저장소를 쓸 수 없는 브라우저도 있어서, 실패하면 처음부터 답하게 둔다.
