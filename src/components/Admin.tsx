@@ -63,6 +63,9 @@ export function AdminDaily({ daily, closesAt }: { daily: AdminSummary['daily']; 
   const rows = days.map((date) => ({ date, count: date <= today ? (counts.get(date) ?? 0) : null }))
   const peak = daily.reduce((a, b) => (b.count > a.count ? b : a), daily[0] ?? { date: today, count: 0 })
   const total = daily.reduce((sum, d) => sum + d.count, 0)
+  // 건수라서 눈금은 정수만. 자동 눈금은 하루 최대가 작으면 0.5 같은 소수로 나눈다.
+  const step = Math.max(1, Math.ceil(peak.count / 3))
+  const yTicks = [0, step, step * 2, step * 3]
 
   const definition = useMemo(
     () =>
@@ -70,7 +73,7 @@ export function AdminDaily({ daily, closesAt }: { daily: AdminSummary['daily']; 
         marks: [barY(rows, { x: 'date', y: 'count', fill: BRAND, inset: 1, radius: 2 })],
         scales: {
           x: { scale: () => scaleBand<string>().padding(0.15), axis: { ticks: { values: days.filter((_, i) => i % 7 === 0), format: shortDate } } },
-          y: { scale: scaleLinear, nice: true, grid: true, axis: { ticks: { count: 3 } } },
+          y: { scale: scaleLinear().domain([0, step * 3]), grid: true, axis: { ticks: { values: yTicks, format: (v: number) => v.toLocaleString() } } },
         },
         tooltip: {
           use: tooltip,
