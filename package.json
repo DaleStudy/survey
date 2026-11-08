@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.61.0",
+    "@resvg/resvg-js": "^2.6.2",
     "@tanstack/router-plugin": "^1.168.40",
     "@types/node": "^22.20.3",
     "@types/react": "^19.3.0",

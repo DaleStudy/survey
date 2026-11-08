@@ -5,6 +5,8 @@ import { ConsentStep } from '@/components/ConsentStep'
 import { QuestionStep } from '@/components/QuestionStep'
 import { Turnstile } from '@/components/Turnstile'
 import { DevTypeCard } from '@/components/DevTypeCard'
+import { DevTypeGrid } from '@/components/DevTypeGrid'
+import { ReadmeBadge } from '@/components/ReadmeBadge'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { ShareButton } from '@/components/ShareButton'
@@ -78,7 +80,8 @@ function EndPage({ children }: { children: React.ReactNode }) {
   )
 }
 
-// 응답을 마친 뒤의 화면. 결과 안내 → 내 유형 → 공유 → 그 밖의 행동 순서로 한 번씩만 보여 준다.
+// 응답을 마친 뒤의 화면. 유형이 보상이자 공유할 거리라서 내 유형 → 공유를 첫 화면에 두고,
+// 결과 일정 안내와 다른 유형 보기는 그 아래에 둔다.
 function Finished({ saved, title, lead, devType, edition, onRetake }: {
   saved?: boolean
   title: string
@@ -87,6 +90,11 @@ function Finished({ saved, title, lead, devType, edition, onRetake }: {
   edition: { id: string; title: string }
   onRetake?: () => void
 }) {
+  const leadText = (
+    <Text size="lg" style={{ lineHeight: 1.6 }}>
+      {lead}
+    </Text>
+  )
   return (
     <EndPage>
       <div style={finished}>
@@ -100,14 +108,20 @@ function Finished({ saved, title, lead, devType, edition, onRetake }: {
             </div>
           )}
           <Heading level={1}>{title}</Heading>
-          <Text size="lg" style={{ lineHeight: 1.6 }}>
-            {lead}
-          </Text>
+          {!devType && leadText}
         </section>
         {devType && (
           <>
             <DevTypeCard type={devType} label="나의 개발자 유형" />
             <ShareButton type={devType} edition={edition} />
+            {leadText}
+            <ReadmeBadge edition={edition} />
+            <section aria-labelledby="types" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-16)' }}>
+              <Heading level={2} size={5} id="types">
+                여섯 가지 유형 모두 보기
+              </Heading>
+              <DevTypeGrid current={devType.slug} currentLabel="나" />
+            </section>
           </>
         )}
         <div
