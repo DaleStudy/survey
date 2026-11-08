@@ -11,7 +11,7 @@ import { SCALE_POINTS } from '@/questions/survey'
 import { displayOptions } from '@/results/order'
 
 // 색은 dataviz 검증 스크립트로 확인한 값이다. 밝은 테마 기준.
-const BRAND = '#5333e1'
+export const BRAND = '#5333e1'
 // 경력처럼 순서가 있는 집단: 보라 한 색의 밝기 단계
 const ORDINAL = ['#9d8cf0', '#5333e1', '#2a1a80']
 // 순서가 없는 집단: 보라와 주황

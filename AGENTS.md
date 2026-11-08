@@ -39,7 +39,7 @@ bun scripts/og-images.ts <임시 폴더>   # 유형 공유 페이지 og:image �
 - 결과 화면은 `src/results/<회차>.json` 만 읽고 원본 응답을 모른다(집계 규칙은 `docs/data-model.md`). TanStack Charts(`src/components/ResultChart.tsx`)로 그리고, 보기 기준은 `?by=` 에 남는다. 차트 색은 dataviz 검증 스크립트를 통과한 값이다.
 - 선택지에 `code: other`(기타)가 있는 문항은 "기타"를 고르면 직접 적을 수 있다. 다음 회차 선택지를 고르는 데 쓴다(`docs/research/2026-11-trend-tracking.md`).
 - 제출은 Turnstile 로 막는다. 위젯은 마지막 문항 화면에만 띄운다 — 토큰이 5분이면 만료된다. 서버(`submitResponse`)는 저장 전에 `verifyTurnstile`(`src/lib/turnstile.ts`)로 `success`·action `survey_submit`·호스트 이름을 확인하고, 하나라도 어긋나면 거절한다(fail closed). 허용 호스트는 `wrangler.jsonc` 의 `TURNSTILE_HOSTNAMES`(운영에는 localhost 를 넣지 않는다)이고, 점으로 시작하는 항목(`.survey.dalestudy.com`)은 미리보기 주소를 위해 하위 도메인을 모두 받는다.
-- 운영진은 `/admin` 에서 회차별 응답 수와 원본 응답을 읽기만 한다. 고치거나 지우는 기능과 SQL 입력창은 두지 않는다. 인증은 직접 만들지 않고 Cloudflare Access 가 `/admin` 을 잠근다. Access 는 잠근 경로로 가는 요청에만 토큰을 붙이므로 데이터는 서버 함수가 아니라 `/admin/api` 가 주고, 요청마다 `verifyAccessToken`(`src/lib/access.ts`)으로 확인해 하나라도 어긋나면 거절한다(fail closed). 로컬에서는 토큰이 없어 늘 거절되므로 미리보기에서 확인한다. 접근 대상은 처리방침과 맞물린다(`docs/operations.md`).
+- 운영진은 `/admin` 에서 회차별 응답 수와 원본 응답을 읽기만 한다. 고치거나 지우는 기능과 SQL 입력창은 두지 않는다. 인증은 직접 만들지 않고 Cloudflare Access 가 `/admin` 을 잠근다. Access 는 잠근 경로로 가는 요청에만 토큰을 붙이므로 데이터는 서버 함수가 아니라 `/admin/api/*`(회차 요약 `summary`, 원본 한 페이지 `responses`)가 주고, 요청마다 `verifyAccessToken`(`src/lib/access.ts`)으로 확인해 하나라도 어긋나면 거절한다(fail closed). 로컬에서는 토큰이 없어 늘 거절되므로 미리보기에서 확인한다. 접근 대상은 처리방침과 맞물린다(`docs/operations.md`).
 
 ## 작업 방식
 
