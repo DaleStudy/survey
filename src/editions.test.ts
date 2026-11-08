@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test'
+import { existsSync } from 'node:fs'
 import { EDITIONS, type Edition, isBeta, isClosed, openEditions } from './editions'
 import { QUESTION_EDITIONS, SCALE_POINTS, questionsFor } from './questions/survey'
 
@@ -14,6 +15,11 @@ describe('회차', () => {
 
   test('응답을 받는 회차는 문항 파일이 있다', () => {
     for (const e of EDITIONS.filter((e) => e.survey)) expect(questionsFor(e.id)).toBeDefined()
+  })
+
+  // 완료 화면이 배지 마크다운을 이 경로로 내준다
+  test('응답을 받는 회차는 참여 배지가 있다', () => {
+    for (const e of EDITIONS.filter((e) => e.survey)) expect(existsSync(`public/badges/${e.id}.svg`)).toBe(true)
   })
 
   test('회차 ID 는 주소에 쓸 수 있는 모양이다', () => {
