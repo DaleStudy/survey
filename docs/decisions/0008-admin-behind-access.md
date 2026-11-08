@@ -22,7 +22,7 @@
 ## 검토한 대안
 
 - **`bun run export` 만 쓰기:** 추가 코드가 없지만, 오픈 뒤 추이를 볼 때마다 CSV 를 받아 열어야 한다.
-- **`DaleStudy/feedback` 의 `/manage` 같은 GitHub OAuth:** 세션과 OAuth 앱을 이 화면 하나를 위해 들여오기에는 과하다.
+- **`DaleStudy/feedback` 의 `/manage` 처럼 직접 GitHub 로그인 구현:** OAuth 앱은 이미 있지만, 로그인·콜백 라우트, 세션 쿠키, 사용자 테이블 같은 로그인 코드를 이 화면 하나를 위해 들여오기에는 과하다. Access 의 GitHub 로그인도 DaleStudy 조직 소유 OAuth 앱을 쓰므로, 지금 방식이 있는 앱을 그대로 다시 쓰는 셈이다.
 - **서버 함수로 조회하기:** `/admin` 을 잠가도 서버 함수의 주소는 공개돼 있고, 관리자 앱의 토큰도 실리지 않는다.
 - **`jose` 로 토큰 검증하기:** 검증하는 값이 몇 개 안 돼서, 의존성을 늘리지 않고 Workers 의 WebCrypto 로 확인한다.
 
