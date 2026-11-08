@@ -29,7 +29,8 @@ export function ShareButton({ type, edition }: { type: DevType; edition: { id: s
   const [nativeShare, setNativeShare] = useState(false)
   const url = `${SITE_URL}/${edition.id}/type/${type.slug}`
   const title = `나는 '${type.name}' 개발자`
-  const text = `${title}래요. ${edition.title}`
+  // 설문을 도와 달라는 부탁보다, 나를 드러내고 상대에게 되묻는 말이 더 잘 퍼진다
+  const text = `${edition.title}에 참여했어요. ${title}래요. 당신은 어떤 유형인가요?`
 
   useEffect(() => {
     setNativeShare(typeof navigator.share === 'function' && matchMedia('(pointer: coarse)').matches)
@@ -59,10 +60,10 @@ export function ShareButton({ type, edition }: { type: DevType; edition: { id: s
     <section aria-labelledby="share" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-16)' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
         <Heading level={2} size={5} id="share">
-          주변 개발자에게도 알려 주세요
+          내 유형 공유하기
         </Heading>
         <Text size="sm" muted>
-          다양한 분들이 답할수록 결과가 더 의미 있어져요.
+          동료와 친구는 어떤 유형일까요? 링크로 들어온 사람도 10분이면 자기 유형을 알 수 있어요.
         </Text>
       </div>
       <Button tone="brand" size="lg" fullWidth onClick={nativeShare ? share : copy}>
