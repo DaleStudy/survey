@@ -9,7 +9,7 @@ import { loadResponses, loadSummary } from '@/server/admin'
 const PRIVATE = { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' }
 
 // GET /admin/api/summary?edition=2026 → 응답 수, 날짜별 응답, 문항별 분포
-// GET /admin/api/responses?edition=2026&page=1 → 원본 응답 한 페이지
+// GET /admin/api/responses?edition=2026 → 원본 응답 전체
 // 서버 함수(/_serverFn)가 아니라 /admin 아래에 두는 건, Access 가 잠근 경로로 가는 요청에만 토큰을 붙여 주기 때문이다.
 // 파일 이름의 admin_ 는 화면 레이아웃(admin.tsx) 아래로 들어가지 않게 한다.
 export const Route = createFileRoute('/admin_/api/$part')({
@@ -25,11 +25,7 @@ export const Route = createFileRoute('/admin_/api/$part')({
         const db = getDb(env.DB)
 
         if (params.part === 'summary') return Response.json(await loadSummary(db, edition.id), { headers: PRIVATE })
-        if (params.part === 'responses') {
-          const page = Number(search.get('page') ?? '1')
-          if (!Number.isInteger(page) || page < 1) return Response.json({ error: '페이지가 올바르지 않아요.' }, { status: 400, headers: PRIVATE })
-          return Response.json(await loadResponses(db, edition.id, page), { headers: PRIVATE })
-        }
+        if (params.part === 'responses') return Response.json(await loadResponses(db, edition.id), { headers: PRIVATE })
         return Response.json({ error: '없는 주소예요.' }, { status: 404, headers: PRIVATE })
       },
     },

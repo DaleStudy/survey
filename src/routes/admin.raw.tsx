@@ -1,27 +1,71 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Button, Heading, Text } from 'daleui'
-import { useRef, useState } from 'react'
-import { AdminError, STACKED } from '@/components/Admin'
+import {
+  columnFacetingFeature,
+  columnFilteringFeature,
+  columnVisibilityFeature,
+  createColumnHelper,
+  createExpandedRowModel,
+  createFacetedRowModel,
+  createFilteredRowModel,
+  createPaginatedRowModel,
+  createSortedRowModel,
+  filterFn_includesString,
+  globalFilteringFeature,
+  rowExpandingFeature,
+  rowPaginationFeature,
+  rowSortingFeature,
+  tableFeatures,
+  useTable,
+} from '@tanstack/react-table'
+import { Button, Checkbox, Icon, Select, Text, TextInput } from 'daleui'
+import { useMemo } from 'react'
+import { AdminError } from '@/components/Admin'
 import { EDITIONS } from '@/editions'
 import { adminFetch } from '@/lib/adminFetch'
 import { answerText } from '@/lib/csv'
 import { OTHER, otherKey } from '@/questions/logic'
-import { type Answers, type Question, questionsFor } from '@/questions/survey'
-import { type AdminResponses, PAGE_SIZE } from '@/server/admin'
+import { type Answers, type Question, questionsFor, SCALE_POINTS } from '@/questions/survey'
+import type { AdminResponses } from '@/server/admin'
 
-// 목록에서 응답을 알아보기 쉽게 요약으로 보여 줄 문항
-const SUMMARY = ['status', 'experience', 'role']
+// 처음 보이는 문항 열. 응답을 알아보기 쉬운 것들이다.
+const DEFAULT_COLUMNS = ['status', 'experience', 'role']
+// 문항 열을 이보다 많이 펼치면 칸이 좁아져 읽기 어렵다. 가로 스크롤 대신 열을 고르게 한다.
+const MAX_COLUMNS = 5
+const PAGE_SIZE = 50
 
-// 원본 응답을 한 건씩 읽는다. 페이지를 넘겨도 부모(/admin)의 요약은 다시 받지 않는다.
+// 원본 응답을 표로 거르고 정렬하며 읽는다. 회차의 응답 전체를 한 번에 받아 브라우저에서 처리한다.
 export const Route = createFileRoute('/admin/raw')({
-  validateSearch: (search: Record<string, unknown>): { page?: number } => ({
-    page: Number.isInteger(search.page) && Number(search.page) > 1 ? Number(search.page) : undefined,
-  }),
-  loaderDeps: ({ search }) => ({ edition: search.edition ?? EDITIONS.filter((e) => e.survey)[0].id, page: search.page ?? 1 }),
-  loader: async ({ deps }) => ({ ...deps, data: await adminFetch<AdminResponses>('responses', { edition: deps.edition, page: String(deps.page) }) }),
+  loaderDeps: ({ search }) => ({ edition: search.edition ?? EDITIONS.filter((e) => e.survey)[0].id }),
+  loader: async ({ deps }) => ({ ...deps, data: await adminFetch<AdminResponses>('responses', { edition: deps.edition }) }),
   component: Raw,
   errorComponent: AdminError,
 })
+
+type Entry = {
+  // 제출 순서. 가장 먼저 낸 응답이 1번이다.
+  no: number
+  createdAt: string
+  answers: Answers
+  // 전체 검색 대상: 모든 답의 문구와 "기타"에 적은 내용
+  search: string
+}
+
+const features = tableFeatures({
+  rowSortingFeature,
+  sortedRowModel: createSortedRowModel(),
+  columnFilteringFeature,
+  globalFilteringFeature,
+  filteredRowModel: createFilteredRowModel(),
+  filterFns: { includesString: filterFn_includesString },
+  columnFacetingFeature,
+  facetedRowModel: createFacetedRowModel(),
+  columnVisibilityFeature,
+  rowExpandingFeature,
+  expandedRowModel: createExpandedRowModel(),
+  rowPaginationFeature,
+  paginatedRowModel: createPaginatedRowModel(),
+})
+const helper = createColumnHelper<typeof features, Entry>()
 
 // 선택지 code 를 화면에 보이는 문구로 바꾼다. 복수 선택은 쉼표로 잇고, "기타"에 적은 내용을 붙인다.
 function answerLabel(q: Question, answers: Answers): string {
@@ -37,138 +81,288 @@ function answerLabel(q: Question, answers: Answers): string {
   return Array.isArray(a) ? a.map(label).join(', ') : label(a)
 }
 
+// 거르기와 정렬에 쓰는 선택지 목록. 척도는 1~5점이다.
+const choices = (q: Question) => (q.type === 'scale' ? SCALE_POINTS.map((code) => ({ code, label: code })) : q.options)
+
+// 선택지는 가나다순이 아니라 문항에 정한 순서로 정렬한다(경력이면 짧은 순). 복수 선택은 첫 번째 답으로.
+function rank(q: Question, answers: Answers): number | undefined {
+  const a = answers[q.id]
+  const code = Array.isArray(a) ? a[0] : a
+  if (code === undefined) return undefined
+  return choices(q).findIndex((o) => o.code === code)
+}
+
 const submittedAt = (iso: string) =>
   new Date(iso).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit' })
 
-function Raw() {
-  const { edition, page: current, data } = Route.useLoaderData()
-  const navigate = Route.useNavigate()
-  const pages = Math.max(1, Math.ceil(data.total / PAGE_SIZE))
-  const go = (page: number) => navigate({ search: (prev) => ({ ...prev, page }) })
+function buildColumns(questions: Question[]) {
+  return helper.columns([
+    helper.accessor('no', {
+      header: '#',
+      enableColumnFilter: false,
+      cell: ({ row }) => (
+        <button type="button" className="admin-expand" aria-expanded={row.getIsExpanded()} onClick={() => row.toggleExpanded()}>
+          <Icon name="chevronRight" size="sm" />#{row.original.no.toLocaleString()}
+        </button>
+      ),
+    }),
+    helper.accessor('createdAt', {
+      header: '제출',
+      enableColumnFilter: false,
+      cell: ({ row }) => submittedAt(row.original.createdAt),
+    }),
+    ...questions.map((q) =>
+      helper.accessor((r) => rank(q, r.answers), {
+        id: q.id,
+        header: q.label,
+        cell: ({ row }) => answerLabel(q, row.original.answers),
+        enableSorting: q.type !== 'long',
+        enableColumnFilter: q.type !== 'long',
+        sortUndefined: 'last',
+        // 정렬 값이 숫자(선택지 순번)라 그대로 두면 내림차순부터 시작한다. 문항에 정한 순서부터 보이게 한다.
+        sortDescFirst: false,
+        filterFn: (row, _id, code: string) => {
+          const a = row.original.answers[q.id]
+          return Array.isArray(a) ? a.includes(code) : a === code
+        },
+      }),
+    ),
+    helper.accessor('search', { header: '검색', enableSorting: false, enableColumnFilter: false }),
+  ])
+}
 
-  if (data.rows.length === 0) return <Text muted>아직 응답이 없어요.</Text>
+function Raw() {
+  const { edition, data } = Route.useLoaderData()
+  const questions = useMemo(() => questionsFor(edition) ?? [], [edition])
+  const columns = useMemo(() => buildColumns(questions), [questions])
+  const entries = useMemo(
+    () =>
+      data.rows.map(
+        (r, i): Entry => ({
+          no: data.rows.length - i,
+          createdAt: r.createdAt,
+          answers: r.answers,
+          search: questions
+            .map((q) => answerLabel(q, r.answers))
+            .join(' ')
+            .toLowerCase(),
+        }),
+      ),
+    [data, questions],
+  )
+
+  const table = useTable({
+    features,
+    columns,
+    data: entries,
+    getRowCanExpand: () => true,
+    globalFilterFn: 'includesString',
+    getColumnCanGlobalFilter: (column) => column.id === 'search',
+    initialState: {
+      sorting: [{ id: 'no', desc: true }],
+      pagination: { pageIndex: 0, pageSize: PAGE_SIZE },
+      columnVisibility: Object.fromEntries([['search', false], ...questions.map((q) => [q.id, DEFAULT_COLUMNS.includes(q.id)])]),
+    },
+  })
+
+  if (entries.length === 0) return <Text muted>아직 응답이 없어요.</Text>
+
+  const questionColumns = questions.map((q) => ({ q, column: table.getColumn(q.id)! }))
+  const shown = questionColumns.filter(({ column }) => column.getIsVisible())
+  const filtered = table.getFilteredRowModel().rows.length
+  const { pageIndex } = table.state.pagination
+  const visibleCount = table.getVisibleLeafColumns().length
+  const filtering = table.state.columnFilters.length > 0 || Boolean(table.state.globalFilter)
+
   return (
     <section aria-label="원본 응답" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-16)' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-12)', alignItems: 'flex-end' }}>
+        <div style={{ flex: '1 1 240px', maxWidth: 360 }}>
+          <TextInput
+            label="검색"
+            leadingIcon="search"
+            placeholder="답에 들어 있는 말"
+            value={String(table.state.globalFilter ?? '')}
+            onChange={(e) => table.setGlobalFilter(e.target.value.toLowerCase())}
+          />
+        </div>
+        <details className="admin-picker">
+          <summary>
+            열 고르기 ({shown.length}/{MAX_COLUMNS})
+          </summary>
+          <div className="admin-picker-panel">
+            {[...new Set(questions.map((q) => q.section))].map((section) => (
+              <fieldset key={section}>
+                <legend>{section}</legend>
+                {questionColumns
+                  .filter(({ q }) => q.section === section)
+                  .map(({ q, column }) => (
+                    <Checkbox
+                      key={q.id}
+                      label={q.label}
+                      checked={column.getIsVisible()}
+                      disabled={!column.getIsVisible() && shown.length >= MAX_COLUMNS}
+                      onChange={(on) => {
+                        // 가린 열에 걸린 필터는 보이지 않으니 함께 푼다
+                        if (!on) column.setFilterValue(undefined)
+                        column.toggleVisibility(on)
+                      }}
+                    />
+                  ))}
+              </fieldset>
+            ))}
+          </div>
+        </details>
+        {filtering && (
+          <Button
+            tone="neutral"
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              table.resetColumnFilters()
+              table.setGlobalFilter('')
+            }}
+          >
+            필터 모두 풀기
+          </Button>
+        )}
+      </div>
+
+      {shown.some(({ q }) => q.type !== 'long') && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 220px), 1fr))', gap: 'var(--spacing-12)', alignItems: 'end' }}>
+          {shown
+            .filter(({ q }) => q.type !== 'long')
+            .map(({ q, column }) => {
+              // 다른 필터가 걸린 상태에서 이 선택지를 고르면 몇 건이 남는지
+              const facet = column.getFacetedRowModel().rows
+              const count = (code: string) =>
+                facet.filter((r) => {
+                  const a = r.original.answers[q.id]
+                  return Array.isArray(a) ? a.includes(code) : a === code
+                }).length
+              return (
+                <Select
+                  key={q.id}
+                  label={q.label}
+                  placeholder="전체"
+                  clearButtonName="필터 풀기"
+                  value={String(column.getFilterValue() ?? '')}
+                  onChange={(e) => column.setFilterValue(e.target.value || undefined)}
+                >
+                  {choices(q).map((o) => (
+                    <option key={o.code} value={o.code}>
+                      {o.label} ({count(o.code).toLocaleString()})
+                    </option>
+                  ))}
+                </Select>
+              )
+            })}
+        </div>
+      )}
+
       <Text size="sm" muted>
-        최근 응답부터 · 응답을 고르면 모든 답이 보여요
+        {filtering ? `${entries.length.toLocaleString()}건 중 ${filtered.toLocaleString()}건` : `${entries.length.toLocaleString()}건`} · 번호를 누르면 모든 답이 보여요
       </Text>
-      {/* 페이지나 회차가 바뀌면 고른 응답을 첫 번째로 되돌린다 */}
-      <Responses
-        key={`${edition}-${current}`}
-        rows={data.rows}
-        firstNo={data.total - (current - 1) * PAGE_SIZE}
-        questions={questionsFor(edition) ?? []}
-        pager={
-          <nav aria-label="페이지" style={pager}>
-            <Button tone="neutral" variant="outline" size="sm" disabled={current <= 1} onClick={() => go(current - 1)}>
-              이전
-            </Button>
-            <Text size="sm" muted>
-              {((current - 1) * PAGE_SIZE + 1).toLocaleString()}–{Math.min(current * PAGE_SIZE, data.total).toLocaleString()} / {data.total.toLocaleString()}
-            </Text>
-            <Button tone="neutral" variant="outline" size="sm" disabled={current >= pages} onClick={() => go(current + 1)}>
-              다음
-            </Button>
-          </nav>
-        }
-      />
+
+      <div className="admin-panel" style={{ overflow: 'hidden' }}>
+        <table className="admin-table">
+          <thead>
+            {table.getHeaderGroups().map((group) => (
+              <tr key={group.id}>
+                {group.headers.map((header) => {
+                  const sorted = header.column.getIsSorted()
+                  return (
+                    <th
+                      key={header.id}
+                      aria-sort={sorted === 'asc' ? 'ascending' : sorted === 'desc' ? 'descending' : undefined}
+                      style={header.column.id === 'no' ? { width: '5.5rem' } : header.column.id === 'createdAt' ? { width: '8.5rem' } : undefined}
+                    >
+                      {header.column.getCanSort() ? (
+                        <button type="button" className="admin-sort" onClick={header.column.getToggleSortingHandler()}>
+                          <table.FlexRender header={header} />
+                          {sorted && <Icon name="chevronDown" size="xs" style={sorted === 'asc' ? { transform: 'rotate(180deg)' } : undefined} />}
+                        </button>
+                      ) : (
+                        <table.FlexRender header={header} />
+                      )}
+                    </th>
+                  )
+                })}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <RowGroup key={row.id} expanded={row.getIsExpanded()} colSpan={visibleCount} questions={questions} answers={row.original.answers}>
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id} data-label={typeof cell.column.columnDef.header === 'string' ? cell.column.columnDef.header : undefined}>
+                    <table.FlexRender cell={cell} />
+                  </td>
+                ))}
+              </RowGroup>
+            ))}
+          </tbody>
+        </table>
+        {filtered === 0 && (
+          <div style={{ padding: 'var(--spacing-16)' }}>
+            <Text muted>조건에 맞는 응답이 없어요.</Text>
+          </div>
+        )}
+        <nav aria-label="페이지" style={pager}>
+          <Button tone="neutral" variant="outline" size="sm" disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()}>
+            이전
+          </Button>
+          <Text size="sm" muted>
+            {filtered === 0 ? 0 : (pageIndex * PAGE_SIZE + 1).toLocaleString()}–{Math.min((pageIndex + 1) * PAGE_SIZE, filtered).toLocaleString()} / {filtered.toLocaleString()}
+          </Text>
+          <Button tone="neutral" variant="outline" size="sm" disabled={!table.getCanNextPage()} onClick={() => table.nextPage()}>
+            다음
+          </Button>
+        </nav>
+      </div>
     </section>
   )
 }
 
-// 열이 많아 표로 펼치면 가로로 넘치므로, 목록에서 응답을 고르고 상세에서 문항별로 읽는다.
-// 좁은 화면에서는 둘이 위아래로 쌓이므로, 고르면 상세로 내려가고 "목록으로"로 돌아온다.
-function Responses({ rows, firstNo, questions, pager }: { rows: AdminResponses['rows']; firstNo: number; questions: Question[]; pager: React.ReactNode }) {
-  const [picked, setPicked] = useState(0)
-  const detail = useRef<HTMLElement>(null)
-  const items = useRef<(HTMLButtonElement | null)[]>([])
-  const selected = rows[picked]
-  const summary = SUMMARY.map((id) => questions.find((q) => q.id === id)).filter((q) => q !== undefined)
+// 행 하나와, 펼쳤을 때 그 아래 이어지는 모든 답
+function RowGroup({ expanded, colSpan, questions, answers, children }: { expanded: boolean; colSpan: number; questions: Question[]; answers: Answers; children: React.ReactNode }) {
   const sections = [...new Set(questions.map((q) => q.section))]
-    .map((title) => ({ title, items: questions.filter((q) => q.section === title && selected.answers[q.id] !== undefined) }))
+    .map((title) => ({ title, items: questions.filter((q) => q.section === title && answers[q.id] !== undefined) }))
     .filter((s) => s.items.length > 0)
-
-  const pick = (i: number) => {
-    setPicked(i)
-    if (window.matchMedia(STACKED).matches) detail.current?.scrollIntoView({ block: 'start' })
-  }
-  const backToList = () => {
-    items.current[picked]?.scrollIntoView({ block: 'center' })
-    items.current[picked]?.focus()
-  }
-
   return (
-    <div className="admin-raw">
-      <div className="admin-panel" style={{ overflow: 'hidden' }}>
-        <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-          {rows.map((row, i) => (
-            <li key={`${row.createdAt}-${i}`} style={{ borderBottom: '1px solid var(--colors-bg-neutral-hover)' }}>
-              <button
-                ref={(el) => {
-                  items.current[i] = el
-                }}
-                type="button"
-                className="admin-row"
-                aria-pressed={i === picked}
-                onClick={() => pick(i)}
-                // 선택 배경은 회색 요약 글자와 4.5:1 이 나오는 가장 진한 브랜드 면이다. 색 차이가 작아 테두리로 함께 보인다.
-                style={{ ...rowButton, ...(i === picked ? { background: 'var(--colors-bg-brand)', boxShadow: 'inset 0 0 0 1px var(--colors-border-brand)' } : {}) }}
-              >
-                <span style={{ display: 'flex', justifyContent: 'space-between', gap: 'var(--spacing-8)', fontSize: '0.875rem', fontVariantNumeric: 'tabular-nums' }}>
-                  <span style={{ fontWeight: 600, color: i === picked ? 'var(--colors-fg-brand)' : undefined }}>#{(firstNo - i).toLocaleString()}</span>
-                  <span style={{ color: 'var(--colors-fg-neutral-placeholder)' }}>{submittedAt(row.createdAt)}</span>
-                </span>
-                <span style={{ fontSize: '0.875rem', lineHeight: 1.5, color: 'var(--colors-fg-neutral-placeholder)' }}>
-                  {summary
-                    .map((q) => answerLabel(q, row.answers))
-                    .filter(Boolean)
-                    .join(' · ')}
-                </span>
-              </button>
-            </li>
-          ))}
-        </ul>
-        {pager}
-      </div>
-
-      <article ref={detail} aria-labelledby="detail-title" className="admin-panel" style={{ padding: 'var(--spacing-24)', gap: 'var(--spacing-24)', scrollMarginTop: 'var(--spacing-16)' }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-8)', alignItems: 'baseline', justifyContent: 'space-between' }}>
-          <Heading level={3} size={5} id="detail-title">
-            응답 #{(firstNo - picked).toLocaleString()}
-          </Heading>
-          <Text size="sm" muted>
-            {submittedAt(selected.createdAt)} 제출
-          </Text>
-        </div>
-        {sections.map((s) => (
-          <section key={s.title} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-12)' }}>
-            <Text size="sm" weight="semibold" tone="brand">
-              {s.title}
-            </Text>
-            <dl style={{ margin: 0, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-12)' }}>
-              {s.items.map((q) => (
-                <div key={q.id} style={answerRow}>
-                  <dt style={{ fontSize: '0.875rem', lineHeight: 1.5, color: 'var(--colors-fg-neutral-placeholder)' }}>{q.label}</dt>
-                  <dd style={{ margin: 0, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-2)' }}>
-                    <span style={{ lineHeight: 1.5, whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>{answerLabel(q, selected.answers)}</span>
-                    {q.type !== 'long' && (
-                      <code style={{ fontFamily: 'var(--fonts-mono)', fontSize: '0.75rem', color: 'var(--colors-fg-neutral-placeholder)' }}>
-                        {q.id}: {answerText(selected.answers, q.id)}
-                      </code>
-                    )}
-                  </dd>
-                </div>
+    <>
+      <tr className={expanded ? 'admin-open' : undefined}>{children}</tr>
+      {expanded && (
+        <tr className="admin-detail">
+          <td colSpan={colSpan}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-20)' }}>
+              {sections.map((s) => (
+                <section key={s.title} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
+                  <Text size="sm" weight="semibold" tone="brand">
+                    {s.title}
+                  </Text>
+                  <dl style={{ margin: 0, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
+                    {s.items.map((q) => (
+                      <div key={q.id} style={answerRow}>
+                        <dt style={{ flex: '0 1 22rem', color: 'var(--colors-fg-neutral-placeholder)' }}>{q.label}</dt>
+                        <dd style={{ flex: '1 1 14rem', margin: 0, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-2)' }}>
+                          <span style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>{answerLabel(q, answers)}</span>
+                          {q.type !== 'long' && (
+                            <code style={{ fontFamily: 'var(--fonts-mono)', fontSize: '0.75rem', color: 'var(--colors-fg-neutral-placeholder)' }}>
+                              {q.id}: {answerText(answers, q.id)}
+                            </code>
+                          )}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </section>
               ))}
-            </dl>
-          </section>
-        ))}
-        <div className="admin-back">
-          <Button tone="neutral" variant="outline" size="sm" onClick={backToList}>
-            목록으로
-          </Button>
-        </div>
-      </article>
-    </div>
+            </div>
+          </td>
+        </tr>
+      )}
+    </>
   )
 }
 
@@ -180,28 +374,10 @@ const pager: React.CSSProperties = {
   padding: 'var(--spacing-12) var(--spacing-16)',
 }
 
-// 브라우저 기본 포커스 표시 대신 .admin-row:focus-visible 을 쓰고, 버튼 모양만 지운다
-const rowButton: React.CSSProperties = {
-  border: 0,
-  margin: 0,
-  font: 'inherit',
-  color: 'inherit',
-  textAlign: 'left',
-  boxSizing: 'border-box',
-  width: '100%',
-  minHeight: 44,
-  cursor: 'pointer',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 'var(--spacing-4)',
-  padding: 'var(--spacing-12) var(--spacing-16)',
-  background: 'var(--colors-app-bg)',
-}
-
+// 좁으면 문항 아래로 답이 내려간다
 const answerRow: React.CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-  gap: 'var(--spacing-4) var(--spacing-16)',
-  paddingBottom: 'var(--spacing-12)',
-  borderBottom: '1px solid var(--colors-bg-neutral-hover)',
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: 'var(--spacing-2) var(--spacing-16)',
+  lineHeight: 1.5,
 }

@@ -4,8 +4,6 @@ import { responses } from '@/db/schema'
 import { type Answers, questionsFor } from '@/questions/survey'
 import { aggregate, type QuestionStat } from '@/results/aggregate'
 
-export const PAGE_SIZE = 50
-
 // 회차 전체 그림. 원본 페이지를 넘겨도 다시 받지 않도록 원본 응답과 따로 준다.
 export interface AdminSummary {
   total: number
@@ -15,9 +13,9 @@ export interface AdminSummary {
   stats: QuestionStat[]
 }
 
+// 원본 응답 전체. 거르기·정렬을 브라우저에서 하므로 한 번에 준다(운영진만 받고, 캐시하지 않는다).
 export interface AdminResponses {
-  total: number
-  // 최근 응답부터 PAGE_SIZE 건
+  // 최근 응답부터
   rows: { createdAt: string; answers: Answers }[]
 }
 
@@ -35,17 +33,11 @@ export async function loadSummary(db: Database, edition: string): Promise<AdminS
   return { total: answers.length, daily, stats }
 }
 
-export async function loadResponses(db: Database, edition: string, page: number): Promise<AdminResponses> {
-  const ofEdition = eq(responses.edition, edition)
-  const [[{ total }], rows] = await Promise.all([
-    db.select({ total: count() }).from(responses).where(ofEdition),
-    db
-      .select({ createdAt: responses.createdAt, answers: responses.answers })
-      .from(responses)
-      .where(ofEdition)
-      .orderBy(desc(responses.createdAt))
-      .limit(PAGE_SIZE)
-      .offset((page - 1) * PAGE_SIZE),
-  ])
-  return { total, rows }
+export async function loadResponses(db: Database, edition: string): Promise<AdminResponses> {
+  const rows = await db
+    .select({ createdAt: responses.createdAt, answers: responses.answers })
+    .from(responses)
+    .where(eq(responses.edition, edition))
+    .orderBy(desc(responses.createdAt))
+  return { rows }
 }

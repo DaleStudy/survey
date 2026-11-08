@@ -9,10 +9,7 @@ import { BRAND } from '@/components/ResultChart'
 import { koDate } from '@/lib/date'
 import type { AdminSummary } from '@/server/admin'
 
-// 원본 목록과 상세가 위아래로 쌓이는 너비. 화면(CSS)과 응답을 고를 때 스크롤(JS)이 같은 값을 본다.
-export const STACKED = '(max-width: 900px)'
-
-// 인라인 스타일로는 못 하는 것(:focus-visible, 화면 너비별 규칙, 탭의 활성 표시)만 둔다.
+// 인라인 스타일로는 못 하는 것(:focus-visible, :hover, 화면 너비별 규칙, 탭의 활성 표시)만 둔다.
 // 탭의 활성 표시를 인라인으로 덧씌우면 React 가 지울 때 축약 속성의 색까지 지워 비활성 탭에 밑줄이 남는다.
 export const ADMIN_CSS = `
 .admin-panel { display: flex; flex-direction: column; border: 1px solid var(--colors-border-neutral); border-radius: var(--radii-lg); }
@@ -22,18 +19,39 @@ export const ADMIN_CSS = `
 .admin-stat-value { font-size: 2.25rem; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; }
 .admin-tab { display: inline-flex; align-items: center; min-height: 48px; padding: 0 var(--spacing-12); margin-bottom: -1px; border-bottom: 2px solid transparent; color: var(--colors-fg-neutral-placeholder); font-weight: 500; text-decoration: none; }
 .admin-tab[aria-current='page'] { color: var(--colors-fg-brand); border-bottom-color: var(--colors-bg-solid-brand); font-weight: 600; }
-.admin-tab:focus-visible, .admin-row:focus-visible { outline: 2px solid var(--colors-border-brand-focus); outline-offset: -2px; }
-.admin-raw { display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: var(--spacing-16); align-items: start; }
-.admin-back { display: none; }
+.admin-tab:focus-visible, .admin-sort:focus-visible, .admin-expand:focus-visible, .admin-picker summary:focus-visible { outline: 2px solid var(--colors-border-brand-focus); outline-offset: 2px; border-radius: var(--radii-sm); }
+
+/* 원본 응답 표. 칸 폭을 화면에 맞추고(table-layout: fixed) 긴 답은 줄바꿈해서 가로 스크롤이 생기지 않게 한다. */
+.admin-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 0.875rem; line-height: 1.5; }
+.admin-table th, .admin-table td { padding: var(--spacing-8) var(--spacing-12); text-align: left; vertical-align: top; overflow-wrap: anywhere; border-bottom: 1px solid var(--colors-bg-neutral-hover); }
+.admin-table th { font-weight: 600; color: var(--colors-fg-neutral-placeholder); border-bottom-color: var(--colors-border-neutral); }
+.admin-table tbody tr:hover { background: var(--colors-bg-brand); }
+.admin-table tr.admin-open, .admin-table tr.admin-detail { background: var(--colors-bg-brand); }
+.admin-table tr.admin-open td { border-bottom: 0; }
+.admin-table tr.admin-detail > td { padding: var(--spacing-8) var(--spacing-16) var(--spacing-20) 5.5rem; }
+.admin-sort, .admin-expand { display: inline-flex; align-items: center; gap: var(--spacing-4); min-height: 32px; padding: 0; border: 0; background: none; font: inherit; color: inherit; text-align: left; cursor: pointer; }
+.admin-expand { font-weight: 600; color: var(--colors-fg-brand); font-variant-numeric: tabular-nums; }
+.admin-expand svg { transition: transform 0.15s; }
+.admin-expand[aria-expanded='true'] svg { transform: rotate(90deg); }
+.admin-picker { position: relative; }
+.admin-picker summary { display: inline-flex; align-items: center; min-height: 40px; padding: 0 var(--spacing-12); border: 1px solid var(--colors-border-neutral); border-radius: var(--radii-md); cursor: pointer; font-weight: 500; }
+.admin-picker-panel { position: absolute; z-index: 1; top: calc(100% + var(--spacing-4)); left: 0; width: min(360px, calc(100vw - 48px)); max-height: 60vh; overflow-y: auto; padding: var(--spacing-12) var(--spacing-16); display: flex; flex-direction: column; gap: var(--spacing-12); background: var(--colors-app-bg); border: 1px solid var(--colors-border-neutral); border-radius: var(--radii-md); box-shadow: 0 8px 24px rgb(0 0 0 / 0.12); }
+.admin-picker fieldset { margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: var(--spacing-8); }
+.admin-picker legend { padding: 0 0 var(--spacing-4); font-size: 0.875rem; font-weight: 600; color: var(--colors-fg-brand); }
+
 @media (max-width: 640px) {
   .admin-stats { gap: var(--spacing-8); }
   .admin-stat { padding: var(--spacing-12); gap: var(--spacing-4); }
   .admin-stat-label { font-size: 0.75rem; }
   .admin-stat-value { font-size: 1.5rem; }
-}
-@media ${STACKED} {
-  .admin-raw { grid-template-columns: minmax(0, 1fr); }
-  .admin-back { display: inline-flex; }
+  /* 휴대폰에서는 행을 카드처럼 쌓고, 머리글은 정렬 버튼 줄로 남긴다 */
+  .admin-table, .admin-table tbody, .admin-table tr, .admin-table td { display: block; width: auto; }
+  .admin-table thead tr { display: flex; flex-wrap: wrap; gap: 0 var(--spacing-12); padding: var(--spacing-4) var(--spacing-12); border-bottom: 1px solid var(--colors-border-neutral); }
+  .admin-table thead th { width: auto !important; padding: 0; border: 0; }
+  .admin-table tbody tr { padding: var(--spacing-8) 0; border-bottom: 1px solid var(--colors-bg-neutral-hover); }
+  .admin-table td { padding: var(--spacing-2) var(--spacing-12); border: 0; }
+  .admin-table td[data-label]:not(:first-child)::before { content: attr(data-label); display: block; font-size: 0.75rem; color: var(--colors-fg-neutral-placeholder); }
+  .admin-table tr.admin-detail > td { padding: var(--spacing-8) var(--spacing-12) var(--spacing-12); }
 }
 `
 
