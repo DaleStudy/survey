@@ -24,6 +24,12 @@ jobs:
 
       - run: bun install --frozen-lockfile
 
+      # 새 코드가 쓸 스키마를 배포 전에 먼저 맞춘다. 이미 적용한 마이그레이션은 건너뛴다
+      - name: Migrate production D1
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: bun run db:migrate:remote
+
       - run: bun run build
 
       - name: Deploy
