@@ -7,6 +7,7 @@ import { tooltip } from '@tanstack/charts/tooltip'
 import { Text } from 'daleui'
 import { useMemo } from 'react'
 import type { Breakdown, QuestionStat } from '@/results/aggregate'
+import { SCALE_POINTS } from '@/questions/survey'
 import { displayOptions } from '@/results/order'
 
 // 색은 dataviz 검증 스크립트로 확인한 값이다. 밝은 테마 기준.
@@ -37,7 +38,7 @@ function withHeadroom(rows: Row[]) {
 }
 
 function likertRows(label: string, shares: Record<string, number>, scale?: { min: string; max: string }): Row[] {
-  return ['1', '2', '3', '4', '5'].map((code) => ({
+  return SCALE_POINTS.map((code) => ({
     label,
     share: shares[code] ?? 0,
     series: code === '1' && scale ? `1 ${scale.min}` : code === '5' && scale ? `5 ${scale.max}` : code,

@@ -1,7 +1,7 @@
 import { Button, Heading, Icon, Tag, Text, TextInput } from 'daleui'
 import { LONG_MAX, OTHER, OTHER_MAX, picksOther } from '@/questions/logic'
 import { sectionIcon } from '@/questions/sectionIcons'
-import type { Answer, Question } from '@/questions/survey'
+import { type Answer, type Question, SCALE_POINTS } from '@/questions/survey'
 
 interface Props {
   question: Question
@@ -93,9 +93,9 @@ export function QuestionStep({ question: q, value, error, onPick, onToggle, onTe
           <div
             role="radiogroup"
             aria-labelledby="question"
-            style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: 'var(--spacing-8)' }}
+            style={{ display: 'grid', gridTemplateColumns: `repeat(${SCALE_POINTS.length}, minmax(0, 1fr))`, gap: 'var(--spacing-8)' }}
           >
-            {['1', '2', '3', '4', '5'].map((v) => (
+            {SCALE_POINTS.map((v) => (
               <Button
                 key={v}
                 role="radio"

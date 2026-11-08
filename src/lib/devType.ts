@@ -1,6 +1,7 @@
 import type { Answers } from '@/questions/survey'
 
-// 완료 화면과 공유 페이지의 개발자 유형. 근거: docs/decisions/0004-developer-type-result.md
+// 완료 화면과 공유 페이지의 개발자 유형. 경품 대신 응답을 마친 보상이자 공유할 거리다.
+// 유형 전용 문항을 두지 않는다 — 원하는 유형을 받으려고 답을 고르게 된다.
 // 응답 데이터가 아니라서 문구는 회차마다 바꿔도 된다. 서버에는 저장하지 않는다.
 export interface DevType {
   slug: string

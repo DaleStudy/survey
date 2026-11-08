@@ -1,4 +1,4 @@
-// 회차 목록. 근거: docs/decisions/0005-survey-editions.md
+// 회차 목록. 회차와 키 규칙: docs/data-model.md
 export interface Edition {
   // 주소와 DB 에 쓰는 ID: 2026(연례), 2027-h1(반기), 2027-frontend(트랙)
   id: string
@@ -12,7 +12,7 @@ export interface Edition {
   resultsAt?: string
   // 원본 응답을 지우는 날. 동의 화면과 처리방침에 공개한 약속이다.
   deleteAt?: string
-  // 완료 화면에서 개발자 유형을 보여 주는지 (ADR 0004)
+  // 완료 화면에서 개발자 유형을 보여 주는지
   devTypes: boolean
   // 결과 화면을 시험하려고 만든 예시 데이터. 실제 설문이 아니다. 오픈 전에 지운다.
   sample?: boolean
