@@ -9,7 +9,7 @@
 - `src/editions.ts` — 회차 목록. 한 번 열고 닫는 설문 하나가 회차다: `2026`(연례), `2027-h1`(반기), `2027-frontend`(트랙). 일정, 설문·유형 결과 유무, 예시 여부를 여기서 정한다.
 - `questions/<회차>.yaml` — 그 회차 설문의 문항 원본. 형식 규칙은 파일 머리말에 있다. 문항 `id` 와 선택지 `code` 는 회차 간 비교의 키라서, `fixed: true` 문항은 문구·선택지·순서를 바꾸지 않는다.
 - `docs/data-model.md` — 회차·문항·응답·집계를 잇는 키, `responses` 와 `answers` 의 형태, 브라우저에만 두는 값, 스키마를 바꿀 때 지킬 것.
-- `docs/stack.md` — 쓰는 기술과 이유, `feedback` 과 다른 점, 생성 파일과 타입 검사 범위.
+- `docs/stack.md` — 쓰는 기술과 이유, 생성 파일과 타입 검사 범위.
 - `docs/operations.md` — 시크릿 원본, Cloudflare Access·Turnstile 설정, D1 저장 위치, 원본 응답 삭제.
 - `docs/research/` — 조사 결과. 파일 이름의 날짜 기준 스냅샷이라 고치지 않는다. 다시 조사하면 새 파일을 만든다.
 
@@ -30,7 +30,7 @@ OPENAI_API_KEY=$(op read op://dev/OpenAI-DaleStudy/credential) bun scripts/type-
 
 ## Architecture
 
-**TanStack Start** on **Cloudflare Workers**, D1 + Drizzle, 달레 UI. 스택은 `DaleStudy/feedback` 과 같지만 로그인, 문항 저장, 답 저장 방식이 다르다(`docs/stack.md`).
+**TanStack Start** on **Cloudflare Workers**, D1 + Drizzle, 달레 UI(`docs/stack.md`).
 
 - 화면은 `src/routes/` 의 파일 기반 라우트다. 설문을 여는 버튼("설문 시작하기")은 회차 페이지(`/<회차>`)에만 두고, 홈과 유형 공유 페이지의 참여 버튼은 회차 페이지로 보낸다. 설문 진행 화면을 뺀 모든 화면에 `SiteHeader`·`SiteFooter` 를 둔다(헤더의 "결과" 메뉴는 예시가 아닌 결과가 생기면 저절로 나온다). 응답 완료·이미 응답·마감 화면은 `$edition.survey.tsx` 의 `Finished` 하나로 그린다.
 - 마감은 회차의 `closesAt` 으로 정한다. 화면과 서버 함수가 함께 본다. 회차의 `opensAt` 전(`isBeta`)에는 종료 화면에 "다시 답하기"가 나온다.

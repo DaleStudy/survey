@@ -6,7 +6,7 @@ Tally 같은 설문 도구 대신 직접 만든다. 응답 화면을 달레 UI �
 
 | 영역 | 쓰는 것 | 이유 | 위치 |
 |---|---|---|---|
-| 실행·배포 | Cloudflare Workers | 조직 서비스 대부분이 Workers 에 있고 `feedback` 에서 검증했다 | `wrangler.jsonc`, `.github/workflows/` |
+| 실행·배포 | Cloudflare Workers | 조직 서비스 대부분이 Workers 에 있다 | `wrangler.jsonc`, `.github/workflows/` |
 | 앱 | TanStack Start (React) | 파일 기반 라우트와 서버 함수를 한 Worker 에서 쓴다 | `src/routes/`, `src/server/` |
 | DB | D1 + Drizzle | Workers 바인딩으로 바로 쓰고, 마이그레이션은 drizzle-kit 이 만든다 | `src/db/`, `drizzle/` |
 | UI | 달레 UI (`daleui`) | 커뮤니티 디자인 시스템 | 컴포넌트 전반 |
@@ -15,14 +15,6 @@ Tally 같은 설문 도구 대신 직접 만든다. 응답 화면을 달레 UI �
 | 운영자 인증 | Cloudflare Access | 로그인 코드를 들여오지 않고 GitHub 팀으로 잠근다 | `src/lib/access.ts`, `src/routes/admin.api.ts` |
 | 문항 원본 | YAML, Bun 내장 파서 | 사람이 읽고 고치기 쉽고, 파서 의존성이 없다 | `questions/`, `scripts/questions.ts` |
 | 테스트 | `bun test` + `tsc --noEmit` | 별도 테스트 러너 없이 Bun 으로 | `src/**/*.test.ts` |
-
-## `feedback` 과 다른 점
-
-스택은 `feedback` 과 같지만 응답자 모델이 반대라서 아래는 따르지 않는다.
-
-- 로그인과 세션이 없다. 사용자 테이블도 없다.
-- 문항을 DB 가 아니라 회차별 YAML 에 둔다. 화면에서 설문을 만드는 기능이 없다.
-- 답을 문항당 1행이 아니라 응답 1건당 JSON 한 칸에 둔다([데이터 모델](data-model.md)).
 
 ## 알아 둘 것
 
