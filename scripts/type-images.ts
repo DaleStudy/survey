@@ -13,7 +13,7 @@ const STYLE =
 
 const SCENES: Record<string, string> = {
   'ai-explorer':
-    'A Korean woman developer in her twenties with a ponytail and a small cute robot companion exploring together, holding a glowing compass and a map, sparkles around them, curious and excited mood.',
+    'A Korean woman developer in her twenties with a ponytail and a backpack, exploring a stylized outdoor landscape of purple rocks and teal plants with a small cute robot companion. Her right hand raises a glowing compass. The robot holds an open map with both of its own hands, and her left hand reaches across to touch the map with one finger. Show exactly two human hands, anatomically correct. Sparkles around them, curious and excited mood.',
   'ai-pragmatist':
     'A Korean man developer in his thirties, relaxed at a tidy desk while a small cute robot assistant hands over a finished checklist, a wall clock and a bag ready to go home, efficient and satisfied mood.',
   'careful-experimenter':
