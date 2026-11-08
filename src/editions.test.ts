@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import { existsSync } from 'node:fs'
 import { EDITIONS, type Edition, isBeta, isClosed, openEditions } from './editions'
+import { DEV_TYPES } from './lib/devType'
 import { QUESTION_EDITIONS, SCALE_POINTS, questionsFor } from './questions/survey'
 
 const edition = (closesAt?: string): Edition => ({ id: 'x', title: 'x', survey: true, devTypes: false, closesAt })
@@ -17,9 +18,14 @@ describe('회차', () => {
     for (const e of EDITIONS.filter((e) => e.survey)) expect(questionsFor(e.id)).toBeDefined()
   })
 
-  // 완료 화면이 배지 마크다운을 이 경로로 내준다
+  // 완료 화면이 배지 마크다운을, 유형 공유 페이지가 미리보기 이미지를 이 경로로 내준다
   test('응답을 받는 회차는 참여 배지가 있다', () => {
     for (const e of EDITIONS.filter((e) => e.survey)) expect(existsSync(`public/badges/${e.id}.svg`)).toBe(true)
+  })
+
+  test('유형을 보여 주는 회차는 유형마다 미리보기 이미지가 있다 (bun scripts/og-images.ts)', () => {
+    for (const e of EDITIONS.filter((e) => e.devTypes))
+      for (const t of DEV_TYPES) expect(existsSync(`public/og/${e.id}/${t.slug}.jpg`)).toBe(true)
   })
 
   test('회차 ID 는 주소에 쓸 수 있는 모양이다', () => {

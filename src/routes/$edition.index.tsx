@@ -29,7 +29,7 @@ export const Route = createFileRoute('/$edition/')({
             { property: 'og:title', content: loaderData.title },
             { property: 'og:description', content: DESCRIPTION },
             { property: 'og:url', content: `${SITE_URL}/${loaderData.id}` },
-            ...ogImage('default', '여러 세대의 한국 개발자들이 함께 서 있는 그림'),
+            ...ogImage('/types/default.jpg', '여러 세대의 한국 개발자들이 함께 서 있는 그림'),
           ],
         }
       : {},

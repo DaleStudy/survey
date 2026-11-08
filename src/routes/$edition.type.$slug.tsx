@@ -29,7 +29,7 @@ export const Route = createFileRoute('/$edition/type/$slug')({
         { property: 'og:type', content: 'website' },
         { property: 'og:locale', content: 'ko_KR' },
         { property: 'og:site_name', content: '달레 스터디 개발자 설문조사' },
-        ...ogImage(loaderData.slug, loaderData.name),
+        ...ogImage(`/og/${loaderData.edition}/${loaderData.slug}.jpg`, `${loaderData.editionTitle} 개발자 유형: ${loaderData.name}`),
       ],
     }
   },

@@ -23,7 +23,7 @@ export const Route = createFileRoute('/')({
       { property: 'og:type', content: 'website' },
       { property: 'og:locale', content: 'ko_KR' },
       { property: 'og:site_name', content: '달레 스터디 개발자 설문조사' },
-      ...ogImage('home', '개발자들이 모여 화이트보드에 응답을 붙여 그래프를 만드는 그림'),
+      ...ogImage('/types/home.jpg', '개발자들이 모여 화이트보드에 응답을 붙여 그래프를 만드는 그림'),
     ],
   }),
   component: Landing,
