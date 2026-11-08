@@ -19,7 +19,7 @@ bun run test                # 문항 생성 + tsc --noEmit + bun test (push 전�
 bun run cf-typegen          # wrangler.jsonc 변경 후 worker-configuration.d.ts 재생성
 bunx drizzle-kit generate --name <desc>   # 스키마 변경 후 마이그레이션 생성
 bun run db:migrate:local    # 로컬 D1 마이그레이션
-bun run db:migrate:remote   # 프로덕션 D1 마이그레이션 (배포 전에 먼저)
+bun run db:migrate:remote   # 프로덕션 D1 마이그레이션 (배포 워크플로가 배포 전에 자동으로 실행한다)
 bun run export <회차>       # 운영 D1 원본 응답을 exports/<회차>-responses-<날짜>.csv 로 (git 무시, 공개 금지)
 bun scripts/sample-results.ts   # 예시 회차 2025 의 집계(src/results/2025.json)를 다시 만든다
 OPENAI_API_KEY=$(op read op://dev/OpenAI-DaleStudy/credential) bun scripts/type-images.ts <임시 폴더> [slug...]   # 유형 일러스트와 대표 이미지 → public/types/<slug>.jpg (1200×630, og:image 겸용)
@@ -34,7 +34,8 @@ OPENAI_API_KEY=$(op read op://dev/OpenAI-DaleStudy/credential) bun scripts/type-
 - 결과는 응답 → 집계(`src/results/aggregate.ts`, 응답자 30명 미만 문항은 숨김) → 화면으로 나눈다. 집계는 `BREAKDOWNS`(경력별, 현업 여부별)에 따라 집단별 결과도 미리 계산하고, 집단별 칸에도 같은 30명 규칙을 적용한다. 한 번에 한 기준으로만 나눈다. 결과 화면은 TanStack Charts(`src/components/ResultChart.tsx`)로 그리고, 보기 기준은 `?by=` 에 남는다. 차트 색은 dataviz 검증 스크립트를 통과한 값이다. 결과 화면은 `src/results/<회차>.json` 만 읽고 원본 응답을 모른다. 회차끼리 비교할 수 있게 같은 문항 `id` 는 모든 회차에서 같은 선택지 `code` 를 쓴다.
 - 선택지에 `code: other`(기타)가 있는 문항은 "기타"를 고르면 직접 적을 수 있다(선택, 100자). 답에는 `<문항 id>_other` 키로 저장하고(`src/questions/logic.ts`), 집계와 결과 화면에는 쓰지 않으며 원본 CSV 에만 `<id>_other` 열로 나온다. 다음 회차 선택지를 고르는 데 쓴다(`docs/research/2026-11-trend-tracking.md`).
 - 원본 응답 내보내기는 웹 관리자 화면 없이 `bun run export` 로 한다 — 로그인이 없는 사이트라 관리자 인증을 새로 만들지 않고, DaleStudy Cloudflare 계정 접근 권한으로 갈음한다.
-- `main` 에 push 하면 GitHub Actions(`.github/workflows/deploy.yml`)가 배포한다. 시크릿은 org secret `CLOUDFLARE_API_TOKEN` 하나.
+- `main` 에 push 하면 GitHub Actions(`.github/workflows/deploy.yml`)가 운영 D1 마이그레이션을 먼저 적용한 뒤 배포한다. 시크릿은 org secret `CLOUDFLARE_API_TOKEN` 하나.
+- 미리보기와 운영 모두 배포 직전에 마이그레이션을 자동으로 적용하므로, 마이그레이션은 이전 코드가 그대로 돌아가는 변경이어야 한다. 칸이나 테이블을 지울 때는 먼저 그것을 쓰지 않게 바꾸는 PR 을 병합해 배포하고, 삭제 마이그레이션은 다음 PR 로 올린다 — 한 PR 에 넣으면 운영에서는 배포 직전, 미리보기에서는 함께 쓰는 `survey-preview` 를 읽는 다른 PR 의 미리보기에서 이전 코드가 깨진다.
 - 변경은 PR 로 올린다. PR 마다 `preview.yml` 이 테스트를 돌리고, 같은 저장소 브랜치면 `pr-<번호>.survey.dalestudy.com` 에 미리보기를 띄운다(운영 도메인 라우트에 `previews_enabled`)(GitHub `preview` 환경, 오래된 미리보기는 Cloudflare 가 정리한다). 미리보기는 운영 바인딩을 물려받지 않아서 `wrangler.jsonc` 의 `previews` 블록에 따로 적는다: D1 은 미리보기끼리 함께 쓰는 `survey-preview`, Turnstile 시크릿은 repo secret `TURNSTILE_SECRET` 를 `--secrets-file` 로 넘긴다.
 - 익명 설문이다. 로그인이 없고, 응답 1건이 `responses` 1행이다. IP·User-Agent 처럼 응답자를 알아볼 수 있는 값은 저장하지 않는다 — 스키마에 칸을 두지 않는 것으로 지킨다([개인정보 조사](docs/research/2026-10-privacy-law.md)).
 - 진행 중인 답은 새로고침에 대비해 그 탭의 `sessionStorage` 에만 둔다(`src/questions/progress.ts`). 서버에 중간 저장하지 않는 건 제출하지 않은 답을 보관하지 않으려는 것이고, `localStorage` 를 쓰지 않는 건 공용 PC에 민감한 답이 남지 않게 하려는 것이다(#9).
