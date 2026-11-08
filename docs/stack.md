@@ -10,9 +10,9 @@ Tally 같은 설문 도구 대신 직접 만든다. 응답 화면을 달레 UI �
 | 앱 | TanStack Start (React) | 파일 기반 라우트와 서버 함수를 한 Worker 에서 쓴다 | `src/routes/`, `src/server/` |
 | DB | D1 + Drizzle | Workers 바인딩으로 바로 쓰고, 마이그레이션은 drizzle-kit 이 만든다 | `src/db/`, `drizzle/` |
 | UI | 달레 UI (`daleui`) | 커뮤니티 디자인 시스템 | 컴포넌트 전반 |
-| 차트 | TanStack Charts | 결과 화면 | `src/components/ResultChart.tsx` |
+| 차트 | TanStack Charts | 결과 화면, 관리자 화면의 날짜별 응답 | `src/components/ResultChart.tsx`, `src/components/Admin.tsx` |
 | 봇 방지 | Turnstile | 로그인 없이 자동 제출을 막는다 | `src/lib/turnstile.ts`, `src/components/Turnstile.tsx` |
-| 운영자 인증 | Cloudflare Access | 로그인 코드를 들여오지 않고 GitHub 팀으로 잠근다 | `src/lib/access.ts`, `src/routes/admin.api.ts` |
+| 운영자 인증 | Cloudflare Access | 로그인 코드를 들여오지 않고 GitHub 팀으로 잠근다 | `src/lib/access.ts`, `src/routes/admin_.api.$part.ts` |
 | 문항 원본 | YAML, Bun 내장 파서 | 사람이 읽고 고치기 쉽고, 파서 의존성이 없다 | `questions/`, `scripts/questions.ts` |
 | 테스트 | `bun test` + `tsc --noEmit` | 별도 테스트 러너 없이 Bun 으로 | `src/**/*.test.ts` |
 

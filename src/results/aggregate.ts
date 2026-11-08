@@ -116,8 +116,9 @@ function breakdown(questions: Question[], responses: Answers[], spec: (typeof BR
 
 // 화면은 이 집계만 읽는다. 원본 응답은 공개 페이지로 넘어가지 않는다.
 export function aggregate(questions: Question[], responses: Answers[], edition: string, sample: boolean): ResultSet {
+  const visible = responses.map((r) => new Set(visibleQuestions(questions, r).map((v) => v.id)))
   const stats = questions.map((q): QuestionStat => {
-    const shownTo = responses.filter((r) => visibleQuestions(questions, r).some((v) => v.id === q.id))
+    const shownTo = responses.filter((_, i) => visible[i].has(q.id))
     const answers = shownTo.map((r) => r[q.id]).filter(isAnswered)
     const answered = answers.length
     const optionList =
