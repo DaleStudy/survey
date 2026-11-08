@@ -6,7 +6,7 @@ import { type Edition, isClosed } from '@/editions'
 import { koDate } from '@/lib/date'
 import { sectionIcon } from '@/questions/sectionIcons'
 import { questionsFor } from '@/questions/survey'
-import { BREAKDOWNS, MIN_GROUP } from '@/results/aggregate'
+import { BREAKDOWNS } from '@/results/aggregate'
 
 const cta: React.CSSProperties = {
   display: 'inline-flex',
@@ -22,7 +22,7 @@ const cta: React.CSSProperties = {
 }
 
 // 결과 공개 전의 결과 화면. 언제 무엇이 공개되는지와 응답을 어떻게 분석하는지 알린다.
-// 집계 규칙(MIN_GROUP, BREAKDOWNS)을 그대로 읽어서 실제 결과 화면과 설명이 어긋나지 않는다.
+// 집계 규칙(BREAKDOWNS)을 그대로 읽어서 실제 결과 화면과 설명이 어긋나지 않는다.
 export function UpcomingResults({ edition: e }: { edition: Edition & { resultsAt: string } }) {
   const open = !isClosed(e)
   const sections = [
@@ -34,17 +34,12 @@ export function UpcomingResults({ edition: e }: { edition: Edition & { resultsAt
     {
       icon: 'chartBar',
       title: '문항마다 비율로 정리해요',
-      body: `${e.closesAt ? `${koDate(e.closesAt)} 마감 뒤 ` : ''}응답을 모아 선택지별 비율과 척도 평균을 계산해요. 공개되는 건 이 집계뿐이고, 원본 응답은 공개하지 않아요.`,
+      body: '마감 뒤 응답을 모아 선택지별 비율과 척도 평균을 계산해요. 공개되는 건 이 집계뿐이고, 원본 응답은 공개하지 않아요.',
     },
     {
       icon: 'users',
       title: '집단별로 나눠 봐요',
       body: `${BREAKDOWNS.map((b) => `${b.label}(${b.groups.map((g) => g.label).join('·')})`).join(', ')}로 나눠 같은 문항의 답을 비교할 수 있어요.`,
-    },
-    {
-      icon: 'eyeOff',
-      title: `${MIN_GROUP}명보다 적으면 숨겨요`,
-      body: '답한 사람이 적은 문항이나 집단은 누가 답했는지 짐작할 수 있어서 결과에서 빼요.',
     },
     {
       icon: 'messageCircle',
