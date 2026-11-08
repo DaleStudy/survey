@@ -8,7 +8,7 @@ import { cleanAnswers } from '@/questions/logic'
 import { type Answers, questionsFor } from '@/questions/survey'
 
 export const submitResponse = createServerFn({ method: 'POST' })
-  .validator((input: { edition: string; answers: Answers; ref?: string; consented: true; turnstileToken: string }) => input)
+  .validator((input: { edition: string; answers: Answers; consented: true; turnstileToken: string }) => input)
   .handler(async ({ data }) => {
     // 동의 화면을 거치지 않은 요청은 받지 않는다 (개인정보 보호법 제15조, 제28조의8)
     if (data.consented !== true) throw new Error('동의가 필요해요.')
@@ -32,7 +32,6 @@ export const submitResponse = createServerFn({ method: 'POST' })
         id: crypto.randomUUID(),
         edition: edition.id,
         answers: result.answers,
-        ref: data.ref?.slice(0, 64) || null,
         createdAt: new Date().toISOString(),
       })
   })

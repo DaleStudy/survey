@@ -1,0 +1,1 @@
+ALTER TABLE `responses` DROP COLUMN `ref`;

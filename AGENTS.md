@@ -29,7 +29,7 @@ OPENAI_API_KEY=$(op read op://dev/OpenAI-DaleStudy/credential) bun scripts/type-
 
 **TanStack Start** on **Cloudflare Workers**, D1 + Drizzle, 달레 UI. 구성은 `DaleStudy/feedback` 을 따른다.
 
-- 화면: `/` 회차와 상관없는 소개(열린 회차로 가는 버튼, 회차 목록), `/<회차>` 회차 페이지(일정, 주제, 설문 시작이나 결과로 가는 버튼. 날짜는 `editions.ts` 의 `opensAt`, `closesAt`, `resultsAt`, `deleteAt` 에서 읽는다), `/survey` → 열린 회차 설문(여럿이면 고르는 화면, `?ref=` 유지), `/results` 결과 아카이브(모든 회차를 최근 것부터, `src/components/EditionList.tsx`), `/privacy`. 회차별로 `/<회차>/survey`(시작 → 동의 → 문항 → 완료와 개발자 유형), `/<회차>/type/<유형>`(공유용, ADR 0004), `/<회차>/results`(집계만 읽는 결과 화면). 유형은 브라우저에서만 계산하고 저장하지 않는다. 설문을 여는 버튼("설문 시작하기")은 회차 페이지에만 두고, 홈과 유형 공유 페이지의 참여 버튼은 회차 페이지로 보낸다. 설문 진행 화면을 뺀 모든 화면에 공통 헤더(`SiteHeader`: 로고, Discord, GitHub. "결과" 메뉴는 예시가 아닌 결과가 생기면 저절로 나온다)와 하단(`SiteFooter`)을 둔다. 응답 완료·이미 응답·마감 화면은 `$edition.survey.tsx` 의 `Finished` 하나로 그린다.
+- 화면: `/` 회차와 상관없는 소개(열린 회차로 가는 버튼, 회차 목록), `/<회차>` 회차 페이지(일정, 주제, 설문 시작이나 결과로 가는 버튼. 날짜는 `editions.ts` 의 `opensAt`, `closesAt`, `resultsAt`, `deleteAt` 에서 읽는다), `/survey` → 열린 회차 설문(여럿이면 고르는 화면), `/results` 결과 아카이브(모든 회차를 최근 것부터, `src/components/EditionList.tsx`), `/privacy`. 회차별로 `/<회차>/survey`(시작 → 동의 → 문항 → 완료와 개발자 유형), `/<회차>/type/<유형>`(공유용, ADR 0004), `/<회차>/results`(집계만 읽는 결과 화면). 유형은 브라우저에서만 계산하고 저장하지 않는다. 설문을 여는 버튼("설문 시작하기")은 회차 페이지에만 두고, 홈과 유형 공유 페이지의 참여 버튼은 회차 페이지로 보낸다. 설문 진행 화면을 뺀 모든 화면에 공통 헤더(`SiteHeader`: 로고, Discord, GitHub. "결과" 메뉴는 예시가 아닌 결과가 생기면 저절로 나온다)와 하단(`SiteFooter`)을 둔다. 응답 완료·이미 응답·마감 화면은 `$edition.survey.tsx` 의 `Finished` 하나로 그린다.
 - 마감은 회차의 `closesAt` 으로 정한다. 화면과 서버 함수가 함께 본다.
 - 결과는 응답 → 집계(`src/results/aggregate.ts`, 응답자 30명 미만 문항은 숨김) → 화면으로 나눈다. 집계는 `BREAKDOWNS`(경력별, 현업 여부별)에 따라 집단별 결과도 미리 계산하고, 집단별 칸에도 같은 30명 규칙을 적용한다. 한 번에 한 기준으로만 나눈다. 결과 화면은 TanStack Charts(`src/components/ResultChart.tsx`)로 그리고, 보기 기준은 `?by=` 에 남는다. 차트 색은 dataviz 검증 스크립트를 통과한 값이다. 결과 화면은 `src/results/<회차>.json` 만 읽고 원본 응답을 모른다. 회차끼리 비교할 수 있게 같은 문항 `id` 는 모든 회차에서 같은 선택지 `code` 를 쓴다.
 - 선택지에 `code: other`(기타)가 있는 문항은 "기타"를 고르면 직접 적을 수 있다(선택, 100자). 답에는 `<문항 id>_other` 키로 저장하고(`src/questions/logic.ts`), 집계와 결과 화면에는 쓰지 않으며 원본 CSV 에만 `<id>_other` 열로 나온다. 다음 회차 선택지를 고르는 데 쓴다(`docs/research/2026-11-trend-tracking.md`).
@@ -62,9 +62,11 @@ OPENAI_API_KEY=$(op read op://dev/OpenAI-DaleStudy/credential) bun scripts/type-
 
 ## 문서 규칙
 
-- 논의는 GitHub 이슈에서, 결론은 `docs/` 에 남긴다. 이슈 댓글을 결론으로 읽지 않는다 — 중간에 뒤집힌 의견이 섞여 있다.
-- 결정을 내리면 `docs/decisions/NNNN-<slug>.md` 를 추가한다. 맥락 → 결정 → 검토한 대안 → 결과 순으로 쓰고, 논의한 이슈가 있으면 링크한다. 결정을 뒤집을 때는 기존 파일을 지우지 않고 새 ADR 을 만든 뒤 기존 파일에 `Superseded by NNNN` 을 적는다.
-- 이미 기각한 대안을 다시 제안하기 전에 `docs/decisions/` 를 먼저 본다.
+- 논의는 GitHub 이슈에서 한다. 이슈 댓글을 결론으로 읽지 않는다 — 중간에 뒤집힌 의견이 섞여 있다. 결론과 근거, 검토한 대안은 이슈 본문에 정리해 둔다.
+- 앞으로의 작업을 계속 제약하는 결정(오래 유지되고, 되돌리기 어렵고, 같은 질문이 반복될 결정)만 `docs/decisions/NNNN-<slug>.md` 에 ADR 로 남긴다. 맥락 → 결정 → 검토한 대안 → 결과 순으로 쓰고, 논의한 이슈가 있으면 링크한다. 범위가 좁고 되돌리기 쉬운 결정은 이슈와 PR 로 충분하다.
+- 결정을 통째로 뒤집을 때는 새 ADR 을 만들고, 기존 파일은 지우지 않되 상태를 `Superseded by NNNN` 으로 바꾼다. 결정의 일부만 바뀌면 기존 문서를 지금 상태에 맞게 고치고, 바뀐 이유는 이슈나 새 ADR 에 남긴다.
+- 문서에는 항상 지금 맞는 내용만 둔다. 지난 내용을 취소선이나 줄 단위 표시로 남기지 않는다 — 이력은 git, 이슈, PR 이 갖고 있다.
+- 이미 기각한 대안을 다시 제안하기 전에 `docs/decisions/` 와 관련 이슈를 먼저 본다.
 - 코드나 설정 파일에 있는 정보(의존성 버전, 바인딩 등)는 문서에 옮겨 적지 않는다. 문서에는 이유와 위치만 남긴다.
 - 문서는 내용이 생길 때 만든다. 빈 문서를 미리 만들지 않는다.
 - `_my/` 는 전역 gitignore 대상이라 다른 세션에서 보이지 않는다. 남겨야 할 내용은 `docs/` 에 둔다.

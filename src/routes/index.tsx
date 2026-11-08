@@ -13,9 +13,6 @@ const DESCRIPTION =
 
 // 회차와 상관없는 소개 페이지. 회차마다 바뀌는 일정과 주제는 회차 페이지(/$edition)에 둔다.
 export const Route = createFileRoute('/')({
-  // 공유 링크의 ?ref= 를 설문 링크로 넘겨 유입 경로를 남긴다
-  validateSearch: (search: Record<string, unknown>): { ref?: string } =>
-    typeof search.ref === 'string' ? { ref: search.ref } : {},
   head: () => ({
     meta: [
       { title: TITLE },
@@ -49,7 +46,6 @@ const cta: React.CSSProperties = {
 }
 
 function Landing() {
-  const { ref } = Route.useSearch()
   // 지금 응답을 받는 회차. 없으면 결과로 안내한다.
   const open = openEditions()[0]
   return (
@@ -67,7 +63,7 @@ function Landing() {
             한국 개발자가 어떻게 일하고 성장하는지, 그 이야기를 함께 모아요. 응답 하나하나가 모여 국내 개발 생태계를 읽는 인사이트가 돼요.
           </Text>
           {open ? (
-            <Link to="/$edition" params={{ edition: open.id }} search={ref ? { ref } : {}} style={cta}>
+            <Link to="/$edition" params={{ edition: open.id }} style={cta}>
               {open.title.replace(' 달레 스터디 개발자 설문조사', ' 설문조사')} 참여하기
             </Link>
           ) : (
@@ -186,7 +182,6 @@ function Landing() {
             <Link
               to="/$edition"
               params={{ edition: open.id }}
-              search={ref ? { ref } : {}}
               style={{ ...cta, background: '#ffffff', color: 'var(--colors-fg-brand)', fontWeight: 600 }}
             >
               참여하기

@@ -15,8 +15,6 @@ const DESCRIPTION = '글로벌 설문조사에서는 잘 보이지 않는 한국
 
 // 회차 페이지. 그 회차의 일정과 주제를 보여 주고 설문이나 결과로 보낸다. 회차가 끝나도 그대로 남는다.
 export const Route = createFileRoute('/$edition/')({
-  validateSearch: (search: Record<string, unknown>): { ref?: string } =>
-    typeof search.ref === 'string' ? { ref: search.ref } : {},
   loader: ({ params }) => {
     const edition = findEdition(params.edition)
     if (!edition) throw notFound()
@@ -55,7 +53,6 @@ const cta: React.CSSProperties = {
 
 function EditionPage() {
   const e = Route.useLoaderData()
-  const { ref } = Route.useSearch()
   const open = e.survey && !isClosed(e)
   const result = RESULTS[e.id]
   const questions = questionsFor(e.id) ?? []
@@ -99,7 +96,7 @@ function EditionPage() {
               </Text>
               {open && (
                 <>
-                  <Link to="/$edition/survey" params={{ edition: e.id }} search={ref ? { ref } : {}} reloadDocument={isBeta(e)} style={cta}>
+                  <Link to="/$edition/survey" params={{ edition: e.id }} reloadDocument={isBeta(e)} style={cta}>
                     설문 시작하기
                   </Link>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-20)' }}>

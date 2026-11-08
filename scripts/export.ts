@@ -15,14 +15,14 @@ if (!EDITION || !QUESTIONS || !/^[0-9a-z-]+$/.test(EDITION)) {
 
 const proc = Bun.spawn(
   ['bunx', 'wrangler', 'd1', 'execute', 'survey', '--remote', '--json', '--command',
-    `SELECT created_at, ref, answers FROM responses WHERE edition = '${EDITION}' ORDER BY created_at`],
+    `SELECT created_at, answers FROM responses WHERE edition = '${EDITION}' ORDER BY created_at`],
   { env: { ...process.env, CLOUDFLARE_ACCOUNT_ID: ACCOUNT_ID }, stdout: 'pipe', stderr: 'inherit' },
 )
 const out = await new Response(proc.stdout).text()
 if ((await proc.exited) !== 0) process.exit(1)
 
-const results = JSON.parse(out)[0].results as { created_at: string; ref: string | null; answers: string }[]
-const rows: ResponseRow[] = results.map((r) => ({ createdAt: r.created_at, ref: r.ref, answers: JSON.parse(r.answers) }))
+const results = JSON.parse(out)[0].results as { created_at: string; answers: string }[]
+const rows: ResponseRow[] = results.map((r) => ({ createdAt: r.created_at, answers: JSON.parse(r.answers) }))
 
 await mkdir('exports', { recursive: true })
 const path = `exports/${EDITION}-responses-${new Date().toISOString().slice(0, 10)}.csv`
