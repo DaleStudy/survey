@@ -29,7 +29,7 @@ const fontFiles = await Promise.all(
 
 const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
-// 일러스트 배경과 같은 색으로 바탕을 깔고 좌우를 흐려, 일러스트를 줄여도 가장자리가 드러나지 않게 한다
+// 일러스트 배경과 같은 색으로 바탕을 깔고 좌우와 위를 흐려, 배경이 꽉 찬 일러스트도 글자 아래에서 끊겨 보이지 않게 한다
 function svg(edition: string, name: string, illustration: string) {
   return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="630">
   <defs>
@@ -39,10 +39,17 @@ function svg(edition: string, name: string, illustration: string) {
       <stop offset="0.88" stop-color="#fff"/>
       <stop offset="1" stop-color="#fff" stop-opacity="0"/>
     </linearGradient>
-    <mask id="edges"><rect x="200" y="210" width="800" height="420" fill="url(#fade)"/></mask>
+    <linearGradient id="fadeTop" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="0.2" stop-color="#fff"/>
+    </linearGradient>
+    <mask id="sides"><rect x="200" y="210" width="800" height="420" fill="url(#fade)"/></mask>
+    <mask id="top"><rect x="200" y="210" width="800" height="420" fill="url(#fadeTop)"/></mask>
   </defs>
   <rect width="1200" height="630" fill="#F6F5FD"/>
-  <image x="200" y="210" width="800" height="420" mask="url(#edges)" xlink:href="data:image/jpeg;base64,${illustration}"/>
+  <g mask="url(#top)">
+    <image x="200" y="210" width="800" height="420" mask="url(#sides)" xlink:href="data:image/jpeg;base64,${illustration}"/>
+  </g>
   <text x="600" y="84" text-anchor="middle" font-family="Pretendard" font-weight="600" font-size="32" fill="#5333E1">${escape(edition)}</text>
   <text x="600" y="178" text-anchor="middle" font-family="Pretendard" font-weight="700" font-size="76" fill="#1A1530">${escape(name)}</text>
 </svg>`
