@@ -47,9 +47,9 @@ export function EditionList() {
                   참여하기
                 </Link>
               )}
-              {result && (
+              {(result || (e.survey && e.resultsAt)) && (
                 <Link to="/$edition/results" params={{ edition: e.id }}>
-                  결과 보기
+                  {result ? '결과 보기' : '결과 안내'}
                 </Link>
               )}
             </div>

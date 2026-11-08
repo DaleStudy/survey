@@ -154,6 +154,11 @@ function EditionPage() {
                   </li>
                 ))}
               </ol>
+              {!result && e.resultsAt && (
+                <Link to="/$edition/results" params={{ edition: e.id }} style={{ display: 'inline-flex', gap: 'var(--spacing-4)', alignItems: 'center', fontWeight: 600 }}>
+                  결과를 어떻게 분석하나요 <Icon name="chevronRight" size="sm" />
+                </Link>
+              )}
             </div>
           </section>
         )}

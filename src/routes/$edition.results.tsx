@@ -4,23 +4,32 @@ import { findEdition } from '@/editions'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { ResultChart } from '@/components/ResultChart'
+import { UpcomingResults } from '@/components/UpcomingResults'
 import { sectionIcon } from '@/questions/sectionIcons'
 import { RESULTS } from '@/results'
-import { type Breakdown, MIN_GROUP, type QuestionStat } from '@/results/aggregate'
+import { type Breakdown, MIN_GROUP, type QuestionStat, type ResultSet } from '@/results/aggregate'
 import { displayOptions } from '@/results/order'
 
 // 화면은 집계(src/results/<회차>.json)만 읽는다. 원본 응답은 여기로 오지 않는다.
+// 집계가 아직 없으면 공개일과 분석 방법을 알리는 예고 화면을 보여 준다.
 export const Route = createFileRoute('/$edition/results')({
   validateSearch: (search: Record<string, unknown>): { by?: string } => (typeof search.by === 'string' ? { by: search.by } : {}),
   loader: ({ params }) => {
     const edition = findEdition(params.edition)
+    if (!edition) throw notFound()
     const result = RESULTS[params.edition]
-    if (!edition || !result) throw notFound()
-    return { title: edition.title, result }
+    if (result) return { kind: 'result' as const, title: edition.title, result }
+    if (!edition.survey || !edition.resultsAt) throw notFound()
+    return { kind: 'upcoming' as const, title: edition.title, edition: { ...edition, resultsAt: edition.resultsAt } }
   },
   head: ({ loaderData }) => ({ meta: [{ title: loaderData ? `${loaderData.title} 결과` : '결과' }] }),
-  component: Results,
+  component: ResultsPage,
 })
+
+function ResultsPage() {
+  const data = Route.useLoaderData()
+  return data.kind === 'result' ? <Results title={data.title} result={data.result} /> : <UpcomingResults edition={data.edition} />
+}
 
 const percent = (share: number) => `${Math.round(share * 100)}%`
 
@@ -140,8 +149,7 @@ function BreakdownPicker({ breakdowns, active }: { breakdowns: Breakdown[]; acti
   )
 }
 
-function Results() {
-  const { title, result } = Route.useLoaderData()
+function Results({ title, result }: { title: string; result: ResultSet }) {
   const { by } = Route.useSearch()
   const breakdown = result.breakdowns.find((b) => b.id === by)
   const sections = [...new Map(result.questions.map((q) => [q.sectionId, q.section]))]
