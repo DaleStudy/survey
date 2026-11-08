@@ -5,6 +5,7 @@ import { ConsentStep } from '@/components/ConsentStep'
 import { QuestionStep } from '@/components/QuestionStep'
 import { Turnstile } from '@/components/Turnstile'
 import { DevTypeCard } from '@/components/DevTypeCard'
+import { DevTypeGrid } from '@/components/DevTypeGrid'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { ShareButton } from '@/components/ShareButton'
@@ -113,6 +114,12 @@ function Finished({ saved, title, lead, devType, edition, onRetake }: {
             <DevTypeCard type={devType} label="나의 개발자 유형" />
             <ShareButton type={devType} edition={edition} />
             {leadText}
+            <section aria-labelledby="types" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-16)' }}>
+              <Heading level={2} size={5} id="types">
+                여섯 가지 유형 모두 보기
+              </Heading>
+              <DevTypeGrid current={devType.slug} currentLabel="나" />
+            </section>
           </>
         )}
         <div

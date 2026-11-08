@@ -1,6 +1,7 @@
 import { Link, createFileRoute, notFound } from '@tanstack/react-router'
-import { Text } from 'daleui'
+import { Heading, Text } from 'daleui'
 import { DevTypeCard } from '@/components/DevTypeCard'
+import { DevTypeGrid } from '@/components/DevTypeGrid'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { findEdition } from '@/editions'
@@ -62,6 +63,12 @@ function TypePage() {
           >
             나도 해 보기
           </Link>
+          <section aria-labelledby="types" style={{ width: '100%', marginTop: 'var(--spacing-32)', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-16)' }}>
+            <Heading level={2} size={5} id="types">
+              여섯 가지 유형 모두 보기
+            </Heading>
+            <DevTypeGrid current={type.slug} currentLabel="친구" />
+          </section>
         </div>
       </main>
       <SiteFooter />
