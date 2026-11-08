@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import { EDITIONS, type Edition, isBeta, isClosed, openEditions } from './editions'
-import { QUESTION_EDITIONS, questionsFor } from './questions/survey'
+import { QUESTION_EDITIONS, SCALE_POINTS, questionsFor } from './questions/survey'
 
 const edition = (closesAt?: string): Edition => ({ id: 'x', title: 'x', survey: true, devTypes: false, closesAt })
 
@@ -34,7 +34,7 @@ describe('회차', () => {
   })
 })
 
-// 회차끼리 결과를 비교할 수 있게 한다 (ADR 0005)
+// 회차끼리 결과를 비교할 수 있게 한다 (docs/data-model.md 의 "키")
 describe('회차 간 문항 일관성', () => {
   const all = QUESTION_EDITIONS.flatMap((id) => questionsFor(id)!.map((q) => ({ edition: id, q })))
 
@@ -61,5 +61,14 @@ describe('회차 간 문항 일관성', () => {
     for (const { q } of choice) {
       for (const other of choice.filter((o) => o.q.id === q.id)) expect(other.q.order).toBe(q.order)
     }
+  })
+
+  test('척도 문항은 모두 1~5점이다', () => {
+    const scales = all.filter(({ q }) => q.type === 'scale')
+    const range = SCALE_POINTS.map(Number)
+    const wrong = scales
+      .filter(({ q }) => q.scale?.min.value !== range[0] || q.scale?.max.value !== range.at(-1))
+      .map(({ edition, q }) => `${edition}/${q.id}`)
+    expect(wrong).toEqual([])
   })
 })

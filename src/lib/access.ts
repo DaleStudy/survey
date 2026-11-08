@@ -1,4 +1,4 @@
-// /admin 은 Cloudflare Access 관리자 앱이 운영진(GitHub DaleStudy/maintainer 팀)에게만 연다(ADR 0008).
+// /admin 은 Cloudflare Access 관리자 앱이 운영진(GitHub DaleStudy/maintainer 팀)에게만 연다.
 // Access 는 잠근 경로로 가는 요청에만 Cf-Access-Jwt-Assertion 헤더를 붙인다. 서버는 이 토큰을 다시 검증해서,
 // Access 설정이 빠지거나 잘못돼도 원본 응답이 열리지 않게 한다.
 export const ACCESS_TEAM_DOMAIN = 'https://dalestudy.cloudflareaccess.com'

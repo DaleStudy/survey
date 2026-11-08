@@ -5,6 +5,8 @@ export type QuestionType = 'single' | 'multi' | 'scale' | 'long'
 export type OptionOrder = 'ordinal' | 'nominal'
 export type Option = { code: string; label: string }
 export type ScaleEnd = { value: number; label: string }
+// 척도 문항은 모두 5점이다. 결과 차트의 색과 가운데 정렬이 5점에 맞춰져 있어서, 테스트가 YAML 의 min·max 를 1·5 로 묶는다.
+export const SCALE_POINTS = ['1', '2', '3', '4', '5']
 export type ShowIf = Record<string, string[]>
 export type Answer = string | string[]
 export type Answers = Record<string, Answer>

@@ -1,5 +1,5 @@
 import { visibleQuestions } from '@/questions/logic'
-import type { Answers, OptionOrder, Question, QuestionType } from '@/questions/survey'
+import { type Answers, type OptionOrder, type Question, type QuestionType, SCALE_POINTS } from '@/questions/survey'
 
 // 응답자가 이보다 적은 문항은 결과에서 숨긴다 (개인정보 조사의 k 출발점)
 export const MIN_GROUP = 30
@@ -85,7 +85,7 @@ function isAnswered(a: Answers[string] | undefined): boolean {
 }
 
 function optionCodes(q: Question): string[] {
-  return q.type === 'scale' ? ['1', '2', '3', '4', '5'] : q.options.map((o) => o.code)
+  return q.type === 'scale' ? SCALE_POINTS : q.options.map((o) => o.code)
 }
 
 function breakdown(questions: Question[], responses: Answers[], spec: (typeof BREAKDOWNS)[number]): Breakdown {
@@ -122,7 +122,7 @@ export function aggregate(questions: Question[], responses: Answers[], edition: 
     const answered = answers.length
     const optionList =
       q.type === 'scale' && q.scale
-        ? ['1', '2', '3', '4', '5'].map((code) => ({ code, label: code }))
+        ? SCALE_POINTS.map((code) => ({ code, label: code }))
         : q.type === 'long'
           ? []
           : q.options
