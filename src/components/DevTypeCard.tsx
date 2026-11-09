@@ -48,7 +48,7 @@ export function DevTypeCard({ type, label }: { type: DevType; label: string }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
               <Icon name="star" size="sm" tone="brand" fill="currentColor" />
               <Text size="sm" weight="semibold" tone="brand">
-                2027 개발 운세
+                2027 커리어 운세
               </Text>
             </div>
             <Text size="xs" tone="brand" style={{ letterSpacing: '0.08em', opacity: 0.6 }}>

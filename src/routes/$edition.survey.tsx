@@ -71,7 +71,7 @@ const quietAction: React.CSSProperties = {
 
 // 제출하는 동안 보여 주는 분석 화면. 유형을 정하는 두 문항(ai_frequency, company_criteria)을 짚어서
 // 결과가 내 답에서 나온다는 걸 보여 준다. 제출 대기와 겹치므로 실제로 늘어나는 시간은 짧다.
-const ANALYSIS_STEPS = ['응답을 익명으로 저장하는 중', 'AI 사용 습관 읽는 중', '커리어 우선순위 확인 중', '2027 운세 뽑는 중']
+const ANALYSIS_STEPS = ['응답을 익명으로 저장하는 중', 'AI 사용 습관 읽는 중', '커리어 우선순위 확인 중', '2027 커리어 운세 뽑는 중']
 const ANALYSIS_STEP_MS = 1200
 const ANALYSIS_MIN_MS = ANALYSIS_STEPS.length * ANALYSIS_STEP_MS + 400
 // 별 회전과 체크 표시에 쓰는, 살짝 지나쳤다 돌아오는 곡선
@@ -85,7 +85,7 @@ function Analyzing() {
   }, [])
   return (
     <main style={page}>
-      <div role="status" aria-live="polite" style={{ ...column, maxWidth: 560 }}>
+      <div role="status" aria-live="polite" aria-atomic="false" style={{ ...column, maxWidth: 560 }}>
         {/* 단계마다 별이 돈다. */}
         <span
           aria-hidden
@@ -237,15 +237,14 @@ function Survey() {
       return
     }
     setPhase('sending')
+    // 분석 화면이 바로 사라지지 않게 최소 시간을 기다린다
+    const minWait = edition.devTypes && new Promise((r) => setTimeout(r, ANALYSIS_MIN_MS))
     try {
-      await Promise.all([
-        submitResponse({ data: { edition: edition.id, answers: final, ref, consented: true, turnstileToken } }),
-        // 분석 화면이 바로 사라지지 않게 최소 시간을 기다린다
-        edition.devTypes && new Promise((r) => setTimeout(r, ANALYSIS_MIN_MS)),
-      ])
+      await submitResponse({ data: { edition: edition.id, answers: final, ref, consented: true, turnstileToken } })
       const type = edition.devTypes ? devTypeOf(final) : undefined
-      // 다시 들어와도 유형을 보여 줄 수 있게 유형 이름만 남긴다
+      // 다시 들어와도 유형을 보여 줄 수 있게 유형 이름만 남긴다. 기다리는 동안 새로고침해도 남도록 저장 직후에 둔다
       localStorage.setItem(DONE_KEY, type?.slug ?? 'done')
+      await minWait
       setDevType(type)
       setPhase('done')
     } catch {
@@ -340,7 +339,7 @@ function Survey() {
               [
                 ['clock', '10분 안팎', 'neutral'],
                 ['eyeOff', '이름·이메일·로그인 없이 익명', 'neutral'],
-                ...(edition.devTypes ? [['star', '마지막엔 개발자 유형과 2027 운세', 'brand'] as const] : []),
+                ...(edition.devTypes ? [['star', '마지막엔 개발자 유형과 2027 커리어 운세', 'brand'] as const] : []),
               ] as const
             ).map(([icon, text, tone]) => (
               <span key={icon} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
