@@ -14,10 +14,16 @@ import { displayOptions } from '@/results/order'
 export const BRAND = '#5333e1'
 // 경력처럼 순서가 있는 집단: 보라 한 색의 밝기 단계
 const ORDINAL = ['#9d8cf0', '#5333e1', '#2a1a80']
+// 강조하지 않는 막대(관리자 화면의 지난날). ORDINAL 의 가장 밝은 단계다.
+export const BRAND_SOFT = ORDINAL[0]
 // 순서가 없는 집단: 보라와 주황
 const CATEGORICAL = ['#5333e1', '#eb6834']
 // 1~5점 척도: 주황(낮음) → 회색(보통) → 보라(높음)
 const LIKERT = ['#d9531e', '#f3a07c', '#dde3e6', '#9d8cf0', '#5333e1']
+// 척도 막대 칸 안의 비율 글자. 칸 색마다 4.5:1 을 넘는 색이다(흰 글자는 진한 주황 위에서 4.0:1 이라 쓰지 않는다).
+const LIKERT_TEXT = ['#000000', '#3a1a0c', '#363c43', '#1d1147', '#fdfdff']
+// 이보다 좁은 칸에는 비율을 적지 않는다. 글자가 칸 밖으로 넘친다.
+const LIKERT_LABEL_MIN = 0.08
 
 const percent = (share: number) => `${Math.round(share * 100)}%`
 
@@ -35,6 +41,21 @@ const GROUP_PADDING = 0.1
 // 가장 긴 막대 끝의 % 라벨이 잘리지 않게 x축 끝에 여유를 둔다. 휴대폰 너비에서 "100%" 한 개가 들어갈 만큼.
 function withHeadroom(rows: Row[]) {
   return scaleLinear().domain([0, Math.max(0.01, ...rows.map((r) => r.share)) * 1.18])
+}
+
+// 쌓은 막대 칸의 가운데. 막대는 3점 칸의 가운데를 0에 두고 양쪽으로 쌓는다(stack 의 anchor 와 같은 기준).
+function likertLabels(rows: Row[]) {
+  const byLabel = new Map<string, Row[]>()
+  for (const r of rows) byLabel.set(r.label, [...(byLabel.get(r.label) ?? []), r])
+  return [...byLabel.values()].flatMap((segments) => {
+    const shares = segments.map((r) => r.share)
+    let start = -(shares[0] + shares[1] + shares[2] / 2)
+    return segments.flatMap((r, i) => {
+      const at = start + r.share / 2
+      start += r.share
+      return r.share >= LIKERT_LABEL_MIN ? [{ ...r, at, fill: LIKERT_TEXT[i] }] : []
+    })
+  })
 }
 
 function likertRows(label: string, shares: Record<string, number>, scale?: { min: string; max: string }): Row[] {
@@ -72,6 +93,16 @@ export function ResultChart({ q, breakdown }: { q: QuestionStat; breakdown?: Bre
               color: 'series',
               inset: 1,
               layout: stack({ order: likertSeries, anchor: { series: likertSeries[2], fraction: 0.5 } }),
+            }),
+            text(likertLabels(rows), {
+              x: 'at',
+              y: 'label',
+              key: (d) => `${d.label}:${d.series}`,
+              text: (d) => percent(d.share),
+              anchor: 'middle',
+              fill: (d) => d.fill,
+              fontSize: 12,
+              fontWeight: 700,
             }),
           ],
           scales: {

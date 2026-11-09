@@ -33,7 +33,7 @@ bun scripts/og-images.ts <임시 폴더>   # 유형 공유 페이지 og:image �
 
 **TanStack Start** on **Cloudflare Workers**, D1 + Drizzle, 달레 UI(`docs/stack.md`).
 
-- 화면은 `src/routes/` 의 파일 기반 라우트다. 설문을 여는 버튼("설문 시작하기")은 회차 페이지(`/<회차>`)에만 두고, 홈과 유형 공유 페이지의 참여 버튼은 회차 페이지로 보낸다. 설문 진행 화면을 뺀 모든 화면에 `SiteHeader`·`SiteFooter` 를 둔다(헤더의 "결과" 메뉴는 예시가 아닌 결과가 생기면 저절로 나온다). 응답 완료·이미 응답·마감 화면은 `$edition.survey.tsx` 의 `Finished` 하나로 그린다.
+- 화면은 `src/routes/` 의 파일 기반 라우트다. 설문을 여는 버튼("설문 시작하기")은 회차 페이지(`/<회차>`)에만 두고, 홈, 유형 공유 페이지, 헤더의 참여 버튼은 회차 페이지로 보낸다. 설문 진행 화면을 뺀 모든 화면에 `SiteHeader`·`SiteFooter` 를 둔다(헤더의 "결과" 메뉴는 예시가 아닌 결과가 생기면, "참여하기"는 응답을 받는 회차가 있으면 저절로 나온다). 응답 완료·이미 응답·마감 화면은 `$edition.survey.tsx` 의 `Finished` 하나로 그린다.
 - 마감은 회차의 `closesAt` 으로 정한다. 화면과 서버 함수가 함께 본다. 회차의 `opensAt` 전(`isBeta`)에는 종료 화면에 "다시 답하기"가 나온다.
 - 익명 설문이다. 로그인이 없고, 응답자를 알아볼 수 있는 값은 스키마에 칸을 두지 않는 것으로 지킨다. 개발자 유형도 브라우저에서만 계산한다. 서버와 브라우저에 무엇을 두는지는 `docs/data-model.md`.
 - 결과 화면은 `src/results/<회차>.json` 만 읽고 원본 응답을 모른다(집계 규칙은 `docs/data-model.md`). TanStack Charts(`src/components/ResultChart.tsx`)로 그리고, 보기 기준은 `?by=` 에 남는다. 차트 색은 dataviz 검증 스크립트를 통과한 값이다.

@@ -25,7 +25,7 @@ Tally 같은 설문 도구 대신 직접 만든다. 응답 화면을 달레 UI �
   - `worker-configuration.d.ts` — `bun run cf-typegen`. 저장소를 새로 받으면 `bun run test` 전에 한 번 돌린다(`tsconfig.json` 이 이 파일을 읽는다). 시크릿 타입은 `wrangler types` 가 모르므로 `src/env.d.ts` 에 더한다.
 - **Worker 바인딩**은 서버 코드에서 `import { env } from 'cloudflare:workers'` 로 읽는다.
 - **타입 검사 범위:** `tsconfig.json` 이 `*.test.ts` 와 `scripts/` 를 뺀다. `bun test` 는 타입을 보지 않으므로, 테스트와 스크립트의 타입 오류는 실행해야 드러난다.
-- **스타일:** 달레 UI 컴포넌트를 먼저 쓰고, 배치는 인라인 `style` 에 달레 UI CSS 변수(`var(--colors-…)`, `var(--spacing-…)`)로 한다. 별도 CSS 프레임워크는 없다.
+- **스타일:** 달레 UI 컴포넌트를 먼저 쓰고, 배치는 인라인 `style` 에 달레 UI CSS 변수(`var(--colors-…)`, `var(--spacing-…)`)로 한다. 별도 CSS 프레임워크는 없다. 여러 화면이 같이 쓰는 제목 단계, 첫 화면 액자, 주 행동 링크, 브랜드 그라데이션은 `src/lib/brand.ts` 에 둔다. 인라인으로 할 수 없는 `:hover`, `:focus-visible`, 화면 너비별 규칙만 컴포넌트 안의 `<style>` 로 둔다(`QuestionStep`, `ADMIN_CSS` 등).
 - **경로 별칭:** `@/` 는 `src/` 다(`tsconfig.json`, `vite-tsconfig-paths`).
 - **유형 이미지:** `scripts/type-images.ts` 가 OpenAI 이미지 API 로 만들어 `public/types/` 에 커밋한다. 빌드나 실행 때는 API 를 부르지 않는다.
 - **유형 미리보기 이미지:** `scripts/og-images.ts` 가 유형 일러스트에 설문 이름과 유형 이름을 얹어 `public/og/<회차>/` 에 만든다. 일러스트는 유형 카드에도 쓰여서 글자를 넣지 않고 따로 둔다. 회차 제목이나 유형 이름을 바꾸면 다시 돌린다. 글자는 설치된 폰트에 기대지 않도록 `@resvg/resvg-js` 에 폰트 파일(Pretendard)을 직접 넘겨 그린다. 폰트는 저장소에 넣지 않고 실행할 때 받는다.

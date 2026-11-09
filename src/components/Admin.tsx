@@ -5,26 +5,26 @@ import { scaleLinear } from '@tanstack/charts/scales/linear'
 import { tooltip } from '@tanstack/charts/tooltip'
 import { Heading, Text } from 'daleui'
 import { useMemo } from 'react'
-import { BRAND } from '@/components/ResultChart'
+import { BRAND, BRAND_SOFT } from '@/components/ResultChart'
 import { koDate } from '@/lib/date'
 import type { AdminSummary } from '@/server/admin'
 
 // 인라인 스타일로는 못 하는 것(:focus-visible, :hover, 화면 너비별 규칙, 탭의 활성 표시)만 둔다.
 // 탭의 활성 표시를 인라인으로 덧씌우면 React 가 지울 때 축약 속성의 색까지 지워 비활성 탭에 밑줄이 남는다.
 export const ADMIN_CSS = `
-.admin-panel { display: flex; flex-direction: column; border: 1px solid var(--colors-border-neutral); border-radius: var(--radii-lg); }
-.admin-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--spacing-16); }
-.admin-stat { padding: var(--spacing-20); gap: var(--spacing-8); }
-.admin-stat-label { font-size: 0.875rem; font-weight: 500; color: var(--colors-fg-neutral-placeholder); }
-.admin-stat-value { font-size: 2.25rem; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; }
-.admin-tab { display: inline-flex; align-items: center; min-height: 48px; padding: 0 var(--spacing-12); margin-bottom: -1px; border-bottom: 2px solid transparent; color: var(--colors-fg-neutral-placeholder); font-weight: 500; text-decoration: none; }
+.admin-panel { display: flex; flex-direction: column; border-radius: 12px; background: var(--colors-app-bg); }
+.admin-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--spacing-12); }
+.admin-stat { padding: 18px var(--spacing-20); gap: var(--spacing-8); }
+.admin-stat-label { font-size: 0.8125rem; font-weight: 600; color: var(--colors-fg-neutral-placeholder); }
+.admin-stat-value { font-size: 2rem; font-weight: 800; line-height: 1.1; color: var(--colors-fg-neutral-active); font-variant-numeric: tabular-nums; }
+.admin-tab { display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--spacing-12); margin-bottom: -1px; border-bottom: 2px solid transparent; color: var(--colors-fg-neutral-placeholder); font-weight: 500; text-decoration: none; }
 .admin-tab[aria-current='page'] { color: var(--colors-fg-brand); border-bottom-color: var(--colors-bg-solid-brand); font-weight: 600; }
 .admin-tab:focus-visible, .admin-sort:focus-visible, .admin-expand:focus-visible, .admin-picker summary:focus-visible { outline: 2px solid var(--colors-border-brand-focus); outline-offset: 2px; border-radius: var(--radii-sm); }
 
 /* 원본 응답 표. 칸 폭을 화면에 맞추고(table-layout: fixed) 긴 답은 줄바꿈해서 가로 스크롤이 생기지 않게 한다. */
 .admin-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 0.875rem; line-height: 1.5; }
 .admin-table th, .admin-table td { padding: var(--spacing-8) var(--spacing-12); text-align: left; vertical-align: top; overflow-wrap: anywhere; border-bottom: 1px solid var(--colors-bg-neutral-hover); }
-.admin-table th { font-weight: 600; color: var(--colors-fg-neutral-placeholder); border-bottom-color: var(--colors-border-neutral); }
+.admin-table th { font-size: 0.8125rem; font-weight: 700; color: var(--colors-fg-neutral-placeholder); border-bottom-color: var(--colors-bg-neutral-active); }
 .admin-table tbody tr:hover { background: var(--colors-bg-brand); }
 .admin-table tr.admin-open, .admin-table tr.admin-detail { background: var(--colors-bg-brand); }
 .admin-table tr.admin-open td { border-bottom: 0; }
@@ -34,7 +34,7 @@ export const ADMIN_CSS = `
 .admin-expand svg { transition: transform 0.15s; }
 .admin-expand[aria-expanded='true'] svg { transform: rotate(90deg); }
 .admin-picker { position: relative; }
-.admin-picker summary { display: inline-flex; align-items: center; min-height: 40px; padding: 0 var(--spacing-12); border: 1px solid var(--colors-border-neutral); border-radius: var(--radii-md); cursor: pointer; font-weight: 500; }
+.admin-picker summary { display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--spacing-12); border: 1px solid var(--colors-border-neutral-active); background: var(--colors-app-bg); list-style: none; border-radius: var(--radii-md); cursor: pointer; font-weight: 500; }
 .admin-picker-panel { position: absolute; z-index: 1; top: calc(100% + var(--spacing-4)); left: 0; width: min(360px, calc(100vw - 48px)); max-height: 60vh; overflow-y: auto; padding: var(--spacing-12) var(--spacing-16); display: flex; flex-direction: column; gap: var(--spacing-12); background: var(--colors-app-bg); border: 1px solid var(--colors-border-neutral); border-radius: var(--radii-md); box-shadow: 0 8px 24px rgb(0 0 0 / 0.12); }
 .admin-picker fieldset { margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: var(--spacing-8); }
 .admin-picker legend { padding: 0 0 var(--spacing-4); font-size: 0.875rem; font-weight: 600; color: var(--colors-fg-brand); }
@@ -88,7 +88,7 @@ export function AdminDaily({ daily, closesAt }: { daily: AdminSummary['daily']; 
   const definition = useMemo(
     () =>
       defineChart({
-        marks: [barY(rows, { x: 'date', y: 'count', fill: BRAND, inset: 1, radius: 2 })],
+        marks: [barY(rows, { x: 'date', y: 'count', fill: (d) => (d.date === today ? BRAND : BRAND_SOFT), inset: 1, radius: 2 })],
         scales: {
           x: { scale: () => scaleBand<string>().padding(0.15), axis: { ticks: { values: days.filter((_, i) => i % 7 === 0), format: shortDate } } },
           y: { scale: scaleLinear().domain([0, step * 3]), grid: true, axis: { ticks: { values: yTicks, format: (v: number) => v.toLocaleString() } } },
@@ -112,6 +112,7 @@ export function AdminDaily({ daily, closesAt }: { daily: AdminSummary['daily']; 
         </Heading>
         <Text size="sm" muted>
           한국 시간 기준{closesAt ? ` · ${koDate(last)} 마감` : ''}
+          {daily.length > 0 && ` · 가장 많은 날 ${koDate(peak.date)} ${peak.count.toLocaleString()}건`}
         </Text>
       </div>
       {days.length === 0 ? (

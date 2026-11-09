@@ -17,13 +17,13 @@ import {
   tableFeatures,
   useTable,
 } from '@tanstack/react-table'
-import { Button, Checkbox, Icon, Select, Text, TextInput } from 'daleui'
+import { Button, Checkbox, Icon, Select, Tag, Text, TextInput } from 'daleui'
 import { useMemo } from 'react'
 import { AdminError } from '@/components/Admin'
 import { EDITIONS } from '@/editions'
 import { adminFetch } from '@/lib/adminFetch'
 import { answerText } from '@/lib/csv'
-import { OTHER, otherKey } from '@/questions/logic'
+import { OTHER, otherKey, visibleQuestions } from '@/questions/logic'
 import { type Answers, type Question, questionsFor, SCALE_POINTS } from '@/questions/survey'
 import type { AdminResponses } from '@/server/admin'
 
@@ -187,8 +187,12 @@ function Raw() {
           />
         </div>
         <details className="admin-picker">
-          <summary>
-            열 고르기 ({shown.length}/{MAX_COLUMNS})
+          <summary style={{ gap: 'var(--spacing-8)' }}>
+            열 고르기
+            <span style={{ padding: '1px 8px', borderRadius: 'var(--radii-full)', background: 'var(--colors-bg-brand-active)', color: 'var(--colors-fg-brand)', fontSize: 13, fontWeight: 600 }}>
+              {shown.length}/{MAX_COLUMNS}
+            </span>
+            <Icon name="chevronDown" size="sm" />
           </summary>
           <div className="admin-picker-panel">
             {[...new Set(questions.map((q) => q.section))].map((section) => (
@@ -260,6 +264,29 @@ function Raw() {
         </div>
       )}
 
+      {filtering && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-8)', alignItems: 'center' }}>
+          <Text size="sm" weight="semibold" muted>
+            걸린 필터
+          </Text>
+          {table.state.globalFilter && (
+            <Tag tone="brand" onRemove={() => table.setGlobalFilter('')}>
+              검색: {String(table.state.globalFilter)}
+            </Tag>
+          )}
+          {table.state.columnFilters.map((f) => {
+            const q = questions.find((x) => x.id === f.id)
+            if (!q) return null
+            const label = choices(q).find((o) => o.code === f.value)?.label ?? String(f.value)
+            return (
+              <Tag key={f.id} tone="brand" onRemove={() => table.getColumn(f.id)?.setFilterValue(undefined)}>
+                {q.label}: {label}
+              </Tag>
+            )
+          })}
+        </div>
+      )}
+
       <Text size="sm" muted>
         {filtering ? `${entries.length.toLocaleString()}건 중 ${filtered.toLocaleString()}건` : `${entries.length.toLocaleString()}건`} · 번호를 누르면 모든 답이 보여요
       </Text>
@@ -326,16 +353,16 @@ function Raw() {
 
 // 행 하나와, 펼쳤을 때 그 아래 이어지는 모든 답
 function RowGroup({ expanded, colSpan, questions, answers, children }: { expanded: boolean; colSpan: number; questions: Question[]; answers: Answers; children: React.ReactNode }) {
-  const sections = [...new Set(questions.map((q) => q.section))]
-    .map((title) => ({ title, items: questions.filter((q) => q.section === title && answers[q.id] !== undefined) }))
-    .filter((s) => s.items.length > 0)
+  // 응답자에게 보였던 문항만. 보였는데 답이 없으면 건너뛴 것이다.
+  const shown = visibleQuestions(questions, answers)
+  const sections = [...new Set(shown.map((q) => q.section))].map((title) => ({ title, items: shown.filter((q) => q.section === title) }))
   return (
     <>
       <tr className={expanded ? 'admin-open' : undefined}>{children}</tr>
       {expanded && (
         <tr className="admin-detail">
           <td colSpan={colSpan}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-20)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 360px), 1fr))', gap: 'var(--spacing-20) var(--spacing-32)', alignItems: 'start' }}>
               {sections.map((s) => (
                 <section key={s.title} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
                   <Text size="sm" weight="semibold" tone="brand">
@@ -346,8 +373,12 @@ function RowGroup({ expanded, colSpan, questions, answers, children }: { expande
                       <div key={q.id} style={answerRow}>
                         <dt style={{ flex: '0 1 22rem', color: 'var(--colors-fg-neutral-placeholder)' }}>{q.label}</dt>
                         <dd style={{ flex: '1 1 14rem', margin: 0, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-2)' }}>
-                          <span style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>{answerLabel(q, answers)}</span>
-                          {q.type !== 'long' && (
+                          {answers[q.id] === undefined ? (
+                            <span style={{ color: 'var(--colors-fg-neutral-placeholder)' }}>건너뜀</span>
+                          ) : (
+                            <span style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', color: 'var(--colors-fg-neutral-active)' }}>{answerLabel(q, answers)}</span>
+                          )}
+                          {q.type !== 'long' && answers[q.id] !== undefined && (
                             <code style={{ fontFamily: 'var(--fonts-mono)', fontSize: '0.75rem', color: 'var(--colors-fg-neutral-placeholder)' }}>
                               {q.id}: {answerText(answers, q.id)}
                             </code>
