@@ -18,26 +18,34 @@ const employed = {
   work_mode: 'hybrid',
   weekly_hours: '41_45',
   job_satisfaction: '4',
+  job_good: ['culture'],
+  job_pain: ['pay'],
   job_search: 'browsed',
   first_job_route: 'open_recruit',
-  coding_test: '0',
   company_criteria: ['pay', 'growth'],
   next_workplace: 'stay',
   career_concern: ['ai'],
+  study_hours: '1_2',
+  growth_activities: ['reading', 'writing'],
+  learning_sources: ['official_docs', 'ai'],
   main_language: 'typescript',
   want_language: ['rust'],
-  cloud: ['aws'],
+  backend_framework: 'spring',
   ai_frequency: 'daily',
-  ai_tools: ['claude_code'],
+  ai_code_share: '25_50',
+  ai_model: 'claude',
+  ai_harness: ['claude_code'],
   ai_policy: 'provided',
   ai_productivity: '4',
+  ai_upsides: ['speed'],
+  ai_downsides: ['review'],
   ai_outlook: 'major',
 }
 
 describe('문항 원본', () => {
-  test('30문항, 고정 19개', () => {
-    expect(QUESTIONS.length).toBe(30)
-    expect(QUESTIONS.filter((q) => q.fixed).length).toBe(19)
+  test('45문항, 고정 32개', () => {
+    expect(QUESTIONS.length).toBe(45)
+    expect(QUESTIONS.filter((q) => q.fixed).length).toBe(32)
   })
 
   test('선택형 문항은 모두 선택지가 있고, options_from 도 풀린다', () => {
@@ -63,8 +71,13 @@ describe('분기', () => {
     const visible = ids({ status: 'student' })
     expect(visible).not.toContain('employment_type')
     expect(visible).not.toContain('salary')
-    expect(visible).not.toContain('cloud')
+    expect(visible).not.toContain('ai_policy')
     expect(visible).toContain('job_search')
+  })
+
+  test('구직 문항은 일자리를 찾는 사람에게만 묻는다', () => {
+    expect(ids({ status: 'job_seeking' })).toContain('applications')
+    expect(ids({ status: 'employed' })).not.toContain('applications')
   })
 
   test('회사 직원 수는 회사에 속한 경우에만 묻는다', () => {
@@ -72,9 +85,22 @@ describe('분기', () => {
     expect(ids({ status: 'employed', company_type: 'none' })).not.toContain('company_size')
   })
 
-  test('코딩 테스트 부담은 본 사람에게만 묻는다', () => {
-    expect(ids({ coding_test: '0' })).not.toContain('coding_test_burden')
-    expect(ids({ coding_test: '1_2' })).toContain('coding_test_burden')
+  test('총보상은 근로소득을 받는 사람에게만 묻는다', () => {
+    expect(ids({ status: 'employed', employment_type: 'permanent' })).toContain('total_comp')
+    expect(ids({ status: 'employed', employment_type: 'freelance' })).not.toContain('total_comp')
+  })
+
+  test('프레임워크는 고른 직무에 맞는 것만 묻는다', () => {
+    expect(ids({ role: ['backend'] })).toContain('backend_framework')
+    expect(ids({ role: ['backend'] })).not.toContain('frontend_framework')
+    expect(ids({ role: ['fullstack'] })).toEqual(expect.arrayContaining(['backend_framework', 'frontend_framework']))
+    expect(ids({ role: ['ai_ml'] })).toContain('ai_work')
+    expect(ids({ role: ['ai_ml'] })).not.toContain('mobile_framework')
+  })
+
+  test('코딩 테스트는 지난 1년 동안 지원해 본 사람에게만 묻는다', () => {
+    expect(ids({ job_search: 'browsed' })).not.toContain('coding_test')
+    expect(ids({ job_search: 'applied' })).toContain('coding_test')
   })
 })
 

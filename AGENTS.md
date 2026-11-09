@@ -7,7 +7,7 @@
 ## Docs
 
 - `src/editions.ts` — 회차 목록. 한 번 열고 닫는 설문 하나가 회차다: `2026`(연례), `2027-h1`(반기), `2027-frontend`(트랙). 일정, 설문·유형 결과 유무, 예시 여부를 여기서 정한다.
-- `questions/<회차>.yaml` — 그 회차 설문의 문항 원본. 형식 규칙은 파일 머리말에 있다. 문항 `id` 와 선택지 `code` 는 회차 간 비교의 키라서, `fixed: true` 문항은 문구·선택지·순서를 바꾸지 않는다.
+- `questions/<회차>.yaml` — 그 회차 설문의 문항 원본. 형식 규칙은 파일 머리말에 있다. 문항 `id` 와 선택지 `code` 는 회차 간 비교의 키라서, 회차를 연 뒤에는 `fixed: true` 문항의 문구·선택지·순서를 바꾸지 않는다.
 - `docs/data-model.md` — 회차·문항·응답·집계를 잇는 키, `responses` 와 `answers` 의 형태, 브라우저에만 두는 값, 스키마를 바꿀 때 지킬 것.
 - `docs/stack.md` — 쓰는 기술과 이유, 생성 파일과 타입 검사 범위.
 - `docs/operations.md` — 시크릿 원본, Cloudflare Access·Turnstile 설정, D1 저장 위치, 원본 응답 삭제.

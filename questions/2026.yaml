@@ -1,6 +1,6 @@
 # 2026 달레 스터디 개발자 설문조사 문항 원본
 #
-# id 와 선택지 code 는 연도별 비교의 키다. fixed: true 문항은 문구·선택지·순서를 바꾸지 않는다.
+# id 와 선택지 code 는 연도별 비교의 키다. 회차를 연 뒤에는 fixed: true 문항의 문구·선택지·순서를 바꾸지 않는다.
 # 선택지를 늘릴 때는 기존 code 를 지우지 않고 "기타"를 쪼개는 식으로 새 code 를 더한다.
 # show_if 는 키마다 AND, 값 목록은 OR 이다. required 를 적지 않으면 필수다.
 # order 는 single·multi 문항에 꼭 적는다. ordinal(경력, 연봉처럼 선택지에 순서가 있다)은 결과 화면에서 이 순서 그대로,
@@ -53,7 +53,8 @@ sections:
           - { code: fullstack, label: "풀스택" }
           - { code: mobile, label: "모바일 앱" }
           - { code: data_eng, label: "데이터 엔지니어링" }
-          - { code: data_ml, label: "데이터 분석, 머신러닝" }
+          - { code: data_analysis, label: "데이터 분석, 데이터 사이언스" }
+          - { code: ai_ml, label: "AI, 머신러닝 엔지니어링" }
           - { code: devops, label: "DevOps, 인프라, SRE" }
           - { code: security, label: "보안" }
           - { code: embedded, label: "임베디드, 시스템" }
@@ -210,12 +211,22 @@ sections:
         required: false
         label: 1년 전보다 연봉이 어떻게 바뀌었나요?
         options:
-          - { code: up_10_plus, label: "10% 넘게 올랐어요" }
+          - { code: up_10_plus, label: "10% 이상 올랐어요" }
           - { code: up_lt_10, label: "조금 올랐어요 (10% 미만)" }
           - { code: same, label: "그대로예요" }
           - { code: down, label: "줄었어요" }
           - { code: new, label: "1년 전에는 일하지 않았어요" }
           - { code: no_answer, label: "답하지 않을게요" }
+
+      - id: total_comp
+        fixed: true
+        type: single
+        order: ordinal
+        required: false
+        label: 지난해 실제로 받은 세전 총보상은 어느 구간인가요?
+        help: 성과급, 인센티브, 주식 보상을 모두 넣어 주세요. 연말정산 근로소득 원천징수영수증의 "총급여"를 보면 돼요.
+        show_if: { employment_type: [permanent, contract, dispatch] }
+        options_from: salary
 
   - id: career
     title: 커리어
@@ -228,16 +239,38 @@ sections:
         min: { value: 1, label: "전혀 만족하지 않아요" }
         max: { value: 5, label: "아주 만족해요" }
 
-      - id: job_search
+      - id: job_good
         fixed: true
-        type: single
-        order: ordinal
-        label: 지난 1년 동안 이직이나 취업 준비를 해 봤나요?
+        type: multi
+        order: nominal
+        limit: 2
+        label: 지금 일하는 곳에서 가장 만족하는 점은 무엇인가요?
+        help: 두 개까지 고를 수 있어요.
+        show_if: { status: [employed] }
         options:
-          - { code: none, label: "하지 않았어요" }
-          - { code: browsed, label: "알아보기만 했어요" }
-          - { code: applied, label: "지원해 봤어요" }
-          - { code: moved, label: "지원해서 옮기거나 취업했어요" }
+          - { code: pay, label: "연봉" }
+          - { code: growth, label: "성장할 기회" }
+          - { code: stability, label: "회사의 안정성" }
+          - { code: hours, label: "근무 시간과 워라밸" }
+          - { code: flexible, label: "재택, 유연 근무" }
+          - { code: culture, label: "동료와 조직 문화" }
+          - { code: reputation, label: "회사 규모와 인지도" }
+          - { code: commute, label: "출퇴근 거리" }
+          - { code: domain, label: "서비스와 도메인" }
+          - { code: tech, label: "기술 스택과 코드 품질" }
+          - { code: leadership, label: "리더와 매니저" }
+          - { code: evaluation, label: "평가와 승진" }
+          - { code: other, label: "기타" }
+
+      - id: job_pain
+        fixed: true
+        type: multi
+        order: nominal
+        limit: 2
+        label: 지금 일하는 곳에서 가장 힘든 점은 무엇인가요?
+        help: 두 개까지 고를 수 있어요.
+        show_if: { status: [employed] }
+        options_from: job_good
 
       - id: first_job_route
         fixed: false
@@ -255,24 +288,69 @@ sections:
           - { code: founder, label: "창업하거나 프리랜서로 시작" }
           - { code: other, label: "기타" }
 
+      - id: job_search
+        fixed: true
+        type: single
+        order: ordinal
+        label: 지난 1년 동안 이직이나 취업 준비를 해 봤나요?
+        options:
+          - { code: none, label: "하지 않았어요" }
+          - { code: browsed, label: "알아보기만 했어요" }
+          - { code: applied, label: "지원해 봤어요" }
+          - { code: moved, label: "지원해서 옮기거나 취업했어요" }
+
       - id: coding_test
         fixed: true
         type: single
         order: ordinal
         label: 지난 1년 동안 채용 코딩 테스트를 몇 번 봤나요?
+        show_if: { job_search: [applied, moved] }
         options:
           - { code: "0", label: "보지 않았어요" }
           - { code: "1_2", label: "1~2번" }
           - { code: "3_5", label: "3~5번" }
           - { code: "6_plus", label: "6번 이상" }
 
-      - id: coding_test_burden
+      - id: job_search_months
+        fixed: true
+        type: single
+        order: ordinal
+        label: 개발 일자리를 찾은 지 얼마나 됐나요?
+        show_if: { status: [job_seeking] }
+        options:
+          - { code: lt_3, label: "3개월 미만" }
+          - { code: "3_6", label: "3~6개월" }
+          - { code: "6_12", label: "6~12개월" }
+          - { code: "12_plus", label: "1년 이상" }
+
+      - id: applications
+        fixed: true
+        type: single
+        order: ordinal
+        label: 지난 1년 동안 몇 곳에 지원했나요?
+        show_if: { status: [job_seeking] }
+        options:
+          - { code: "0", label: "지원하지 않았어요" }
+          - { code: "1_9", label: "1~9곳" }
+          - { code: "10_29", label: "10~29곳" }
+          - { code: "30_99", label: "30~99곳" }
+          - { code: "100_plus", label: "100곳 이상" }
+
+      - id: job_search_hardest
         fixed: false
-        type: scale
-        label: 코딩 테스트 준비는 얼마나 부담됐나요?
-        show_if: { coding_test: ["1_2", "3_5", "6_plus"] }
-        min: { value: 1, label: "전혀 부담되지 않았어요" }
-        max: { value: 5, label: "아주 부담됐어요" }
+        type: multi
+        order: nominal
+        limit: 2
+        label: 일자리를 찾으면서 가장 어려운 점은 무엇인가요?
+        help: 두 개까지 고를 수 있어요.
+        show_if: { status: [job_seeking] }
+        options:
+          - { code: coding_test, label: "코딩 테스트" }
+          - { code: experience_required, label: "경력을 요구하는 공고" }
+          - { code: few_openings, label: "공고가 적어요" }
+          - { code: interview, label: "면접" }
+          - { code: portfolio, label: "포트폴리오, 이력서" }
+          - { code: other, label: "기타" }
 
       - id: company_criteria
         fixed: true
@@ -299,7 +377,7 @@ sections:
         order: nominal
         label: 다음에는 어떤 곳에서 일하고 싶나요?
         options:
-          - { code: stay, label: "지금 일하는 곳" }
+          - { code: stay, label: "지금 일하는 곳에 남고 싶어요" }
           - { code: large, label: "대기업" }
           - { code: midsize_small, label: "중견·중소기업" }
           - { code: startup, label: "스타트업" }
@@ -323,6 +401,58 @@ sections:
           - { code: ai, label: "AI가 바꿀 일자리" }
           - { code: direction, label: "앞으로 나아갈 방향" }
           - { code: balance, label: "일과 삶의 균형" }
+          - { code: other, label: "기타" }
+
+  - id: growth
+    title: 성장
+    questions:
+      - id: study_hours
+        fixed: true
+        type: single
+        order: ordinal
+        label: 업무나 수업 밖에서 개발 공부를 일주일에 몇 시간쯤 하나요?
+        options:
+          - { code: "0", label: "하지 않아요" }
+          - { code: "1_2", label: "1~2시간" }
+          - { code: "3_5", label: "3~5시간" }
+          - { code: "6_10", label: "6~10시간" }
+          - { code: gt_10, label: "10시간 넘게" }
+
+      - id: growth_activities
+        fixed: true
+        type: multi
+        order: nominal
+        label: 지난 1년 동안 성장을 위해 꾸준히 한 것은 무엇인가요?
+        help: 해당하는 걸 모두 골라 주세요.
+        options:
+          - { code: reading, label: "책 읽기" }
+          - { code: writing, label: "블로그, 글쓰기" }
+          - { code: study_group, label: "스터디 모임" }
+          - { code: side_project, label: "사이드 프로젝트" }
+          - { code: open_source, label: "오픈소스 기여" }
+          - { code: conference, label: "컨퍼런스, 밋업" }
+          - { code: algorithm, label: "알고리즘 문제 풀이" }
+          - { code: none, label: "딱히 없어요" }
+          - { code: other, label: "기타" }
+
+      - id: learning_sources
+        fixed: true
+        type: multi
+        order: nominal
+        limit: 3
+        label: 새로운 기술이나 개발 소식은 주로 어디서 접하나요?
+        help: 세 개까지 고를 수 있어요.
+        options:
+          - { code: course, label: "온라인 강의 (인프런, 유데미 등)" }
+          - { code: youtube, label: "유튜브" }
+          - { code: podcast, label: "팟캐스트" }
+          - { code: newsletter, label: "뉴스레터, 큐레이션 사이트 (GeekNews 등)" }
+          - { code: tech_blog, label: "기업 기술 블로그" }
+          - { code: official_docs, label: "공식 문서" }
+          - { code: social, label: "X, LinkedIn, Threads" }
+          - { code: community, label: "개발 커뮤니티 (Discord, Slack, OKKY 등)" }
+          - { code: ai, label: "AI에게 묻기" }
+          - { code: coworkers, label: "동료" }
           - { code: other, label: "기타" }
 
   - id: tech
@@ -353,59 +483,80 @@ sections:
         type: multi
         order: nominal
         limit: 2
+        required: false
         label: 내년에 더 써 보고 싶은 언어는 무엇인가요?
         help: 두 개까지 고를 수 있어요.
         options_from: main_language
 
-      - id: cloud
-        fixed: false
-        type: multi
+      - id: backend_framework
+        fixed: true
+        type: single
         order: nominal
-        label: 업무에서 어떤 클라우드를 쓰나요?
-        help: 해당하는 걸 모두 골라 주세요.
-        show_if: { status: [employed] }
+        label: 백엔드에서 가장 많이 쓴 프레임워크는 무엇인가요?
+        show_if: { role: [backend, fullstack] }
         options:
-          - { code: aws, label: "AWS" }
-          - { code: gcp, label: "Google Cloud" }
-          - { code: azure, label: "Azure" }
-          - { code: ncloud, label: "네이버 클라우드" }
-          - { code: nhn, label: "NHN Cloud" }
-          - { code: kt, label: "KT Cloud" }
-          - { code: onprem, label: "자체 서버 (온프레미스)" }
-          - { code: unknown, label: "잘 모르겠어요" }
+          - { code: spring, label: "Spring" }
+          - { code: nestjs, label: "NestJS" }
+          - { code: express, label: "Express" }
+          - { code: django, label: "Django" }
+          - { code: fastapi, label: "FastAPI" }
+          - { code: flask, label: "Flask" }
+          - { code: aspnet, label: "ASP.NET" }
+          - { code: laravel, label: "Laravel" }
+          - { code: go_web, label: "Go (Gin, Echo 등)" }
+          - { code: none, label: "프레임워크 없이" }
+          - { code: not_yet, label: "아직 써 본 적 없어요" }
+          - { code: other, label: "기타" }
+
+      - id: frontend_framework
+        fixed: true
+        type: single
+        order: nominal
+        label: 프론트엔드에서 가장 많이 쓴 프레임워크는 무엇인가요?
+        show_if: { role: [frontend, fullstack] }
+        options:
+          - { code: react, label: "React" }
+          - { code: nextjs, label: "Next.js" }
+          - { code: vue, label: "Vue" }
+          - { code: nuxt, label: "Nuxt" }
+          - { code: svelte, label: "Svelte, SvelteKit" }
+          - { code: angular, label: "Angular" }
+          - { code: none, label: "프레임워크 없이" }
+          - { code: not_yet, label: "아직 써 본 적 없어요" }
+          - { code: other, label: "기타" }
+
+      - id: mobile_framework
+        fixed: true
+        type: single
+        order: nominal
+        label: 모바일 앱은 주로 무엇으로 만드나요?
+        show_if: { role: [mobile] }
+        options:
+          - { code: ios_native, label: "네이티브 iOS" }
+          - { code: android_native, label: "네이티브 Android" }
+          - { code: flutter, label: "Flutter" }
+          - { code: react_native, label: "React Native" }
+          - { code: not_yet, label: "아직 써 본 적 없어요" }
+          - { code: other, label: "기타" }
+
+      - id: ai_work
+        fixed: true
+        type: single
+        order: nominal
+        label: AI 엔지니어링에서 주로 하는 일은 무엇인가요?
+        show_if: { role: [ai_ml] }
+        options:
+          - { code: llm_app, label: "LLM 앱, 에이전트 개발" }
+          - { code: training, label: "모델 학습, 파인튜닝" }
+          - { code: serving, label: "추론, 서빙 인프라" }
+          - { code: data_eval, label: "학습 데이터, 평가" }
+          - { code: research, label: "연구" }
+          - { code: not_yet, label: "아직 해 본 적 없어요" }
+          - { code: other, label: "기타" }
 
   - id: ai
     title: 올해의 주제 AI
     questions:
-      - id: ai_frequency
-        fixed: true
-        type: single
-        order: ordinal
-        label: 개발할 때 AI 코딩 도구를 얼마나 자주 쓰나요?
-        options:
-          - { code: daily, label: "매일 써요" }
-          - { code: weekly, label: "일주일에 몇 번 써요" }
-          - { code: monthly, label: "한 달에 몇 번 써요" }
-          - { code: stopped, label: "써 봤지만 지금은 안 써요" }
-          - { code: never, label: "써 본 적 없어요" }
-
-      - id: ai_tools
-        fixed: false
-        type: multi
-        order: nominal
-        label: 주로 어떤 AI 도구를 쓰나요?
-        help: 해당하는 걸 모두 골라 주세요.
-        show_if: { ai_frequency: [daily, weekly, monthly] }
-        options:
-          - { code: copilot, label: "GitHub Copilot" }
-          - { code: cursor, label: "Cursor" }
-          - { code: claude_code, label: "Claude Code" }
-          - { code: codex, label: "Codex" }
-          - { code: chatgpt, label: "ChatGPT" }
-          - { code: claude, label: "Claude" }
-          - { code: gemini, label: "Gemini" }
-          - { code: other, label: "기타" }
-
       - id: ai_policy
         fixed: false
         type: single
@@ -420,6 +571,91 @@ sections:
           - { code: banned, label: "쓸 수 없어요" }
           - { code: unknown, label: "잘 모르겠어요" }
 
+      - id: ai_frequency
+        fixed: true
+        type: single
+        order: ordinal
+        label: 개발할 때 AI 코딩 도구를 얼마나 자주 쓰나요?
+        options:
+          - { code: daily, label: "매일 써요" }
+          - { code: weekly, label: "일주일에 몇 번 써요" }
+          - { code: monthly, label: "한 달에 몇 번 써요" }
+          - { code: stopped, label: "써 봤지만 지금은 안 써요" }
+          - { code: never, label: "써 본 적 없어요" }
+
+      - id: ai_model
+        fixed: false
+        type: single
+        order: nominal
+        label: 개발할 때 가장 많이 쓰는 AI 모델은 무엇인가요?
+        show_if: { ai_frequency: [daily, weekly, monthly] }
+        options:
+          - { code: claude, label: "Claude (Anthropic)" }
+          - { code: command, label: "Command (Cohere)" }
+          - { code: deepseek, label: "DeepSeek" }
+          - { code: exaone, label: "EXAONE (LG AI연구원)" }
+          - { code: gemini, label: "Gemini (Google)" }
+          - { code: glm, label: "GLM (Z.ai)" }
+          - { code: gpt, label: "GPT (OpenAI)" }
+          - { code: grok, label: "Grok (xAI)" }
+          - { code: hyperclova, label: "HyperCLOVA X (네이버)" }
+          - { code: kanana, label: "Kanana (카카오)" }
+          - { code: kimi, label: "Kimi (Moonshot AI)" }
+          - { code: llama, label: "Llama (Meta)" }
+          - { code: mistral, label: "Mistral (Mistral AI)" }
+          - { code: qwen, label: "Qwen (Alibaba)" }
+          - { code: solar, label: "Solar (업스테이지)" }
+          - { code: unknown, label: "잘 모르겠어요" }
+          - { code: other, label: "기타" }
+
+      - id: ai_harness
+        fixed: false
+        type: multi
+        order: nominal
+        label: AI를 어떤 도구에서 쓰나요?
+        help: 해당하는 걸 모두 골라 주세요. 목록에 없으면 기타에 적어 주세요.
+        show_if: { ai_frequency: [daily, weekly, monthly] }
+        options:
+          - { code: aider, label: "Aider" }
+          - { code: amp, label: "Amp" }
+          - { code: antigravity, label: "Google Antigravity (Gemini CLI 포함)" }
+          - { code: claude_code, label: "Claude Code" }
+          - { code: cline, label: "Cline" }
+          - { code: codex, label: "Codex" }
+          - { code: cursor, label: "Cursor" }
+          - { code: devin, label: "Devin (Devin Desktop, 옛 Windsurf)" }
+          - { code: copilot, label: "GitHub Copilot" }
+          - { code: goose, label: "Goose" }
+          - { code: grok_build, label: "Grok Build" }
+          - { code: herdr, label: "herdr" }
+          - { code: jetbrains_ai, label: "JetBrains AI" }
+          - { code: kilo_code, label: "Kilo Code" }
+          - { code: kiro, label: "Kiro" }
+          - { code: opencode, label: "OpenCode" }
+          - { code: orca, label: "Orca" }
+          - { code: paseo, label: "Paseo" }
+          - { code: pi, label: "pi" }
+          - { code: qwen_code, label: "Qwen Code" }
+          - { code: trae, label: "Trae" }
+          - { code: warp, label: "Warp" }
+          - { code: zed, label: "Zed" }
+          - { code: chat_app, label: "대화형 앱 (ChatGPT, Claude, Gemini 등)" }
+          - { code: app_builder, label: "AI 앱 빌더 (v0, Lovable, Bolt 등)" }
+          - { code: other, label: "기타" }
+
+      - id: ai_code_share
+        fixed: true
+        type: single
+        order: ordinal
+        label: 지난 한 달 동안 내가 낸 코드 중 AI가 쓴 코드는 얼마쯤인가요?
+        show_if: { ai_frequency: [daily, weekly, monthly] }
+        options:
+          - { code: almost_none, label: "거의 없어요" }
+          - { code: lt_25, label: "25% 미만" }
+          - { code: "25_50", label: "25~50%" }
+          - { code: "50_75", label: "50~75%" }
+          - { code: "75_plus", label: "75% 이상" }
+
       - id: ai_productivity
         fixed: false
         type: scale
@@ -427,6 +663,42 @@ sections:
         show_if: { ai_frequency: [daily, weekly, monthly] }
         min: { value: 1, label: "크게 줄었어요" }
         max: { value: 5, label: "크게 늘었어요" }
+
+      - id: ai_upsides
+        fixed: false
+        type: multi
+        order: nominal
+        limit: 2
+        label: AI 도구를 쓰고 나서 가장 좋아진 점은 무엇인가요?
+        help: 두 개까지 고를 수 있어요.
+        show_if: { ai_frequency: [daily, weekly, monthly] }
+        options:
+          - { code: speed, label: "작업 속도가 빨라졌어요" }
+          - { code: repetitive, label: "반복 작업이 줄었어요" }
+          - { code: learning, label: "새 기술을 빨리 배워요" }
+          - { code: unfamiliar, label: "낯선 영역의 일도 해낼 수 있어요" }
+          - { code: quality, label: "테스트와 문서를 더 잘 챙겨요" }
+          - { code: focus, label: "어려운 문제에 더 집중할 수 있어요" }
+          - { code: none, label: "딱히 없어요" }
+          - { code: other, label: "기타" }
+
+      - id: ai_downsides
+        fixed: false
+        type: multi
+        order: nominal
+        limit: 2
+        label: AI 도구를 쓰고 나서 가장 힘들어진 점은 무엇인가요?
+        help: 두 개까지 고를 수 있어요.
+        show_if: { ai_frequency: [daily, weekly, monthly] }
+        options:
+          - { code: review, label: "검토할 코드가 늘었어요" }
+          - { code: fixing, label: "AI가 만든 코드를 고치는 데 시간이 들어요" }
+          - { code: expectation, label: "회사가 기대하는 업무량이 늘었어요" }
+          - { code: skill, label: "실력이 줄어드는 것 같아요" }
+          - { code: tool_churn, label: "따라가야 할 도구가 너무 많아요" }
+          - { code: cost, label: "도구 비용을 직접 내야 해요" }
+          - { code: none, label: "딱히 없어요" }
+          - { code: other, label: "기타" }
 
       - id: ai_outlook
         fixed: false
