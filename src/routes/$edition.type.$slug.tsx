@@ -1,6 +1,7 @@
 import { Link, createFileRoute, notFound } from '@tanstack/react-router'
 import { Heading, Text } from 'daleui'
 import { DevTypeCard } from '@/components/DevTypeCard'
+import { ctaLink } from '@/lib/brand'
 import { DevTypeGrid } from '@/components/DevTypeGrid'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
@@ -43,23 +44,14 @@ function TypePage() {
       <SiteHeader />
       <main style={{ flex: 1 }}>
         <div style={{ maxWidth: 840, margin: '0 auto', padding: '96px 24px', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)', alignItems: 'flex-start' }}>
-          <DevTypeCard type={type} label="친구의 개발자 유형" />
+          <div style={{ width: '100%', maxWidth: 560 }}>
+            <DevTypeCard type={type} label="친구의 개발자 유형" />
+          </div>
           <Text size="lg">한국 개발자의 일과 커리어를 묻는 설문조사예요. 10분이면 나의 유형도 알 수 있어요.</Text>
           <Link
             to="/$edition"
             params={{ edition: type.edition }}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              minHeight: 52,
-              padding: '0 var(--spacing-24)',
-              borderRadius: 'var(--radii-md)',
-              background: 'var(--colors-bg-solid-brand)',
-              color: 'var(--colors-fg-solid-brand)',
-              fontSize: '1.125rem',
-              fontWeight: 500,
-              textDecoration: 'none',
-            }}
+            style={ctaLink}
           >
             나도 해 보기
           </Link>

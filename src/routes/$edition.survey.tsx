@@ -2,7 +2,7 @@ import { Link, createFileRoute, notFound } from '@tanstack/react-router'
 import { Button, Heading, Icon, Tag, Text } from 'daleui'
 import { useEffect, useRef, useState } from 'react'
 import { ConsentStep } from '@/components/ConsentStep'
-import { QuestionStep } from '@/components/QuestionStep'
+import { KEY_OPTIONS, QuestionStep } from '@/components/QuestionStep'
 import { Turnstile } from '@/components/Turnstile'
 import { DevTypeCard } from '@/components/DevTypeCard'
 import { DevTypeGrid } from '@/components/DevTypeGrid'
@@ -15,7 +15,7 @@ import { findEdition, isBeta, isClosed } from '@/editions'
 import { koDate } from '@/lib/date'
 import { OTHER, isEmpty, otherKey, visibleQuestions } from '@/questions/logic'
 import { clearProgress, loadProgress, saveProgress } from '@/questions/progress'
-import { type Answers, questionsFor } from '@/questions/survey'
+import { type Answers, SCALE_POINTS, questionsFor } from '@/questions/survey'
 import { submitResponse } from '@/server/functions/responses'
 
 export const Route = createFileRoute('/$edition/survey')({
@@ -46,14 +46,6 @@ const column: React.CSSProperties = {
   gap: 'var(--spacing-24)',
 }
 
-const finished: React.CSSProperties = {
-  maxWidth: 560,
-  margin: '0 auto',
-  padding: '72px 24px 96px',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 'var(--spacing-40)',
-}
 const quietAction: React.CSSProperties = {
   display: 'inline-flex',
   gap: 'var(--spacing-4)',
@@ -69,10 +61,24 @@ const quietAction: React.CSSProperties = {
   cursor: 'pointer',
 }
 
+const bar: React.CSSProperties = { maxWidth: 1120, margin: '0 auto', boxSizing: 'border-box' }
+
+// 아래 버튼 줄. 데스크톱은 이전 | 건너뛸게요 ... 다음, 휴대폰은 다음을 넓게(1:2) 두고 건너뛸게요를 위로 올린다.
+const SURVEY_CSS = `
+.q-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-8); align-items: center; }
+.q-next { margin-left: auto; min-width: 140px; }
+@media (max-width: 640px) {
+  .q-actions { display: grid; grid-template-columns: 1fr 2fr; }
+  .q-skip { grid-column: 1 / -1; order: -1; }
+  .q-next { margin-left: 0; min-width: 0; }
+  .q-step-label, .q-saved { display: none !important; }
+}
+`
+
 // 응답을 마쳤거나 마감된 화면. 설문 진행 중이 아니라서 다른 화면으로 갈 수 있게 헤더와 하단을 둔다.
 function EndPage({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ ...page, display: 'flex', flexDirection: 'column' }}>
+    <div style={{ ...page, background: 'var(--colors-app-bg)', display: 'flex', flexDirection: 'column' }}>
       <SiteHeader />
       <main style={{ flex: 1 }}>{children}</main>
       <SiteFooter />
@@ -91,14 +97,15 @@ function Finished({ saved, title, lead, devType, edition, onRetake }: {
   onRetake?: () => void
 }) {
   const leadText = (
-    <Text size="lg" style={{ lineHeight: 1.6 }}>
+    <Text size="lg" style={{ lineHeight: 1.7 }}>
       {lead}
     </Text>
   )
+  const wrap: React.CSSProperties = { maxWidth: devType ? 1120 : 640, margin: '0 auto', padding: '0 24px', boxSizing: 'border-box' }
   return (
     <EndPage>
-      <div style={finished}>
-        <section style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-12)' }}>
+      <section style={{ ...wrap, paddingTop: 56, paddingBottom: devType ? 72 : 32, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-40)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-12)', maxWidth: 720 }}>
           {saved && (
             <div style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
               <Icon name="check" size="sm" tone="success" />
@@ -107,50 +114,59 @@ function Finished({ saved, title, lead, devType, edition, onRetake }: {
               </Text>
             </div>
           )}
-          <Heading level={1}>{title}</Heading>
+          <Heading level={1} wordBreak="cjk" style={{ fontSize: 'clamp(2.25rem, 2vw + 1.5rem, 3rem)', fontWeight: 800, letterSpacing: '-0.03em' }}>
+            {title}
+          </Heading>
           {!devType && leadText}
-        </section>
-        {devType && (
-          <>
-            <DevTypeCard type={devType} label="나의 개발자 유형" />
-            <ShareButton type={devType} edition={edition} />
-            {leadText}
-            <ReadmeBadge edition={edition} />
-            <section aria-labelledby="types" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-16)' }}>
-              <Heading level={2} size={5} id="types">
-                여섯 가지 유형 모두 보기
-              </Heading>
-              <DevTypeGrid current={devType.slug} currentLabel="나" />
-            </section>
-          </>
-        )}
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 'var(--spacing-16)',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingTop: 'var(--spacing-24)',
-            borderTop: '1px solid var(--colors-bg-neutral-hover)',
-          }}
-        >
-          <Link to="/" style={quietAction}>
-            <Icon name="chevronLeft" size="sm" /> 처음으로
-          </Link>
-          {onRetake && (
-            <div style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
-              <Tag tone="warning">베타</Tag>
-              <button type="button" onClick={onRetake} style={{ ...quietAction, color: 'var(--colors-fg-brand)', textDecoration: 'underline' }}>
-                다시 답하기
-              </button>
-            </div>
-          )}
         </div>
+        {devType && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-32)', alignItems: 'flex-start' }}>
+            <div style={{ flex: '1 1 480px', minWidth: 0 }}>
+              <DevTypeCard type={devType} label="나의 개발자 유형" />
+            </div>
+            <aside style={{ flex: '1 1 320px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-16)' }}>
+              <div style={{ ...panel, background: 'var(--colors-bg-brand)', border: '1px solid var(--colors-bg-brand-active)' }}>
+                <ShareButton type={devType} edition={edition} />
+              </div>
+              <div style={{ padding: '0 var(--spacing-4)' }}>{leadText}</div>
+              <div style={{ ...panel, border: '1px solid var(--colors-bg-neutral-hover)' }}>
+                <ReadmeBadge edition={edition} />
+              </div>
+            </aside>
+          </div>
+        )}
+      </section>
+      {devType && (
+        <section
+          aria-labelledby="types"
+          style={{ background: 'var(--colors-bg-brand)', borderTop: '1px solid var(--colors-bg-brand-active)', borderBottom: '1px solid var(--colors-bg-brand-active)' }}
+        >
+          <div style={{ ...wrap, paddingTop: 64, paddingBottom: 80, display: 'flex', flexDirection: 'column', gap: 28 }}>
+            <Heading level={2} size={4} id="types">
+              여섯 가지 유형 모두 보기
+            </Heading>
+            <DevTypeGrid current={devType.slug} currentLabel="나" />
+          </div>
+        </section>
+      )}
+      <div style={{ ...wrap, paddingTop: 'var(--spacing-24)', paddingBottom: 'var(--spacing-48)', display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-16)', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Link to="/" style={quietAction}>
+          <Icon name="chevronLeft" size="sm" /> 처음으로
+        </Link>
+        {onRetake && (
+          <div style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
+            <Tag tone="warning">베타</Tag>
+            <button type="button" onClick={onRetake} style={{ ...quietAction, color: 'var(--colors-fg-brand)', textDecoration: 'underline' }}>
+              다시 답하기
+            </button>
+          </div>
+        )}
       </div>
     </EndPage>
   )
 }
+
+const panel: React.CSSProperties = { padding: 28, borderRadius: 20 }
 
 function Survey() {
   const edition = Route.useLoaderData()
@@ -190,6 +206,24 @@ function Survey() {
   const visible = visibleQuestions(QUESTIONS, answers)
   const pos = visible.findIndex((q) => q.id === qid)
   const current = pos >= 0 ? visible[pos] : undefined
+
+  // 숫자 키(1~9)로 선택지를 고른다. 입력란에 쓰는 중이면 그 글자로 둔다.
+  useEffect(() => {
+    if (phase !== 'question' || !current || current.type === 'long') return
+    const q = current
+    const codes = q.type === 'scale' ? SCALE_POINTS : q.options.slice(0, KEY_OPTIONS).map((o) => o.code)
+    function onKey(e: KeyboardEvent) {
+      if (e.metaKey || e.ctrlKey || e.altKey || e.repeat) return
+      if (e.target instanceof Element && e.target.closest('input, textarea, select, [contenteditable="true"]')) return
+      const n = Number(e.key)
+      if (!Number.isInteger(n) || n < 1 || n > codes.length) return
+      e.preventDefault()
+      if (q.type === 'multi') toggle(codes[n - 1])
+      else pick(codes[n - 1])
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [phase, current, answers])
 
   async function submit(final: Answers) {
     if (!turnstileToken) {
@@ -238,6 +272,25 @@ function Survey() {
     clearTimeout(timer.current)
     setAnswers(next)
     setError('')
+  }
+
+  function pick(code: string) {
+    if (!current) return
+    const next = { ...answers, [current.id]: code }
+    update(next)
+    // 기타는 직접 적을 수 있게 머문다
+    if (code !== OTHER) timer.current = setTimeout(() => advance(next), AUTO_ADVANCE_MS)
+  }
+
+  function toggle(code: string) {
+    if (!current) return
+    const picked = answers[current.id]
+    const list = Array.isArray(picked) ? picked : []
+    if (!list.includes(code) && current.limit && list.length >= current.limit) {
+      setError(`최대 ${current.limit}개까지 고를 수 있어요. 다른 걸 먼저 빼 주세요.`)
+      return
+    }
+    update({ ...answers, [current.id]: list.includes(code) ? list.filter((c) => c !== code) : [...list, code] })
   }
 
   if (phase === 'done') {
@@ -308,79 +361,130 @@ function Survey() {
 
   const value = answers[current.id]
   const last = pos === visible.length - 1
-  const progress = Math.round((pos / visible.length) * 100)
+  const picked = Array.isArray(value) ? value : []
+  // 진행 막대는 섹션 단위다. 문항 수는 답에 따라 바뀌지만 섹션은 그대로라서 어디쯤인지 더 정확하다.
+  const sections = [...new Map(QUESTIONS.map((q) => [q.sectionId, q.section])).entries()].map(([id, title], i, all) => {
+    const inSection = visible.filter((q) => q.sectionId === id)
+    const here = all.findIndex(([sid]) => sid === current.sectionId)
+    const done = inSection.length ? inSection.filter((q) => visible.indexOf(q) < pos).length / inSection.length : i < here ? 1 : 0
+    return { id, title: title.replace(/^올해의 주제\s*/, ''), done, now: id === current.sectionId }
+  })
 
   return (
-    <main style={page}>
-      <div
-        role="progressbar"
-        aria-label="설문 진행률"
-        aria-valuenow={pos + 1}
-        aria-valuemin={1}
-        aria-valuemax={visible.length}
-        style={{ position: 'fixed', top: 0, left: 0, right: 0, height: 4, background: 'var(--colors-bg-brand-active)' }}
-      >
-        <div style={{ height: 4, width: `${progress}%`, background: 'var(--colors-bg-solid-brand)', transition: 'width 300ms ease' }} />
-      </div>
-      <div style={column}>
-        <Text size="sm" tone="neutral" muted>
-          {pos + 1} / {visible.length}
-        </Text>
-        <QuestionStep
-          question={current}
-          value={value}
-          error={error}
-          onPick={(code) => {
-            const next = { ...answers, [current.id]: code }
-            update(next)
-            // 기타는 직접 적을 수 있게 머문다
-            if (code !== OTHER) timer.current = setTimeout(() => advance(next), AUTO_ADVANCE_MS)
-          }}
-          onToggle={(code) => {
-            const picked = Array.isArray(value) ? value : []
-            if (!picked.includes(code) && current.limit && picked.length >= current.limit) {
-              setError(`최대 ${current.limit}개까지 고를 수 있어요. 다른 걸 먼저 빼 주세요.`)
-              return
-            }
-            update({ ...answers, [current.id]: picked.includes(code) ? picked.filter((c) => c !== code) : [...picked, code] })
-          }}
-          onText={(text) => update({ ...answers, [current.id]: text })}
-          otherText={typeof answers[otherKey(current.id)] === 'string' ? (answers[otherKey(current.id)] as string) : ''}
-          onOtherText={(text) => update({ ...answers, [otherKey(current.id)]: text })}
-        />
-        {last && <Turnstile onToken={setTurnstileToken} resetKey={turnstileReset} />}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-12)', alignItems: 'center' }}>
-          <Button tone="neutral" variant="outline" onClick={() => (pos > 0 ? setQid(visible[pos - 1].id) : setPhase('consent'))}>
-            <Icon name="chevronLeft" size="sm" /> 이전
-          </Button>
-          <Button
-            tone="brand"
-            loading={phase === 'sending'}
-            onClick={() => {
-              if (current.required && isEmpty(value)) {
-                setError(current.type === 'multi' ? '하나 이상 골라 주세요.' : current.type === 'long' ? '내용을 적어 주세요.' : '답을 하나 골라 주세요.')
-                return
-              }
-              advance(answers)
-            }}
-          >
-            {last ? '제출하기' : '다음'}
-          </Button>
-          {!current.required && (
-            <Button
-              tone="neutral"
-              variant="ghost"
-              onClick={() => {
-                const { [current.id]: _, ...rest } = answers
-                update(rest)
-                advance(rest)
-              }}
-            >
-              건너뛸게요
-            </Button>
-          )}
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--colors-app-bg)', color: 'var(--colors-fg-neutral)' }}>
+      <style>{SURVEY_CSS}</style>
+      <header style={{ position: 'sticky', top: 0, zIndex: 1, background: 'var(--colors-app-bg)', borderBottom: '1px solid var(--colors-bg-neutral-hover)' }}>
+        <div style={{ ...bar, padding: 'var(--spacing-8) 24px', display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-8) var(--spacing-24)', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Link to="/$edition" params={{ edition: edition.id }} style={quietAction}>
+            <Icon name="x" size="sm" /> 그만하기
+          </Link>
+          <Text size="sm" muted className="q-saved" style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
+            <Icon name="check" size="sm" tone="success" /> 이 탭에 임시 저장돼요
+          </Text>
         </div>
-      </div>
-    </main>
+        <div
+          role="progressbar"
+          aria-label="설문 진행률"
+          aria-valuenow={pos + 1}
+          aria-valuemin={1}
+          aria-valuemax={visible.length}
+          aria-valuetext={`${current.section}, ${visible.length}문항 가운데 ${pos + 1}번째`}
+          style={{ ...bar, padding: '4px 24px 14px', display: 'grid', gridTemplateColumns: `repeat(${sections.length}, minmax(0, 1fr))`, gap: 6 }}
+        >
+          {sections.map((s) => (
+            <div key={s.id} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)', minWidth: 0 }}>
+              <div style={{ height: 6, borderRadius: 'var(--radii-full)', background: 'var(--colors-bg-brand-active)', overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${s.done * 100}%`, background: 'var(--colors-bg-solid-brand)', transition: 'width 300ms ease' }} />
+              </div>
+              <span
+                aria-hidden="true"
+                className="q-step-label"
+                style={{
+                  fontSize: '0.8125rem',
+                  fontWeight: s.now ? 700 : 500,
+                  color: s.now ? 'var(--colors-fg-brand)' : 'var(--colors-fg-neutral-placeholder)',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {s.title}
+              </span>
+            </div>
+          ))}
+        </div>
+      </header>
+
+      <main style={{ flex: 1, padding: '56px 24px 48px' }}>
+        <div style={{ maxWidth: 680, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-16)' }}>
+          <Text size="sm" weight="bold" tone="brand">
+            질문 {pos + 1} / {visible.length}
+          </Text>
+          <QuestionStep
+            question={current}
+            value={value}
+            error={error}
+            onPick={pick}
+            onToggle={toggle}
+            onText={(text) => update({ ...answers, [current.id]: text })}
+            otherText={typeof answers[otherKey(current.id)] === 'string' ? (answers[otherKey(current.id)] as string) : ''}
+            onOtherText={(text) => update({ ...answers, [otherKey(current.id)]: text })}
+          />
+          {last && <Turnstile onToken={setTurnstileToken} resetKey={turnstileReset} />}
+        </div>
+      </main>
+
+      <footer style={{ position: 'sticky', bottom: 0, background: 'var(--colors-app-bg)', borderTop: '1px solid var(--colors-bg-neutral-hover)' }}>
+        <div style={{ maxWidth: 680, margin: '0 auto', padding: 'var(--spacing-12) 24px var(--spacing-16)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {current.type === 'multi' && (
+            <Text size="sm" muted style={{ textAlign: 'center' }}>
+              <b style={{ color: 'var(--colors-fg-brand)' }}>{picked.length}</b>
+              {current.limit ? ` / ${current.limit}개 골랐어요` : '개 골랐어요. 여러 개 골라도 돼요.'}
+            </Text>
+          )}
+          <div className="q-actions">
+            <div className="q-prev">
+              <Button tone="neutral" variant="outline" size="lg" fullWidth onClick={() => (pos > 0 ? setQid(visible[pos - 1].id) : setPhase('consent'))}>
+                <Icon name="chevronLeft" size="sm" /> 이전
+              </Button>
+            </div>
+            {!current.required && (
+              <div className="q-skip">
+                <Button
+                  tone="neutral"
+                  variant="ghost"
+                  size="lg"
+                  fullWidth
+                  onClick={() => {
+                    const { [current.id]: _, ...rest } = answers
+                    update(rest)
+                    advance(rest)
+                  }}
+                >
+                  건너뛸게요
+                </Button>
+              </div>
+            )}
+            <div className="q-next">
+              <Button
+                tone="brand"
+                size="lg"
+                fullWidth
+                loading={phase === 'sending'}
+                onClick={() => {
+                  if (current.required && isEmpty(value)) {
+                    setError(current.type === 'multi' ? '하나 이상 골라 주세요.' : current.type === 'long' ? '내용을 적어 주세요.' : '답을 하나 골라 주세요.')
+                    return
+                  }
+                  advance(answers)
+                }}
+              >
+                {last ? '제출하기' : '다음'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
   )
 }

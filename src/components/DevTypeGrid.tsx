@@ -14,14 +14,16 @@ export function DevTypeGrid({ current, currentLabel }: { current?: string; curre
             key={t.slug}
             style={{
               overflow: 'hidden',
-              borderRadius: 'var(--radii-md)',
+              borderRadius: 'var(--radii-lg)',
               background: 'var(--colors-app-bg)',
-              border: mine ? '2px solid var(--colors-border-brand)' : '1px solid var(--colors-bg-neutral-hover)',
+              border: mine ? '2px solid var(--colors-border-brand-active)' : '1px solid var(--colors-bg-brand-active)',
             }}
           >
             <img src={`/types/${t.slug}.jpg`} alt="" width={1200} height={630} loading="lazy" style={{ display: 'block', width: '100%', height: 'auto' }} />
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-8)', alignItems: 'center', padding: 'var(--spacing-12) var(--spacing-16)' }}>
-              <Text weight="semibold">{t.name}</Text>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-8)', alignItems: 'center', padding: mine ? '15px 19px' : 'var(--spacing-16) var(--spacing-20)' }}>
+              <Text size="lg" weight="bold">
+                {t.name}
+              </Text>
               {mine && currentLabel && <Tag tone="brand">{currentLabel}</Tag>}
             </div>
           </li>
