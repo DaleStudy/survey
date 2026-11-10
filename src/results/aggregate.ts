@@ -1,5 +1,5 @@
 import { visibleQuestions } from '@/questions/logic'
-import type { Answers, Question, QuestionType } from '@/questions/survey'
+import { type Answers, type OptionOrder, type Question, type QuestionType, SCALE_POINTS } from '@/questions/survey'
 
 // 응답자가 이보다 적은 문항은 결과에서 숨긴다 (개인정보 조사의 k 출발점)
 export const MIN_GROUP = 30
@@ -14,9 +14,12 @@ export interface OptionStat {
 
 export interface QuestionStat {
   id: string
+  sectionId: string
   section: string
   label: string
   type: QuestionType
+  // 결과 화면의 선택지 순서. 없으면(예전 집계) 원래 순서 그대로 보여 준다.
+  order?: OptionOrder
   // 이 문항이 보였던 사람 수와 실제로 답한 사람 수
   shown: number
   answered: number
@@ -82,7 +85,7 @@ function isAnswered(a: Answers[string] | undefined): boolean {
 }
 
 function optionCodes(q: Question): string[] {
-  return q.type === 'scale' ? ['1', '2', '3', '4', '5'] : q.options.map((o) => o.code)
+  return q.type === 'scale' ? SCALE_POINTS : q.options.map((o) => o.code)
 }
 
 function breakdown(questions: Question[], responses: Answers[], spec: (typeof BREAKDOWNS)[number]): Breakdown {
@@ -113,13 +116,14 @@ function breakdown(questions: Question[], responses: Answers[], spec: (typeof BR
 
 // 화면은 이 집계만 읽는다. 원본 응답은 공개 페이지로 넘어가지 않는다.
 export function aggregate(questions: Question[], responses: Answers[], edition: string, sample: boolean): ResultSet {
+  const visible = responses.map((r) => new Set(visibleQuestions(questions, r).map((v) => v.id)))
   const stats = questions.map((q): QuestionStat => {
-    const shownTo = responses.filter((r) => visibleQuestions(questions, r).some((v) => v.id === q.id))
+    const shownTo = responses.filter((_, i) => visible[i].has(q.id))
     const answers = shownTo.map((r) => r[q.id]).filter(isAnswered)
     const answered = answers.length
     const optionList =
       q.type === 'scale' && q.scale
-        ? ['1', '2', '3', '4', '5'].map((code) => ({ code, label: code }))
+        ? SCALE_POINTS.map((code) => ({ code, label: code }))
         : q.type === 'long'
           ? []
           : q.options
@@ -130,9 +134,11 @@ export function aggregate(questions: Question[], responses: Answers[], edition: 
     const mean = q.type === 'scale' && answered ? answers.reduce((sum, a) => sum + Number(a), 0) / answered : undefined
     return {
       id: q.id,
+      sectionId: q.sectionId,
       section: q.section,
       label: q.label,
       type: q.type,
+      order: q.order,
       shown: shownTo.length,
       answered,
       hidden: answered < MIN_GROUP,

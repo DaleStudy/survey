@@ -1,6 +1,8 @@
 import { describe, expect, test } from 'bun:test'
+import { existsSync } from 'node:fs'
 import { EDITIONS, type Edition, isBeta, isClosed, openEditions } from './editions'
-import { QUESTION_EDITIONS, questionsFor } from './questions/survey'
+import { DEV_TYPES } from './lib/devType'
+import { QUESTION_EDITIONS, SCALE_POINTS, questionsFor } from './questions/survey'
 
 const edition = (closesAt?: string): Edition => ({ id: 'x', title: 'x', survey: true, devTypes: false, closesAt })
 
@@ -14,6 +16,16 @@ describe('회차', () => {
 
   test('응답을 받는 회차는 문항 파일이 있다', () => {
     for (const e of EDITIONS.filter((e) => e.survey)) expect(questionsFor(e.id)).toBeDefined()
+  })
+
+  // 완료 화면이 배지 마크다운을, 유형 공유 페이지가 미리보기 이미지를 이 경로로 내준다
+  test('응답을 받는 회차는 참여 배지가 있다', () => {
+    for (const e of EDITIONS.filter((e) => e.survey)) expect(existsSync(`public/badges/${e.id}.svg`)).toBe(true)
+  })
+
+  test('유형을 보여 주는 회차는 유형마다 미리보기 이미지가 있다 (bun scripts/og-images.ts)', () => {
+    for (const e of EDITIONS.filter((e) => e.devTypes))
+      for (const t of DEV_TYPES) expect(existsSync(`public/og/${e.id}/${t.slug}.jpg`)).toBe(true)
   })
 
   test('회차 ID 는 주소에 쓸 수 있는 모양이다', () => {
@@ -34,7 +46,7 @@ describe('회차', () => {
   })
 })
 
-// 회차끼리 결과를 비교할 수 있게 한다 (ADR 0005)
+// 회차끼리 결과를 비교할 수 있게 한다 (docs/data-model.md 의 "키")
 describe('회차 간 문항 일관성', () => {
   const all = QUESTION_EDITIONS.flatMap((id) => questionsFor(id)!.map((q) => ({ edition: id, q })))
 
@@ -50,5 +62,25 @@ describe('회차 간 문항 일관성', () => {
       const codes = q.options.map((o) => o.code)
       expect(new Set(codes).size).toBe(codes.length)
     }
+  })
+
+  test('선택형 문항은 모두 order 를 적고, 같은 문항 id 는 모든 회차에서 order 가 같다', () => {
+    // 빠뜨리면 원래 순서로 보여서 nominal 문항이 비율 순으로 정렬되지 않는다.
+    // 그렇다고 기본값을 nominal 로 두면 연봉 구간 같은 ordinal 문항이 뒤섞이므로, 기본값 없이 꼭 적게 한다.
+    const choice = all.filter(({ q }) => q.type === 'single' || q.type === 'multi')
+    const missing = choice.filter(({ q }) => q.order !== 'ordinal' && q.order !== 'nominal').map(({ edition, q }) => `${edition}/${q.id}`)
+    expect(missing).toEqual([])
+    for (const { q } of choice) {
+      for (const other of choice.filter((o) => o.q.id === q.id)) expect(other.q.order).toBe(q.order)
+    }
+  })
+
+  test('척도 문항은 모두 1~5점이다', () => {
+    const scales = all.filter(({ q }) => q.type === 'scale')
+    const range = SCALE_POINTS.map(Number)
+    const wrong = scales
+      .filter(({ q }) => q.scale?.min.value !== range[0] || q.scale?.max.value !== range.at(-1))
+      .map(({ edition, q }) => `${edition}/${q.id}`)
+    expect(wrong).toEqual([])
   })
 })
