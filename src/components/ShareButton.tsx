@@ -37,7 +37,7 @@ export function ShareButton({ type, edition }: { type: DevType; edition: { id: s
   }, [])
 
   async function copy() {
-    await navigator.clipboard.writeText(`${text}\n${url}`)
+    await navigator.clipboard.writeText(url)
     setCopied(true)
   }
 

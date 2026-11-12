@@ -10,6 +10,7 @@ import { ReadmeBadge } from '@/components/ReadmeBadge'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { ShareButton } from '@/components/ShareButton'
+import { StarBurst } from '@/components/StarBurst'
 import { type DevType, devTypeOf, findDevType } from '@/lib/devType'
 import { findEdition, isBeta, isClosed } from '@/editions'
 import { koDate } from '@/lib/date'
@@ -61,6 +62,62 @@ const quietAction: React.CSSProperties = {
   cursor: 'pointer',
 }
 
+// 제출하는 동안 보여 주는 분석 화면. 유형을 정하는 두 문항(ai_frequency, company_criteria)을 짚어서
+// 결과가 내 답에서 나온다는 걸 보여 준다. 제출 대기와 겹치므로 실제로 늘어나는 시간은 짧다.
+const ANALYSIS_STEPS = ['응답을 익명으로 저장하는 중', 'AI 사용 습관 읽는 중', '커리어 우선순위 확인 중', '2027년 커리어 한 줄 뽑는 중']
+const ANALYSIS_STEP_MS = 1200
+const ANALYSIS_MIN_MS = ANALYSIS_STEPS.length * ANALYSIS_STEP_MS + 400
+// 별 회전과 체크 표시에 쓰는, 살짝 지나쳤다 돌아오는 곡선
+const POP = 'cubic-bezier(0.34, 1.56, 0.64, 1)'
+
+function Analyzing() {
+  const [done, setDone] = useState(0)
+  useEffect(() => {
+    const t = setInterval(() => setDone((n) => Math.min(n + 1, ANALYSIS_STEPS.length)), ANALYSIS_STEP_MS)
+    return () => clearInterval(t)
+  }, [])
+  return (
+    <main style={page}>
+      <div role="status" aria-live="polite" aria-atomic="false" style={{ ...column, maxWidth: 560 }}>
+        {/* 단계마다 별이 돈다. 모션 줄이기 설정에서는 돌지 않는다 */}
+        <style>{'@media (prefers-reduced-motion: reduce) { .analyzing-star { transition: none !important; } }'}</style>
+        <span
+          className="analyzing-star"
+          aria-hidden
+          style={{
+            display: 'inline-flex',
+            alignSelf: 'flex-start',
+            transform: `rotate(${done * 144}deg)`,
+            transition: `transform 700ms ${POP}`,
+          }}
+        >
+          <Icon name="star" size="lg" tone="brand" fill="currentColor" style={{ width: 40, height: 40 }} />
+        </span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
+          <Heading level={1}>두구두구…</Heading>
+          <Text size="lg" tone="neutral" muted>
+            내 답도 2026 한국 개발자 결과에 함께 담겨요!
+          </Text>
+        </div>
+        <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-12)' }}>
+          {ANALYSIS_STEPS.map((step, i) => (
+            <li
+              key={step}
+              style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center', opacity: i <= done ? 1 : 0.35, transition: 'opacity 200ms ease' }}
+            >
+              {/* 끝난 단계에만 체크. 자리는 비워 둬서 글자가 움직이지 않게 한다 */}
+              <span style={{ display: 'inline-flex', transform: `scale(${i < done ? 1 : 0})`, transition: `transform 300ms ${POP}` }}>
+                <Icon name="check" size="sm" tone="success" />
+              </span>
+              <Text size="lg">{i === done ? `${step}…` : step}</Text>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </main>
+  )
+}
+
 const bar: React.CSSProperties = { maxWidth: 1120, margin: '0 auto', boxSizing: 'border-box' }
 
 // 아래 버튼 줄. 데스크톱은 이전 | 건너뛸게요 ... 다음, 휴대폰은 다음을 넓게(1:2) 두고 건너뛸게요를 위로 올린다.
@@ -110,7 +167,7 @@ function Finished({ saved, title, lead, devType, edition, onRetake }: {
             <div style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center' }}>
               <Icon name="check" size="sm" tone="success" />
               <Text size="sm" weight="semibold" tone="success">
-                응답을 저장했어요
+                익명으로 저장했어요
               </Text>
             </div>
           )}
@@ -122,6 +179,7 @@ function Finished({ saved, title, lead, devType, edition, onRetake }: {
         {devType && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-32)', alignItems: 'flex-start' }}>
             <div style={{ flex: '1 1 480px', minWidth: 0 }}>
+              {saved && <StarBurst />}
               <DevTypeCard type={devType} label="나의 개발자 유형" />
             </div>
             <aside style={{ flex: '1 1 320px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-16)' }}>
@@ -172,8 +230,8 @@ function Survey() {
   const edition = Route.useLoaderData()
   const QUESTIONS = questionsFor(edition.id)!
   const resultsNote = edition.resultsAt
-    ? `결과와 분석한 인사이트는 ${koDate(edition.resultsAt)}에 누구나 볼 수 있게 공개할게요.`
-    : '결과와 분석한 인사이트는 정리되는 대로 누구나 볼 수 있게 공개할게요.'
+    ? `결과와 분석한 인사이트는 ${koDate(edition.resultsAt)}에 모두 공개해요.`
+    : '결과와 분석한 인사이트는 정리되는 대로 모두 공개해요.'
   // 같은 브라우저에서 다시 답하지 않게 남기는 표시. 서버로는 보내지 않는다.
   const DONE_KEY = `survey-${edition.id}-done`
   const PROGRESS_KEY = `survey-${edition.id}-progress`
@@ -231,18 +289,22 @@ function Survey() {
       return
     }
     setPhase('sending')
+    // 분석 화면이 바로 사라지지 않게 최소 시간을 기다린다
+    const minWait = edition.devTypes && new Promise((r) => setTimeout(r, ANALYSIS_MIN_MS))
     try {
       await submitResponse({ data: { edition: edition.id, answers: final, consented: true, turnstileToken } })
       const type = edition.devTypes ? devTypeOf(final) : undefined
-      // 다시 들어와도 유형을 보여 줄 수 있게 유형 이름만 남긴다
+      // 다시 들어와도 유형을 보여 줄 수 있게 유형 이름만 남긴다. 기다리는 동안 새로고침해도 남도록 저장 직후에 둔다
       localStorage.setItem(DONE_KEY, type?.slug ?? 'done')
       clearProgress(PROGRESS_KEY)
+      await minWait
       setDevType(type)
       setPhase('done')
     } catch {
       setPhase('question')
       setError('저장하지 못했어요. 잠시 뒤에 다시 시도해 주세요.')
-      // 쓴 토큰은 다시 쓸 수 없으니 새로 받는다
+      // 쓴 토큰은 다시 쓸 수 없으니 비우고 새로 받는다
+      setTurnstileToken(null)
       setTurnstileReset((n) => n + 1)
     }
   }
@@ -297,8 +359,8 @@ function Survey() {
     return (
       <Finished
         saved
-        title="고마워요"
-        lead={`익명으로 저장했어요. ${resultsNote}`}
+        title={devType ? '내 유형이 나왔어요!' : '수고했어요!'}
+        lead={`전체 설문 ${resultsNote}`}
         devType={devType}
         edition={edition}
         onRetake={isBeta(edition) ? retake : undefined}
@@ -347,9 +409,24 @@ function Survey() {
         <div style={{ ...column, alignItems: 'flex-start' }}>
           <Heading level={1}>{edition.title}</Heading>
           <Text size="lg">
-            글로벌 설문조사에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 묻는 설문조사예요. {resultsNote}
+            글로벌 설문조사에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 물어요. {resultsNote}
           </Text>
-          <Text>이름도 이메일도 로그인도 필요 없어요. 10분 안팎이면 끝나요.</Text>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-8) var(--spacing-20)' }}>
+            {(
+              [
+                ['clock', '10분 안팎', 'neutral'],
+                ['eyeOff', '이름·이메일·로그인 없이 익명', 'neutral'],
+                ...(edition.devTypes ? [['star', '마지막엔 개발자 유형과 2027년 커리어 한 줄', 'brand'] as const] : []),
+              ] as const
+            ).map(([icon, text, tone]) => (
+              <span key={icon} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--spacing-4)' }}>
+                <Icon name={icon} size="sm" tone={tone} {...(icon === 'star' && { fill: 'currentColor' })} />
+                <Text size="sm" tone={tone} weight={tone === 'brand' ? 'semibold' : undefined}>
+                  {text}
+                </Text>
+              </span>
+            ))}
+          </div>
           <Button tone="brand" size="lg" disabled={!hydrated} onClick={() => setPhase('consent')}>
             시작하기 <Icon name="chevronRight" size="sm" />
           </Button>
@@ -358,6 +435,8 @@ function Survey() {
       </main>
     )
   }
+
+  if (phase === 'sending' && edition.devTypes) return <Analyzing />
 
   const value = answers[current.id]
   const last = pos === visible.length - 1

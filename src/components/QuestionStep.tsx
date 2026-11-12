@@ -47,6 +47,11 @@ export function QuestionStep({ question: q, value, error, onPick, onToggle, onTe
         </div>
         <Heading level={2} wordBreak="cjk" id="question" style={{ fontSize: 'clamp(1.5rem, 1.5vw + 1rem, 2.125rem)', lineHeight: 1.35, fontWeight: 800, letterSpacing: '-0.025em' }}>
           {q.label}
+          {q.required && (
+            <Text as="span" size="lg" tone="danger" aria-hidden>
+              {' *'}
+            </Text>
+          )}
         </Heading>
         {q.help && (
           <Text size="lg" muted>

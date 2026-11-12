@@ -12,7 +12,7 @@ status: draft
 
 sections:
   - id: about
-    title: 나에 대해
+    title: 기본 정보
     questions:
       - id: status
         fixed: true
