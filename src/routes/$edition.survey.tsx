@@ -79,8 +79,10 @@ function Analyzing() {
   return (
     <main style={page}>
       <div role="status" aria-live="polite" aria-atomic="false" style={{ ...column, maxWidth: 560 }}>
-        {/* 단계마다 별이 돈다. */}
+        {/* 단계마다 별이 돈다. 모션 줄이기 설정에서는 돌지 않는다 */}
+        <style>{'@media (prefers-reduced-motion: reduce) { .analyzing-star { transition: none !important; } }'}</style>
         <span
+          className="analyzing-star"
           aria-hidden
           style={{
             display: 'inline-flex',
@@ -301,7 +303,8 @@ function Survey() {
     } catch {
       setPhase('question')
       setError('저장하지 못했어요. 잠시 뒤에 다시 시도해 주세요.')
-      // 쓴 토큰은 다시 쓸 수 없으니 새로 받는다
+      // 쓴 토큰은 다시 쓸 수 없으니 비우고 새로 받는다
+      setTurnstileToken(null)
       setTurnstileReset((n) => n + 1)
     }
   }

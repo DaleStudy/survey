@@ -37,7 +37,6 @@ export function ShareButton({ type, edition }: { type: DevType; edition: { id: s
   }, [])
 
   async function copy() {
-    // 주소만 복사
     await navigator.clipboard.writeText(url)
     setCopied(true)
   }
