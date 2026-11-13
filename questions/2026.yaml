@@ -34,11 +34,26 @@ sections:
         help: 인턴은 넣고, 학생 때 혼자 공부한 기간은 빼 주세요.
         options:
           - { code: none, label: "아직 없어요" }
-          - { code: "0_2", label: "2년 이하" }
+          - { code: lt_1, label: "1년 미만" }
+          - { code: "1_2", label: "1~2년" }
           - { code: "3_5", label: "3~5년" }
           - { code: "6_9", label: "6~9년" }
           - { code: "10_14", label: "10~14년" }
           - { code: "15_plus", label: "15년 이상" }
+
+      - id: major
+        fixed: false
+        type: single
+        order: nominal
+        label: 대학 전공은 무엇인가요?
+        help: 학생이라면 지금 전공을 골라 주세요. 복수전공이고 그중 컴퓨터 관련 전공이 있다면 그쪽을 골라 주세요.
+        options:
+          - { code: cs, label: "컴퓨터공학 등 컴퓨터 관련" }
+          - { code: stem, label: "그 밖의 이공계" }
+          - { code: humanities, label: "인문·사회·상경" }
+          - { code: arts, label: "예체능" }
+          - { code: none, label: "해당 없음" }
+          - { code: no_answer, label: "답하지 않을게요" }
 
       - id: role
         fixed: true
@@ -123,7 +138,6 @@ sections:
           - { code: midsize, label: "중견기업" }
           - { code: small, label: "중소기업" }
           - { code: startup, label: "스타트업" }
-          - { code: si_sm, label: "SI·SM 회사" }
           - { code: public, label: "공공기관·공기업" }
           - { code: foreign, label: "외국계 기업" }
           - { code: none, label: "회사에 속해 있지 않아요" }
@@ -133,7 +147,7 @@ sections:
         type: single
         order: ordinal
         label: 회사 직원은 모두 몇 명인가요?
-        show_if: { company_type: [large, midsize, small, startup, si_sm, public, foreign] }
+        show_if: { company_type: [large, midsize, small, startup, public, foreign] }
         options:
           - { code: lt_10, label: "10명 미만" }
           - { code: "10_49", label: "10~49명" }
@@ -143,15 +157,27 @@ sections:
           - { code: "5000_plus", label: "5,000명 이상" }
           - { code: unknown, label: "잘 모르겠어요" }
 
+      - id: work_type
+        fixed: true
+        type: single
+        order: nominal
+        label: 지금 하는 일은 주로 어떤 형태인가요?
+        options:
+          - { code: own_service, label: "자사 서비스·제품 개발 (우리 회사의 앱, 플랫폼, 게임 등)" }
+          - { code: si, label: "SI (고객사 시스템을 새로 구축하는 프로젝트)" }
+          - { code: sm, label: "SM (고객사 시스템 운영·유지보수)" }
+          - { code: solution, label: "솔루션·패키지 (여러 고객사에 설치하고 맞춤 개발하는 제품)" }
+          - { code: agency, label: "외주 개발·에이전시 (웹·앱 제작 의뢰를 받아 개발)" }
+          - { code: inhouse_it, label: "사내 IT·전산 조직 (개발이 본업이 아닌 회사의 IT 부서. 예: 은행, 제조, 유통)" }
+          - { code: other, label: "기타" }
+
       - id: contract_position
         fixed: false
         type: single
         order: ordinal
         label: 지금 하는 일은 발주 구조에서 어디쯤인가요?
-        help: 자사 서비스를 만든다면 첫 번째를 골라 주세요.
-        show_if: { company_type: [si_sm, none] }
+        show_if: { work_type: [si, sm, solution, agency] }
         options:
-          - { code: owner, label: "발주처, 자사 서비스" }
           - { code: prime, label: "원청" }
           - { code: sub_1, label: "1차 하청" }
           - { code: sub_2_plus, label: "2차 이하 하청" }
@@ -277,7 +303,7 @@ sections:
         type: single
         order: nominal
         label: 첫 개발 일자리는 어떻게 구했나요?
-        show_if: { experience: ["0_2", "3_5", "6_9", "10_14", "15_plus"] }
+        show_if: { experience: [lt_1, "1_2", "3_5", "6_9", "10_14", "15_plus"] }
         options:
           - { code: open_recruit, label: "신입 공채" }
           - { code: rolling, label: "수시 채용" }
@@ -582,6 +608,23 @@ sections:
           - { code: monthly, label: "한 달에 몇 번 써요" }
           - { code: stopped, label: "써 봤지만 지금은 안 써요" }
           - { code: never, label: "써 본 적 없어요" }
+
+      - id: ai_not_using_reason
+        fixed: false
+        type: multi
+        order: nominal
+        limit: 2
+        label: AI 코딩 도구를 쓰지 않는 가장 큰 이유는 무엇인가요?
+        help: 두 개까지 고를 수 있어요.
+        show_if: { ai_frequency: [stopped, never] }
+        options:
+          - { code: banned, label: "회사에서 쓸 수 없어요 (망분리, 보안)" }
+          - { code: no_need, label: "필요성을 못 느껴요" }
+          - { code: distrust, label: "결과를 신뢰하기 어려워요" }
+          - { code: cost, label: "비용이 부담돼요" }
+          - { code: disappointing, label: "써 봤는데 별로였어요" }
+          - { code: no_time, label: "배울 시간이 없어요" }
+          - { code: other, label: "기타" }
 
       - id: ai_model
         fixed: false
