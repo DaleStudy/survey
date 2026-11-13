@@ -47,7 +47,7 @@ sections:
         order: nominal
         required: false
         label: 대학 전공은 무엇인가요?
-        help: 학생은 지금 전공으로, 복수전공이라면 컴퓨터 관련 전공이 있을 때 그쪽으로 골라 주세요.
+        help: 학생이라면 지금 전공을 골라 주세요. 복수전공이고 그중 컴퓨터 관련 전공이 있다면 그쪽을 골라 주세요.
         options:
           - { code: cs, label: "컴퓨터공학 등 컴퓨터 관련" }
           - { code: stem, label: "그 밖의 이공계" }
@@ -135,7 +135,7 @@ sections:
         order: nominal
         label: 지금 일하는 곳은 어떤 곳인가요?
         options:
-          - { code: large, label: "대기업(계열사 포함)" }
+          - { code: large, label: "대기업" }
           - { code: midsize, label: "중견기업" }
           - { code: small, label: "중소기업" }
           - { code: startup, label: "스타트업" }
