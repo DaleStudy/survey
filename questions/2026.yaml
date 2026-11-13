@@ -45,7 +45,6 @@ sections:
         fixed: false
         type: single
         order: nominal
-        required: false
         label: 대학 전공은 무엇인가요?
         help: 학생이라면 지금 전공을 골라 주세요. 복수전공이고 그중 컴퓨터 관련 전공이 있다면 그쪽을 골라 주세요.
         options:

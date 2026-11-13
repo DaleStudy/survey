@@ -10,6 +10,7 @@ const ids = (answers: Record<string, string | string[]>) => visibleQuestions(QUE
 const employed = {
   status: 'employed',
   experience: '3_5',
+  major: 'cs',
   role: ['backend'],
   region: 'seoul',
   employment_type: 'permanent',

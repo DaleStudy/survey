@@ -6,7 +6,7 @@ const QUESTIONS = questionsFor('2026')!
 
 describe('restoreProgress', () => {
   test('저장한 답과 머물던 문항을 그대로 되살린다', () => {
-    const saved = { answers: { status: 'employed', experience: '3_5' }, qid: 'role' }
+    const saved = { answers: { status: 'employed', experience: '3_5', major: 'cs' }, qid: 'role' }
     expect(restoreProgress(QUESTIONS, saved)).toEqual(saved)
   })
 
