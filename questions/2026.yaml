@@ -749,7 +749,7 @@ sections:
         label: 앞으로 1년 동안 AI 때문에 내 일은 어떻게 달라질 것 같나요?
         help: 학생이거나 일을 찾고 있다면 앞으로 하고 싶은 일을 떠올려 주세요.
         options:
-          - { code: replaced, label: "AI가 내 일을 대신해서 일자리를 잃을 것 같아요" }
+          - { code: replaced, label: "AI가 내 일을 대신해서 일자리가 위태로워질 것 같아요" }
           - { code: delegate, label: "직접 하던 일을 AI에게 맡기고 감독하는 게 주된 일이 될 것 같아요" }
           - { code: workflow, label: "하는 일은 그대로지만 일하는 방식이 크게 바뀔 것 같아요" }
           - { code: tools, label: "쓰는 도구만 조금 바뀌고 큰 틀은 그대로일 것 같아요" }
