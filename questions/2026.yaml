@@ -194,8 +194,8 @@ sections:
         label: 주로 어디서 일하나요?
         options:
           - { code: onsite, label: "매일 출근해요" }
-          - { code: hybrid, label: "출근과 재택을 섞어요" }
-          - { code: remote, label: "거의 재택이에요" }
+          - { code: hybrid, label: "출근과 재택을 섞어요 (주 2~4일 출근)" }
+          - { code: remote, label: "거의 재택이에요 (주 1일 이하 출근)" }
           - { code: full_remote, label: "완전 재택이에요 (출근할 사무실이 없어요)" }
 
       - id: weekly_hours
