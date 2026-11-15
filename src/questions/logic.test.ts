@@ -38,15 +38,14 @@ const employed = {
   ai_model: 'claude',
   ai_harness: ['claude_code'],
   ai_policy: 'provided',
-  ai_productivity: '4',
   ai_upsides: ['speed'],
   ai_downsides: ['review'],
   ai_outlook: 'major',
 }
 
 describe('문항 원본', () => {
-  test('48문항, 고정 33개', () => {
-    expect(QUESTIONS.length).toBe(48)
+  test('47문항, 고정 33개', () => {
+    expect(QUESTIONS.length).toBe(47)
     expect(QUESTIONS.filter((q) => q.fixed).length).toBe(33)
   })
 
