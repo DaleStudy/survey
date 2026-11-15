@@ -39,63 +39,71 @@ function ResultsPage() {
 function BreakdownPicker({ breakdowns, active }: { breakdowns: Breakdown[]; active?: string }) {
   const options = [{ id: undefined, label: '전체' }, ...breakdowns.map((b) => ({ id: b.id, label: b.label }))]
   // 옆으로 넘기는 좁은 화면에서 고른 기준이 가려지지 않게 그 버튼까지 넘겨 둔다. 페이지는 움직이지 않는다.
+  // 흐린 가장자리(--fade-size, RESULTS_CSS)에 걸리지 않게 그만큼 띄운다.
   const strip = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    const on = strip.current?.querySelector<HTMLElement>('[aria-current="page"]')
-    if (strip.current && on) strip.current.scrollLeft = on.offsetLeft - strip.current.offsetLeft - 8
+    const el = strip.current
+    const on = el?.querySelector<HTMLElement>('[aria-current="page"]')
+    if (el && on) el.scrollLeft += on.getBoundingClientRect().left - el.getBoundingClientRect().left - FADE_PX
   }, [active])
+  // 스크롤 기반 애니메이션이 없는 브라우저에서는 양 끝 버튼이 다 보이는지 지켜보고 흐림을 켠다
+  useEffect(() => {
+    const el = strip.current
+    const [first, last] = [el?.firstElementChild, el?.lastElementChild]
+    if (!el || !first || !last || CSS.supports('animation-timeline', 'scroll()')) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const { target, intersectionRatio } of entries) el.classList.toggle(target === first ? 'more-start' : 'more-end', intersectionRatio < 1)
+      },
+      // rootMargin: 소수점 너비 때문에 끝 버튼이 1px 모자라 보이지 않는 것으로 잡히지 않게 한다
+      { root: el, threshold: 1, rootMargin: '1px' },
+    )
+    observer.observe(first)
+    observer.observe(last)
+    return () => observer.disconnect()
+  }, [])
   return (
     <nav aria-label="집단별로 보기" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-12)', alignItems: 'center', minWidth: 0, maxWidth: '100%' }}>
       <Text size="sm" weight="bold">
         나눠 보기
       </Text>
-      {/* 기준이 많아서 좁은 화면에서는 줄을 바꾸지 않고 옆으로 넘긴다. 줄을 바꾸면 위에 붙는 막대가 화면을 너무 많이 가린다. */}
-      <div
-        ref={strip}
-        style={{
-          display: 'inline-flex',
-          maxWidth: '100%',
-          overflowX: 'auto',
-          // 끝 버튼이 잘려 보이는 것으로 더 있다는 것을 알 수 있어서 스크롤 막대는 숨긴다
-          scrollbarWidth: 'none',
-          gap: 'var(--spacing-4)',
-          padding: 'var(--spacing-4)',
-          borderRadius: 12,
-          background: 'var(--colors-bg-neutral-hover)',
-        }}
-      >
-        {options.map((o) => {
-          const on = o.id === active
-          return (
-            <Link
-              key={o.label}
-              from="/$edition/results"
-              // 라우터는 search 를 포함 관계로 비교해서 {} 이면 어느 기준에서나 활성이 된다.
-              // "전체"는 by 를 undefined 로 적고 explicitUndefined 로 by 가 없을 때만 활성이 되게 한다. 활성 링크에는 라우터가 aria-current="page" 를 단다.
-              search={{ by: o.id }}
-              activeOptions={{ explicitUndefined: true }}
-              replace
-              resetScroll={false}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                minHeight: 36,
-                padding: '0 var(--spacing-16)',
-                borderRadius: 'var(--radii-md)',
-                background: on ? 'var(--colors-app-bg)' : 'transparent',
-                boxShadow: on ? '0 1px 2px rgb(0 0 0 / 0.12)' : undefined,
-                color: on ? 'var(--colors-fg-brand)' : 'inherit',
-                textDecoration: 'none',
-                fontSize: 14,
-                fontWeight: on ? 700 : 500,
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
-              }}
-            >
-              {o.label}
-            </Link>
-          )
-        })}
+      {/* 기준이 많아서 좁은 화면에서는 줄을 바꾸지 않고 옆으로 넘긴다. 줄을 바꾸면 위에 붙는 막대가 화면을 너무 많이 가린다.
+          스크롤 막대는 숨기고, 더 있는 쪽 가장자리를 흐리게 해서 넘길 수 있다는 것을 보인다(.r-strip). 흐림이 회색 바탕까지 지우지 않게 바탕은 바깥에 둔다. */}
+      <div style={{ display: 'flex', maxWidth: '100%', padding: 'var(--spacing-4)', borderRadius: 12, background: 'var(--colors-bg-neutral-hover)', boxSizing: 'border-box' }}>
+        <div ref={strip} className="r-strip">
+          {options.map((o) => {
+            const on = o.id === active
+            return (
+              <Link
+                key={o.label}
+                from="/$edition/results"
+                // 라우터는 search 를 포함 관계로 비교해서 {} 이면 어느 기준에서나 활성이 된다.
+                // "전체"는 by 를 undefined 로 적고 explicitUndefined 로 by 가 없을 때만 활성이 되게 한다. 활성 링크에는 라우터가 aria-current="page" 를 단다.
+                search={{ by: o.id }}
+                activeOptions={{ explicitUndefined: true }}
+                replace
+                resetScroll={false}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  minHeight: 36,
+                  padding: '0 var(--spacing-16)',
+                  borderRadius: 'var(--radii-md)',
+                  background: on ? 'var(--colors-app-bg)' : 'transparent',
+                  boxShadow: on ? '0 1px 2px rgb(0 0 0 / 0.12)' : undefined,
+                  color: on ? 'var(--colors-fg-brand)' : 'inherit',
+                  textDecoration: 'none',
+                  fontSize: 14,
+                  fontWeight: on ? 700 : 500,
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
+                }}
+              >
+                {o.label}
+              </Link>
+            )
+          })}
+        </div>
       </div>
     </nav>
   )
@@ -122,12 +130,35 @@ function useActiveSection(ids: string[]) {
 }
 
 // 목차는 넓은 화면에서만 왼쪽에 둔다. 좁으면 본문만 남긴다.
+// 나눠 보기 줄 양 끝의 흐림 너비
+const FADE_PX = 32
+
 const RESULTS_CSS = `
 .r-toc { flex: 1 1 200px; max-width: 240px; position: sticky; top: 88px; display: flex; flex-direction: column; gap: 2px; }
 .r-toc a { display: flex; justify-content: space-between; align-items: center; min-height: 40px; padding: 0 12px; border-radius: var(--radii-md); color: inherit; text-decoration: none; }
 .r-toc a:hover { background: var(--colors-bg-neutral-hover); }
 .r-toc a[aria-current='true'] { background: var(--colors-bg-brand-hover); color: var(--colors-fg-brand); font-weight: 700; }
 @media (max-width: 860px) { .r-toc { display: none; } }
+@property --fade-start { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@property --fade-end { syntax: "<length>"; inherits: false; initial-value: 0px; }
+.r-strip {
+  --fade-size: ${FADE_PX}px;
+  display: flex; gap: var(--spacing-4); min-width: 0; overflow-x: auto; scrollbar-width: none;
+  scroll-padding-inline: var(--fade-size);
+  mask:
+    linear-gradient(black, black) no-clip subtract,
+    linear-gradient(to right, black, transparent) 0 0 / var(--fade-start) 100% no-repeat no-clip,
+    linear-gradient(to right, transparent, black) 100% 0 / var(--fade-end) 100% no-repeat no-clip;
+  animation: r-fade-start linear both, r-fade-end linear both;
+  animation-timeline: scroll(self inline);
+  animation-range: 0 var(--fade-size), calc(100% - var(--fade-size)) 100%;
+}
+.r-strip.more-start { --fade-start: var(--fade-size); }
+.r-strip.more-end { --fade-end: var(--fade-size); }
+@keyframes r-fade-start { to { --fade-start: var(--fade-size); } }
+@keyframes r-fade-end { from { --fade-end: var(--fade-size); } }
+/* 강제 색상 모드는 배경과 그림자를 지워서 고른 기준이 보이지 않는다. 테두리로 남긴다. */
+@media (forced-colors: active) { .r-strip a[aria-current='page'] { outline: 2px solid CanvasText; outline-offset: -2px; } }
 `
 
 function Results({ title, result }: { title: string; result: ResultSet }) {

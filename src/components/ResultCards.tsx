@@ -1,4 +1,5 @@
 import { Heading, Icon, Text } from 'daleui'
+import { CopyStatus } from '@/components/CopyStatus'
 import { CompareChart, ResultChart } from '@/components/ResultChart'
 import { SITE_URL } from '@/lib/og'
 import { useShare } from '@/lib/useShare'
@@ -187,30 +188,33 @@ const cell: React.CSSProperties = {
 // 차트 한 장의 공유 주소(/<회차>/results/<id>)를 복사하거나 OS 공유 창으로 보낸다. 집단별 보기는 담지 않는다.
 // 휴대폰에서 버튼이 제목 옆 한 줄에 들어가도록 아이콘만 둔다. 무엇을 하는지는 aria-label 과 title 로 알린다.
 function ChartShareButton({ edition, id, title }: { edition: string; id: string; title: string }) {
-  const { nativeShare, copied, copy, share } = useShare(`${SITE_URL}/${edition}/results/${id}`, title)
-  const label = nativeShare ? '이 차트 공유하기' : copied ? '링크를 복사했어요' : '이 차트 링크 복사하기'
+  const { nativeShare, status, copy, share } = useShare(`${SITE_URL}/${edition}/results/${id}`, title)
+  const label = nativeShare ? '이 차트 공유하기' : '이 차트 링크 복사하기'
   return (
-    <button
-      type="button"
-      onClick={nativeShare ? share : copy}
-      aria-label={`${title}: ${label}`}
-      title={label}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-        width: 36,
-        height: 36,
-        padding: 0,
-        border: '1px solid var(--colors-border-neutral)',
-        borderRadius: 'var(--radii-md)',
-        background: 'var(--colors-app-bg)',
-        color: copied ? 'var(--colors-fg-brand)' : 'var(--colors-fg-neutral)',
-        cursor: 'pointer',
-      }}
-    >
-      <Icon name={nativeShare ? 'share2' : copied ? 'check' : 'link'} size="sm" />
-    </button>
+    <span style={{ flexShrink: 0 }}>
+      <button
+        type="button"
+        onClick={nativeShare ? share : copy}
+        aria-label={`${title}: ${label}`}
+        title={label}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minWidth: 36,
+          minHeight: 36,
+          padding: 0,
+          border: '1px solid var(--colors-border-neutral)',
+          borderRadius: 'var(--radii-md)',
+          background: 'var(--colors-app-bg)',
+          color: status === 'copied' ? 'var(--colors-fg-brand)' : status === 'failed' ? 'var(--colors-fg-danger)' : 'var(--colors-fg-neutral)',
+          cursor: 'pointer',
+        }}
+      >
+        {/* 색만으로 알리지 않게 아이콘도 바꾼다 */}
+        <Icon name={nativeShare ? 'share2' : status === 'copied' ? 'check' : status === 'failed' ? 'circleAlert' : 'link'} size="sm" />
+      </button>
+      <CopyStatus status={status} copied="이 차트 링크를 복사했어요." />
+    </span>
   )
 }

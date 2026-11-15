@@ -1,18 +1,15 @@
 import { Button, Heading, Icon, Text } from 'daleui'
-import { useState } from 'react'
+import { CopyStatus } from '@/components/CopyStatus'
 import { SITE_URL } from '@/lib/og'
+import { useCopy } from '@/lib/useCopy'
 
 // GitHub 프로필이나 README 에 다는 참여 배지. 배지는 public/badges/<회차>.svg 정적 파일이라
 // 누가 붙였는지 우리는 모른다. 참여 여부만 담고 유형은 넣지 않는다 — README 는 공유 글보다 오래 남는다.
 export function ReadmeBadge({ edition }: { edition: { id: string; title: string } }) {
-  const [copied, setCopied] = useState(false)
   const src = `/badges/${edition.id}.svg`
   const markdown = `[![${edition.title} 참여](${SITE_URL}${src})](${SITE_URL}/${edition.id})`
 
-  async function copy() {
-    await navigator.clipboard.writeText(markdown)
-    setCopied(true)
-  }
+  const { status, copy } = useCopy(markdown)
 
   return (
     <section aria-labelledby="badge" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-12)' }}>
@@ -27,9 +24,10 @@ export function ReadmeBadge({ edition }: { edition: { id: string; title: string 
       <img src={src} alt={`${edition.title} 참여 배지`} width={232} height={20} />
       <div>
         <Button tone="neutral" variant="outline" onClick={copy}>
-          <Icon name="copy" size="sm" />
-          {copied ? '마크다운을 복사했어요' : '마크다운 복사하기'}
+          <Icon name={status === 'copied' ? 'check' : 'copy'} size="sm" />
+          {status === 'copied' ? '마크다운을 복사했어요' : status === 'failed' ? '복사하지 못했어요' : '마크다운 복사하기'}
         </Button>
+        <CopyStatus status={status} copied="배지 마크다운을 복사했어요." />
       </div>
     </section>
   )

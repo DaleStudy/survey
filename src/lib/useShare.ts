@@ -1,18 +1,14 @@
 import { useEffect, useState } from 'react'
+import { useCopy } from './useCopy'
 
 // 링크 복사와 OS 공유 창. 데스크톱의 OS 공유 창은 메시지나 메모 같은 대상만 보여서, 터치 기기에서만 쓴다.
 export function useShare(url: string, title: string, text?: string) {
-  const [copied, setCopied] = useState(false)
   const [nativeShare, setNativeShare] = useState(false)
+  const { status, copy } = useCopy(url)
 
   useEffect(() => {
     setNativeShare(typeof navigator.share === 'function' && matchMedia('(pointer: coarse)').matches)
   }, [])
-
-  async function copy() {
-    await navigator.clipboard.writeText(url)
-    setCopied(true)
-  }
 
   async function share() {
     try {
@@ -22,5 +18,5 @@ export function useShare(url: string, title: string, text?: string) {
     }
   }
 
-  return { nativeShare, copied, copy, share }
+  return { nativeShare, status, copy, share }
 }

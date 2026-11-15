@@ -65,11 +65,20 @@ export function MyPosition({ result }: { result: ResultSet }) {
         </Select>
       </div>
 
-      {p && dist ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-12)' }}>
-          <Text weight="semibold" style={{ fontSize: '1.125rem', lineHeight: 1.6 }} aria-live="polite">
+      {/* 결과 문장이 바뀔 때 스크린 리더가 읽도록, 알림 영역은 처음부터 두고 안의 글자만 바꾼다 */}
+      <div role="status">
+        {p && dist ? (
+          <Text weight="semibold" style={{ fontSize: '1.125rem', lineHeight: 1.6 }}>
             {who} 응답자 {dist.ranked.toLocaleString()}명 가운데 {headline(p)}
           </Text>
+        ) : (
+          <Text size="sm" muted>
+            비교할 사람과 연봉 구간을 고르면 그 안에서 어디쯤인지 보여 드려요.
+          </Text>
+        )}
+      </div>
+      {p && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-12)' }}>
           <div role="img" aria-label={SEGMENTS.map((s) => `${s.label} ${percent(p[s.key])}%`).join(', ')} style={{ display: 'flex', height: 28, gap: 2, borderRadius: 6, overflow: 'hidden' }}>
             {SEGMENTS.map((s) => (
               <div key={s.key} style={{ width: `${p[s.key] * 100}%`, background: s.color }} />
@@ -84,10 +93,6 @@ export function MyPosition({ result }: { result: ResultSet }) {
             ))}
           </div>
         </div>
-      ) : (
-        <Text size="sm" muted>
-          비교할 사람과 연봉 구간을 고르면 그 안에서 어디쯤인지 보여 드려요.
-        </Text>
       )}
       <Text size="sm" muted>
         성과급을 뺀 세전 계약 연봉 기준이고, 답하지 않은 사람은 빼고 셌어요. 연봉을 구간으로 물어서 위치도 범위로 나와요. 고른 값은 이 화면에서만 쓰고 어디에도 보내지 않아요.
