@@ -8,10 +8,10 @@ import { Logo } from '@/components/Logo'
 export function SiteHeader() {
   // 예시가 아닌 결과가 생기기 전에는 결과 메뉴가 가리킬 곳이 없다
   const hasResults = EDITIONS.some((e) => !e.sample && RESULTS[e.id])
-  // 응답을 받는 회차가 있으면 참여 버튼을 둔다. 설문은 회차 페이지에서 열므로 그리로 보내고, 회차 페이지에서는 숨긴다.
+  // 응답을 받는 회차가 있으면 참여 버튼을 둔다. 설문은 회차 페이지에서 열므로 그리로 보내고, 같은 링크가 본문 첫 화면에 있는 홈과 회차 페이지에서는 숨긴다.
   const open = openEditions()[0]
   const { pathname } = useLocation()
-  const showJoin = open && pathname !== `/${open.id}`
+  const showJoin = open && pathname !== '/' && pathname !== `/${open.id}`
   return (
     <header style={{ borderBottom: '1px solid var(--colors-bg-neutral-hover)', background: 'var(--colors-app-bg)' }}>
       <div
