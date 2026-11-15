@@ -663,7 +663,7 @@ sections:
         options:
           - { code: aider, label: "Aider" }
           - { code: amp, label: "Amp" }
-          - { code: antigravity, label: "Google Antigravity (Gemini CLI, Gemini Code Assist 포함)" }
+          - { code: antigravity, label: "Google Antigravity, Gemini CLI·Code Assist" }
           - { code: claude_code, label: "Claude Code" }
           - { code: cline, label: "Cline" }
           - { code: codex, label: "Codex" }
