@@ -13,7 +13,8 @@
     "db:migrate:local": "wrangler d1 migrations apply survey --local",
     "db:migrate:remote": "wrangler d1 migrations apply survey --remote",
     "db:migrate:preview": "wrangler d1 migrations apply survey-preview --remote --env migrate-preview",
-    "export": "bun run questions && bun scripts/export.ts"
+    "export": "bun run questions && bun scripts/export.ts",
+    "results": "bun run questions && bun scripts/results.ts"
   },
   "dependencies": {
     "@tanstack/charts": "1.2.0",

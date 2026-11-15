@@ -24,6 +24,7 @@ bun run test                # 문항 생성 + tsc --noEmit + bun test
 bun run db:generate --name <desc>   # 스키마 변경 후 마이그레이션 생성
 bun run db:migrate:local    # 로컬 D1 마이그레이션 (운영과 미리보기는 배포 워크플로가 적용한다)
 bun run export <회차>       # 운영 D1 원본 응답을 exports/<회차>-responses-<날짜>.csv 로 (git 무시, 공개 금지)
+bun run results <회차>      # 운영 D1 원본 응답을 집계해 src/results/<회차>.json 으로 (커밋해 공개한다. src/results/index.ts 에 등록해야 화면에 나온다)
 bun scripts/sample-results.ts   # 예시 회차 2025 의 집계(src/results/2025.json)를 다시 만든다
 OPENAI_API_KEY=$(op read op://dev/OpenAI-DaleStudy/credential) bun scripts/type-images.ts <임시 폴더> [slug...]   # 유형 일러스트와 대표 이미지 → public/types/<slug>.jpg (1200×630, 유형 카드와 홈·회차 페이지 og:image)
 bun scripts/og-images.ts <임시 폴더>   # 유형 공유 페이지 og:image → public/og/<회차>/<slug>.jpg (일러스트 + 설문·유형 이름)

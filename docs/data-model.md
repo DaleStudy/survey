@@ -17,7 +17,7 @@ flowchart LR
   browser -- "submitResponse<br/>Turnstile, cleanAnswers" --> d1[("D1 responses")]
   d1 --> admin["/admin (읽기만)"]
   d1 -- "bun run export" --> csv["exports/*.csv (비공개)"]
-  d1 -. "집계" .-> json["src/results/&lt;회차&gt;.json"]
+  d1 -- "bun run results" --> json["src/results/&lt;회차&gt;.json"]
   json --> page["/&lt;회차&gt;/results"]
 ```
 
@@ -73,7 +73,7 @@ flowchart LR
 - 결과 화면은 `src/results/<회차>.json` 만 읽는다. 원본 응답은 공개 페이지로 넘어가지 않는다.
 - 답한 사람이 `MIN_GROUP`(30)명보다 적은 문항과 집단별 칸은 숨긴다. 집단은 `BREAKDOWNS` 에 정하고, 한 번에 한 기준으로만 나눈다.
 - `src/results/index.ts` 에 회차를 등록해야 화면에 나온다.
-- 지금 집계 파일을 만드는 스크립트는 예시 회차용 `scripts/sample-results.ts` 뿐이다.
+- 집계 파일은 `bun run results <회차>` 가 운영 D1 원본으로 만든다(`scripts/results.ts`). 자유 의견, 기타 직접 입력, 제출 시각은 들어가지 않는다.
 
 ## 바꿀 때
 
