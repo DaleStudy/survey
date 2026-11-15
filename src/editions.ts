@@ -52,6 +52,12 @@ export function isBeta(edition: Edition, now: Date = new Date()): boolean {
   return edition.opensAt !== undefined && now.getTime() < new Date(`${edition.opensAt}T00:00:00+09:00`).getTime()
 }
 
+// 응답 완료 표시를 두는 localStorage 키. 베타 응답은 시작할 때 지우므로,
+// 베타 때 남긴 표시가 시작 뒤까지 이어지지 않게 기간마다 키를 따로 쓴다.
+export function doneKey(edition: Edition, now: Date = new Date()): string {
+  return `survey-${edition.id}-${isBeta(edition, now) ? 'beta' : 'open'}-done`
+}
+
 // 지금 응답을 받는 회차들. /survey 짧은 주소가 본다.
 export function openEditions(now: Date = new Date()): Edition[] {
   return EDITIONS.filter((e) => e.survey && !isClosed(e, now))
