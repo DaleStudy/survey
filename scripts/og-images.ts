@@ -7,27 +7,12 @@ import { Resvg } from '@resvg/resvg-js'
 import { $ } from 'bun'
 import { EDITIONS } from '@/editions'
 import { DEV_TYPES } from '@/lib/devType'
-
-const FONT_URL = 'https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/public/static'
-const FONTS = ['Pretendard-SemiBold.otf', 'Pretendard-Bold.otf']
+import { escapeXml as escape, pretendard } from './fonts'
 
 const [out] = process.argv.slice(2)
 if (!out) throw new Error('usage: bun scripts/og-images.ts <임시 폴더>')
 await mkdir(out, { recursive: true })
-
-const fontFiles = await Promise.all(
-  FONTS.map(async (name) => {
-    const path = `${out}/${name}`
-    if (!(await Bun.file(path).exists())) {
-      const r = await fetch(`${FONT_URL}/${name}`)
-      if (!r.ok) throw new Error(`${name}: ${r.status}`)
-      await Bun.write(path, r)
-    }
-    return path
-  }),
-)
-
-const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+const fontFiles = await pretendard(out)
 
 // 일러스트 배경과 같은 색으로 바탕을 깔고 좌우와 위를 흐려, 배경이 꽉 찬 일러스트도 글자 아래에서 끊겨 보이지 않게 한다
 function svg(edition: string, name: string, illustration: string) {
