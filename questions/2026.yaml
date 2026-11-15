@@ -483,7 +483,7 @@ sections:
           - { code: youtube, label: "유튜브" }
           - { code: podcast, label: "팟캐스트" }
           - { code: newsletter, label: "뉴스레터, 큐레이션 사이트" }
-          - { code: tech_blog, label: "기업 기술 블로그" }
+          - { code: tech_blog, label: "기술 블로그 (기업, 개인)" }
           - { code: official_docs, label: "공식 문서" }
           - { code: social, label: "X, LinkedIn, Threads" }
           - { code: community, label: "개발 커뮤니티 (Discord, Slack, OKKY 등)" }
