@@ -15,11 +15,11 @@ import { comparisonViews } from '@/results/comparisons'
 // 집계가 아직 없으면 공개일과 분석 방법을 알리는 예고 화면을 보여 준다.
 export const Route = createFileRoute('/$edition/results')({
   validateSearch: (search: Record<string, unknown>): { by?: string } => (typeof search.by === 'string' ? { by: search.by } : {}),
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
     const edition = findEdition(params.edition)
     if (!edition) throw notFound()
-    const result = RESULTS[params.edition]
-    if (result) return { kind: 'result' as const, title: edition.title, result }
+    const entry = RESULTS[params.edition]
+    if (entry) return { kind: 'result' as const, title: edition.title, result: await entry.load() }
     if (!edition.survey || !edition.resultsAt) throw notFound()
     return { kind: 'upcoming' as const, title: edition.title, edition: { ...edition, resultsAt: edition.resultsAt } }
   },

@@ -11,9 +11,9 @@ import { sharedCharts } from '@/results/share'
 // 차트 한 장을 공유하는 페이지. 전체 응답 기준으로 그 차트만 보여 주고 결과 페이지로 보낸다.
 // 미리보기 이미지는 결과를 공개할 때 scripts/results-og.ts 가 만든다.
 export const Route = createFileRoute('/$edition/results_/$chart')({
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
     const edition = findEdition(params.edition)
-    const result = RESULTS[params.edition]
+    const result = await RESULTS[params.edition]?.load()
     const chart = result && sharedCharts(result).find((c) => c.id === params.chart)
     if (!edition || !chart) throw notFound()
     return { editionTitle: edition.title, edition: edition.id, chart }
