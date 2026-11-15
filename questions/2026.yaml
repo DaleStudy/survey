@@ -581,6 +581,7 @@ sections:
         type: single
         order: nominal
         label: AI 엔지니어링에서 주로 하는 일은 무엇인가요?
+        help: AI 코딩 도구처럼 개발자가 쓰는 제품을 만든다면 "LLM 앱, 에이전트 개발"을 골라 주세요.
         show_if: { role: [ai_ml] }
         options:
           - { code: llm_app, label: "LLM 앱, 에이전트 개발" }
