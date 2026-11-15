@@ -95,7 +95,7 @@ export const BREAKDOWNS: {
     id: 'role',
     label: '직무별',
     by: 'role',
-    note: '직무를 두 개 고른 사람은 두 집단에 모두 들어가요.',
+    note: '직무를 여러 개 고른 사람은 고른 집단에 모두 들어가요.',
     groups: [
       { code: 'backend', label: '백엔드', codes: ['backend'] },
       { code: 'frontend', label: '프론트엔드', codes: ['frontend'] },

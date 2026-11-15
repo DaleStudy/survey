@@ -61,9 +61,9 @@ sections:
         fixed: true
         type: multi
         order: nominal
-        limit: 2
+        limit: 3
         label: 주로 맡은(또는 맡고 싶은) 직무는 무엇인가요?
-        help: 두 개까지 고를 수 있어요.
+        help: 세 개까지 고를 수 있어요.
         options:
           - { code: backend, label: "백엔드" }
           - { code: frontend, label: "프론트엔드" }
