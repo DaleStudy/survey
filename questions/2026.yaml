@@ -485,7 +485,7 @@ sections:
           - { code: newsletter, label: "뉴스레터, 큐레이션 사이트" }
           - { code: tech_blog, label: "기술 블로그 (기업, 개인)" }
           - { code: official_docs, label: "공식 문서" }
-          - { code: social, label: "X, LinkedIn, Threads" }
+          - { code: social, label: "SNS" }
           - { code: community, label: "개발 커뮤니티 (Discord, Slack, OKKY 등)" }
           - { code: ai, label: "AI에게 묻기" }
           - { code: coworkers, label: "동료" }
