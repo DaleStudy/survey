@@ -684,6 +684,7 @@ sections:
           - { code: trae, label: "Trae" }
           - { code: warp, label: "Warp" }
           - { code: zed, label: "Zed" }
+          - { code: internal, label: "회사가 만든 사내 AI 도구" }
           - { code: chat_app, label: "대화형 앱 (ChatGPT, Claude, Gemini 등)" }
           - { code: app_builder, label: "AI 앱 빌더 (v0, Lovable, Bolt 등)" }
           - { code: other, label: "기타" }
