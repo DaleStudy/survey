@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import { existsSync } from 'node:fs'
-import { EDITIONS, type Edition, isBeta, isClosed, openEditions } from './editions'
+import { EDITIONS, type Edition, doneKey, isBeta, isClosed, openEditions } from './editions'
 import { DEV_TYPES } from './lib/devType'
 import { QUESTION_EDITIONS, SCALE_POINTS, questionsFor } from './questions/survey'
 
@@ -38,6 +38,13 @@ describe('회차', () => {
     expect(isBeta(e, new Date('2026-11-15T23:59:59+09:00'))).toBe(true)
     expect(isBeta(e, new Date('2026-11-16T00:00:00+09:00'))).toBe(false)
     expect(isBeta(edition(), new Date('2026-11-01T00:00:00+09:00'))).toBe(false)
+  })
+
+  test('베타 때 남긴 완료 표시는 시작 뒤에 읽는 키와 다르다', () => {
+    const e = { ...edition(), opensAt: '2026-11-16' }
+    expect(doneKey(e, new Date('2026-11-15T23:59:59+09:00'))).toBe('survey-x-beta-done')
+    expect(doneKey(e, new Date('2026-11-16T00:00:00+09:00'))).toBe('survey-x-open-done')
+    expect(doneKey(edition(), new Date('2026-11-01T00:00:00+09:00'))).toBe('survey-x-open-done')
   })
 
   test('마감이 지나면 열린 회차에서 빠진다', () => {
