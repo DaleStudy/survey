@@ -551,16 +551,13 @@ sections:
         type: single
         order: nominal
         label: 프론트엔드에서 가장 많이 쓴 프레임워크는 무엇인가요?
-        help: Next.js, Nuxt, SvelteKit처럼 메타 프레임워크를 썼다면 그쪽을 골라 주세요.
         show_if: { role: [frontend, fullstack] }
         options:
-          - { code: react, label: "React" }
-          - { code: nextjs, label: "Next.js" }
-          - { code: vue, label: "Vue" }
-          - { code: nuxt, label: "Nuxt" }
-          - { code: svelte, label: "Svelte" }
-          - { code: sveltekit, label: "SvelteKit" }
+          - { code: react, label: "React (Next.js 등)" }
+          - { code: vue, label: "Vue (Nuxt 등)" }
+          - { code: svelte, label: "Svelte (SvelteKit 등)" }
           - { code: angular, label: "Angular" }
+          - { code: agnostic, label: "UI 프레임워크를 가리지 않는 도구 (Astro, TanStack 등)" }
           - { code: none, label: "프레임워크 없이" }
           - { code: not_yet, label: "아직 써 본 적 없어요" }
           - { code: other, label: "기타" }
