@@ -134,9 +134,10 @@ sections:
         type: single
         order: nominal
         label: 지금 일하는 곳은 어떤 곳인가요?
-        help: 외국계라면 규모와 관계없이 "외국계 기업"을, 투자를 받아 빠르게 크고 있는 회사라면 "스타트업"을 골라 주세요.
+        help: IT 서비스가 본업인 큰 회사는 국내외 관계없이 "IT 대기업·빅테크"를, 투자를 받아 빠르게 크고 있는 회사는 "스타트업"을 골라 주세요. "외국계 기업"은 한국에 있는 외국 회사예요.
         options:
           - { code: large, label: "대기업" }
+          - { code: bigtech, label: "IT 대기업·빅테크 (네이버, 카카오, 쿠팡, 구글 등)" }
           - { code: midsize, label: "중견기업" }
           - { code: small, label: "중소기업" }
           - { code: startup, label: "스타트업" }
@@ -149,7 +150,7 @@ sections:
         type: single
         order: ordinal
         label: 회사 직원은 모두 몇 명인가요?
-        show_if: { company_type: [large, midsize, small, startup, public, foreign] }
+        show_if: { company_type: [large, bigtech, midsize, small, startup, public, foreign] }
         options:
           - { code: lt_10, label: "10명 미만" }
           - { code: "10_49", label: "10~49명" }
