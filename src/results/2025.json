@@ -3014,12 +3014,12 @@
       "groups": [
         {
           "code": "junior",
-          "label": "2년 이하",
+          "label": "3년 미만",
           "count": 442
         },
         {
           "code": "mid",
-          "label": "3~9년",
+          "label": "3년 이상 10년 미만",
           "count": 230
         },
         {
