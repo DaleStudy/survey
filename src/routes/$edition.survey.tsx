@@ -253,6 +253,14 @@ function Survey() {
     if (done) {
       setDevType(findDevType(done))
       setPhase('already')
+    } else {
+      // 진행 중인 답은 동의한 뒤에만 저장되므로, 남아 있으면 이 탭에서 이미 동의한 것이다
+      const saved = loadProgress(PROGRESS_KEY, QUESTIONS)
+      if (saved) {
+        setAnswers(saved.answers)
+        setQid(saved.qid)
+        setPhase('question')
+      }
     }
     return () => clearTimeout(timer.current)
   }, [])
@@ -373,10 +381,7 @@ function Survey() {
           <ConsentStep
             deleteAt={edition.deleteAt}
             onAgree={() => {
-              // 새로고침했다면 동의를 다시 받은 뒤 머물던 문항부터 잇는다
-              const saved = loadProgress(PROGRESS_KEY, QUESTIONS)
-              if (saved) setAnswers(saved.answers)
-              setQid(saved?.qid ?? visible[0].id)
+              setQid(qid ?? visible[0].id)
               setPhase('question')
             }}
           />
