@@ -2,7 +2,7 @@ import { Link, createFileRoute, notFound } from '@tanstack/react-router'
 import { Button, Heading, Icon, Tag, Text } from 'daleui'
 import { useEffect, useRef, useState } from 'react'
 import { ConsentStep } from '@/components/ConsentStep'
-import { KEY_OPTIONS, QuestionStep } from '@/components/QuestionStep'
+import { QuestionStep } from '@/components/QuestionStep'
 import { Turnstile } from '@/components/Turnstile'
 import { DevTypeCard } from '@/components/DevTypeCard'
 import { DevTypeGrid } from '@/components/DevTypeGrid'
@@ -16,7 +16,7 @@ import { doneKey, findEdition, isBeta, isClosed } from '@/editions'
 import { koDate } from '@/lib/date'
 import { OTHER, isEmpty, otherKey, toggleOption, visibleQuestions } from '@/questions/logic'
 import { clearProgress, loadProgress, saveProgress } from '@/questions/progress'
-import { type Answers, SCALE_POINTS, questionsFor } from '@/questions/survey'
+import { type Answers, questionsFor } from '@/questions/survey'
 import { submitResponse } from '@/server/functions/responses'
 
 export const Route = createFileRoute('/$edition/survey')({
@@ -264,24 +264,6 @@ function Survey() {
   const visible = visibleQuestions(QUESTIONS, answers)
   const pos = visible.findIndex((q) => q.id === qid)
   const current = pos >= 0 ? visible[pos] : undefined
-
-  // 숫자 키(1~9)로 선택지를 고른다. 입력란에 쓰는 중이면 그 글자로 둔다.
-  useEffect(() => {
-    if (phase !== 'question' || !current || current.type === 'long') return
-    const q = current
-    const codes = q.type === 'scale' ? SCALE_POINTS : q.options.slice(0, KEY_OPTIONS).map((o) => o.code)
-    function onKey(e: KeyboardEvent) {
-      if (e.metaKey || e.ctrlKey || e.altKey || e.repeat) return
-      if (e.target instanceof Element && e.target.closest('input, textarea, select, [contenteditable="true"]')) return
-      const n = Number(e.key)
-      if (!Number.isInteger(n) || n < 1 || n > codes.length) return
-      e.preventDefault()
-      if (q.type === 'multi') toggle(codes[n - 1])
-      else pick(codes[n - 1])
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [phase, current, answers])
 
   async function submit(final: Answers) {
     if (!turnstileToken) {
