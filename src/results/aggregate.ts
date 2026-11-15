@@ -77,8 +77,8 @@ export const BREAKDOWNS: {
     by: 'experience',
     ordinal: true,
     groups: [
-      { code: 'junior', label: '2년 이하', codes: ['none', 'lt_1', '1_2'] },
-      { code: 'mid', label: '3~9년', codes: ['3_5', '6_9'] },
+      { code: 'junior', label: '3년 미만', codes: ['none', 'lt_1', '1_2'] },
+      { code: 'mid', label: '3년 이상 10년 미만', codes: ['3_5', '6_9'] },
       { code: 'senior', label: '10년 이상', codes: ['10_14', '15_plus'] },
     ],
   },

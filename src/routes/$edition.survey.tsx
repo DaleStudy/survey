@@ -14,7 +14,7 @@ import { StarBurst } from '@/components/StarBurst'
 import { type DevType, devTypeOf, findDevType } from '@/lib/devType'
 import { findEdition, isBeta, isClosed } from '@/editions'
 import { koDate } from '@/lib/date'
-import { OTHER, isEmpty, otherKey, visibleQuestions } from '@/questions/logic'
+import { OTHER, isEmpty, otherKey, toggleOption, visibleQuestions } from '@/questions/logic'
 import { clearProgress, loadProgress, saveProgress } from '@/questions/progress'
 import { type Answers, SCALE_POINTS, questionsFor } from '@/questions/survey'
 import { submitResponse } from '@/server/functions/responses'
@@ -347,12 +347,12 @@ function Survey() {
   function toggle(code: string) {
     if (!current) return
     const picked = answers[current.id]
-    const list = Array.isArray(picked) ? picked : []
-    if (!list.includes(code) && current.limit && list.length >= current.limit) {
+    const next = toggleOption(current, Array.isArray(picked) ? picked : [], code)
+    if (!next) {
       setError(`최대 ${current.limit}개까지 고를 수 있어요. 다른 걸 먼저 빼 주세요.`)
       return
     }
-    update({ ...answers, [current.id]: list.includes(code) ? list.filter((c) => c !== code) : [...list, code] })
+    update({ ...answers, [current.id]: next })
   }
 
   if (phase === 'done') {

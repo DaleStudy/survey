@@ -53,7 +53,7 @@ flowchart LR
 | 문항 유형 | 값 |
 |---|---|
 | `single` | 선택지 code 문자열 |
-| `multi` | code 배열. 중복 없고 `limit` 이하 |
+| `multi` | code 배열. 중복 없고 `limit` 이하. `exclusive` 선택지는 혼자만 |
 | `scale` | 정수를 담은 **문자열** (`"1"`~`"5"`). 척도는 모두 5점이다(`SCALE_POINTS`, 테스트가 YAML 의 `min`·`max` 를 묶는다) |
 | `long` | 앞뒤 공백을 지운 문자열, 2000자 이하 |
 | `<문항 id>_other` | "기타"를 고르고 직접 적었을 때만. 100자 이하. 집계와 결과 화면에는 쓰지 않고 CSV 에만 나온다 |
