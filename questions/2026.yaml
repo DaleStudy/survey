@@ -667,19 +667,20 @@ sections:
         options:
           - { code: aider, label: "Aider" }
           - { code: amp, label: "Amp" }
-          - { code: antigravity, label: "Google Antigravity (Gemini CLI 포함)" }
+          - { code: antigravity, label: "Google Antigravity" }
           - { code: claude_code, label: "Claude Code" }
           - { code: cline, label: "Cline" }
           - { code: codex, label: "Codex" }
           - { code: cursor, label: "Cursor" }
           - { code: devin, label: "Devin (Devin Desktop, 옛 Windsurf)" }
+          - { code: gemini_cli, label: "Gemini CLI·Code Assist" }
           - { code: copilot, label: "GitHub Copilot" }
           - { code: goose, label: "Goose" }
           - { code: grok_build, label: "Grok Build" }
           - { code: herdr, label: "herdr" }
           - { code: jetbrains_ai, label: "JetBrains AI" }
           - { code: kilo_code, label: "Kilo Code" }
-          - { code: kiro, label: "Kiro" }
+          - { code: kiro, label: "Kiro (옛 Amazon Q Developer)" }
           - { code: opencode, label: "OpenCode" }
           - { code: orca, label: "Orca" }
           - { code: paseo, label: "Paseo" }
@@ -688,8 +689,9 @@ sections:
           - { code: trae, label: "Trae" }
           - { code: warp, label: "Warp" }
           - { code: zed, label: "Zed" }
+          - { code: internal, label: "회사가 만든 사내 AI 도구" }
           - { code: chat_app, label: "대화형 앱 (ChatGPT, Claude, Gemini 등)" }
-          - { code: app_builder, label: "AI 앱 빌더 (v0, Lovable, Bolt 등)" }
+          - { code: app_builder, label: "AI 앱 빌더 (Lovable, v0, Bolt, Replit 등)" }
           - { code: other, label: "기타" }
 
       - id: ai_code_share
