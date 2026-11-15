@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { cleanAnswers, visibleQuestions } from './logic'
+import { cleanAnswers, usesGrid, visibleQuestions } from './logic'
 import { questionsFor } from './survey'
 
 const QUESTIONS = questionsFor('2026')!
@@ -40,7 +40,7 @@ const employed = {
   ai_policy: 'provided',
   ai_upsides: ['speed'],
   ai_downsides: ['review'],
-  ai_outlook: 'major',
+  ai_outlook: 'partial',
 }
 
 describe('문항 원본', () => {
@@ -64,6 +64,12 @@ describe('문항 원본', () => {
         for (const code of codes) expect(target?.options.some((o) => o.code === code)).toBe(true)
       }
     }
+  })
+
+  test('짧은 이름이 많은 문항만 여러 열로, 문장형 선택지는 한 줄에 하나씩 놓는다', () => {
+    const grid = (id: string) => usesGrid(QUESTIONS.find((q) => q.id === id)!)
+    for (const id of ['main_language', 'ai_harness', 'ai_model', 'learning_sources']) expect(grid(id)).toBe(true)
+    for (const id of ['ai_upsides', 'ai_downsides', 'ai_outlook']) expect(grid(id)).toBe(false)
   })
 })
 

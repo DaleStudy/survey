@@ -591,6 +591,7 @@ sections:
         help: 망분리 같은 보안 규정도 함께 떠올려 주세요.
         show_if: { status: [employed] }
         options:
+          - { code: required, label: "써야 해요 (사용을 요구하거나 평가에 반영해요)" }
           - { code: provided, label: "회사가 마련해 주고 권해요" }
           - { code: allowed, label: "쓸 수 있지만 각자 준비해요" }
           - { code: limited, label: "일부 업무에서만 쓸 수 있어요" }
@@ -605,7 +606,7 @@ sections:
         options:
           - { code: daily, label: "매일 써요" }
           - { code: weekly, label: "일주일에 몇 번 써요" }
-          - { code: monthly, label: "한 달에 몇 번 써요" }
+          - { code: monthly, label: "한 달에 몇 번 이하로 써요" }
           - { code: stopped, label: "써 봤지만 지금은 안 써요" }
           - { code: never, label: "써 본 적 없어요" }
 
@@ -622,7 +623,8 @@ sections:
           - { code: no_need, label: "필요성을 못 느껴요" }
           - { code: distrust, label: "결과를 신뢰하기 어려워요" }
           - { code: cost, label: "비용이 부담돼요" }
-          - { code: disappointing, label: "써 봤는데 별로였어요" }
+          - { code: privacy, label: "내 코드나 데이터가 밖으로 나가는 게 걱정돼요" }
+          - { code: skill, label: "내 실력을 스스로 키우고 싶어요" }
           - { code: no_time, label: "배울 시간이 없어요" }
           - { code: other, label: "기타" }
 
@@ -693,11 +695,12 @@ sections:
         label: 지난 한 달 동안 내가 낸 코드 중 AI가 쓴 코드는 얼마쯤인가요?
         show_if: { ai_frequency: [daily, weekly, monthly] }
         options:
-          - { code: almost_none, label: "거의 없어요" }
-          - { code: lt_25, label: "25% 미만" }
+          - { code: lt_10, label: "10% 미만" }
+          - { code: "10_25", label: "10~25%" }
           - { code: "25_50", label: "25~50%" }
           - { code: "50_75", label: "50~75%" }
-          - { code: "75_plus", label: "75% 이상" }
+          - { code: "75_90", label: "75~90%" }
+          - { code: "90_plus", label: "90% 이상" }
 
       - id: ai_upsides
         fixed: false
@@ -710,10 +713,12 @@ sections:
         options:
           - { code: speed, label: "작업 속도가 빨라졌어요" }
           - { code: repetitive, label: "반복 작업이 줄었어요" }
+          - { code: search, label: "검색하는 시간이 줄었어요" }
           - { code: learning, label: "새 기술을 빨리 배워요" }
           - { code: unfamiliar, label: "낯선 영역의 일도 해낼 수 있어요" }
           - { code: quality, label: "테스트와 문서를 더 잘 챙겨요" }
-          - { code: focus, label: "어려운 문제에 더 집중할 수 있어요" }
+          - { code: focus, label: "중요한 일에 더 집중할 수 있어요" }
+          - { code: enjoyment, label: "일이 더 재밌어졌어요" }
           - { code: none, label: "딱히 없어요" }
           - { code: other, label: "기타" }
 
@@ -727,8 +732,10 @@ sections:
         show_if: { ai_frequency: [daily, weekly, monthly] }
         options:
           - { code: review, label: "검토할 코드가 늘었어요" }
-          - { code: fixing, label: "AI가 만든 코드를 고치는 데 시간이 들어요" }
+          - { code: fixing, label: "그럴듯하지만 틀린 코드를 고치느라 시간이 들어요" }
           - { code: expectation, label: "회사가 기대하는 업무량이 늘었어요" }
+          - { code: fatigue, label: "AI에게 맡긴 여러 작업을 챙기느라 더 지쳐요" }
+          - { code: isolation, label: "동료에게 묻고 함께 이야기할 일이 줄었어요" }
           - { code: skill, label: "실력이 줄어드는 것 같아요" }
           - { code: tool_churn, label: "따라가야 할 도구가 너무 많아요" }
           - { code: cost, label: "도구 비용을 직접 내야 해요" }
@@ -739,12 +746,14 @@ sections:
         fixed: false
         type: single
         order: ordinal
-        label: 앞으로 3년 동안 AI가 내 일을 얼마나 바꿀 것 같나요?
+        label: 앞으로 1년 동안 AI 때문에 내 일은 어떻게 달라질 것 같나요?
+        help: 학생이거나 일을 찾고 있다면 앞으로 하고 싶은 일을 떠올려 주세요.
         options:
-          - { code: threat, label: "일자리가 위태로울 것 같아요" }
-          - { code: major, label: "일하는 방식이 크게 바뀔 것 같아요" }
-          - { code: minor, label: "조금 바뀔 것 같아요" }
-          - { code: none, label: "거의 그대로일 것 같아요" }
+          - { code: replaced, label: "AI가 내 일을 대신해서 일자리가 위태로워질 것 같아요" }
+          - { code: delegate, label: "AI에게 대부분의 일을 맡기고 감독하게 될 것 같아요" }
+          - { code: partial, label: "일의 일부는 AI에게 맡기고 나머지는 계속 직접 할 것 같아요" }
+          - { code: assist, label: "AI는 물어보거나 거드는 정도로 쓰고 일은 대부분 직접 할 것 같아요" }
+          - { code: none, label: "거의 바뀌지 않을 것 같아요" }
           - { code: unknown, label: "잘 모르겠어요" }
 
   - id: closing
