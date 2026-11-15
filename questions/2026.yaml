@@ -241,9 +241,13 @@ sections:
         order: ordinal
         required: false
         label: 1년 전보다 연봉이 어떻게 바뀌었나요?
+        # 대부분의 인상은 물가 상승률 언저리라 3%·5% 로 촘촘히 나눈다. 물가는 해마다 달라서 경계는 숫자로 두고, 비교는 결과를 낼 때 그해 물가와 한다.
+        # code 는 구간의 윗값이다(up_lt_10 은 5% 이상 10% 미만).
         options:
           - { code: up_10_plus, label: "10% 이상 올랐어요" }
-          - { code: up_lt_10, label: "조금 올랐어요 (10% 미만)" }
+          - { code: up_lt_10, label: "5% 이상 10% 미만 올랐어요" }
+          - { code: up_lt_5, label: "3% 이상 5% 미만 올랐어요" }
+          - { code: up_lt_3, label: "3% 미만 올랐어요" }
           - { code: same, label: "그대로예요" }
           - { code: down, label: "줄었어요" }
           - { code: new, label: "1년 전에는 일하지 않았어요" }
