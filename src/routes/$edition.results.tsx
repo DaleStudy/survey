@@ -4,12 +4,14 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { findEdition } from '@/editions'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
+import { MyPosition } from '@/components/MyPosition'
 import { ComparisonResult, QuestionResult } from '@/components/ResultCards'
 import { UpcomingResults } from '@/components/UpcomingResults'
 import { sectionIcon } from '@/questions/sectionIcons'
 import { RESULTS } from '@/results'
 import { type Breakdown, MIN_GROUP, type ResultSet } from '@/results/aggregate'
 import { comparisonViews } from '@/results/comparisons'
+import { distribution } from '@/results/position'
 
 // 화면은 집계(src/results/<회차>.json)만 읽는다. 원본 응답은 여기로 오지 않는다.
 // 집계가 아직 없으면 공개일과 분석 방법을 알리는 예고 화면을 보여 준다.
@@ -133,7 +135,9 @@ function Results({ title, result }: { title: string; result: ResultSet }) {
   const breakdown = result.breakdowns.find((b) => b.id === by)
   const sections = [...new Map(result.questions.map((q) => [q.sectionId, q.section]))]
   const comparisons = useMemo(() => comparisonViews(result), [result])
-  const active = useActiveSection([...sections.map(([id]) => id), ...(comparisons.length ? ['compare'] : []), 'method'])
+  // 연봉 문항을 숨겼으면(응답자가 적으면) 나와 비교하기를 두지 않는다
+  const canCompare = distribution(result) !== undefined
+  const active = useActiveSection([...sections.map(([id]) => id), ...(comparisons.length ? ['compare'] : []), ...(canCompare ? ['me'] : []), 'method'])
   const count = (id: string) => result.questions.filter((q) => q.sectionId === id).length
   const wrap: React.CSSProperties = { maxWidth: 1120, margin: '0 auto', padding: '0 24px', boxSizing: 'border-box' }
 
@@ -194,6 +198,11 @@ function Results({ title, result }: { title: string; result: ResultSet }) {
                 <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--colors-fg-neutral-placeholder)' }}>{comparisons.length}</span>
               </a>
             )}
+            {canCompare && (
+              <a href="#me" aria-current={active === 'me' ? 'true' : undefined}>
+                나와 비교하기
+              </a>
+            )}
             <a href="#method" aria-current={active === 'method' ? 'true' : undefined} style={{ marginTop: 8, borderTop: rule, borderRadius: 0, fontSize: 14 }}>
               어떻게 조사했나요
             </a>
@@ -227,6 +236,17 @@ function Results({ title, result }: { title: string; result: ResultSet }) {
                 {comparisons.map((view) => (
                   <ComparisonResult key={view.comparison.id} view={view} breakdown={breakdown} edition={result.edition} />
                 ))}
+              </section>
+            )}
+
+            {canCompare && (
+              <section id="me" aria-labelledby="me-title" style={{ scrollMarginTop: 88, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-20)' }}>
+                <SectionTitle id="me-title" icon="user">
+                  나와 비교하기
+                </SectionTitle>
+                <div style={{ padding: 'clamp(16px, 4vw, 28px)', borderRadius: 'var(--radii-lg)', border: '1px solid var(--colors-bg-neutral-hover)' }}>
+                  <MyPosition result={result} />
+                </div>
               </section>
             )}
 
