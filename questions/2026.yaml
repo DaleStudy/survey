@@ -557,7 +557,8 @@ sections:
           - { code: vue, label: "Vue (Nuxt 등)" }
           - { code: svelte, label: "Svelte (SvelteKit 등)" }
           - { code: angular, label: "Angular" }
-          - { code: agnostic, label: "UI 프레임워크를 가리지 않는 도구 (Astro, TanStack 등)" }
+          - { code: astro, label: "Astro" }
+          - { code: tanstack, label: "TanStack Start" }
           - { code: none, label: "프레임워크 없이" }
           - { code: not_yet, label: "아직 써 본 적 없어요" }
           - { code: other, label: "기타" }
