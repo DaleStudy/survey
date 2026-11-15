@@ -3,6 +3,7 @@
 # id 와 선택지 code 는 연도별 비교의 키다. 회차를 연 뒤에는 fixed: true 문항의 문구·선택지·순서를 바꾸지 않는다.
 # 선택지를 늘릴 때는 기존 code 를 지우지 않고 "기타"를 쪼개는 식으로 새 code 를 더한다.
 # show_if 는 키마다 AND, 값 목록은 OR 이다. required 를 적지 않으면 필수다.
+# exclusive: true 는 multi 문항에서 "딱히 없어요"처럼 다른 선택지와 함께 고를 수 없는 선택지에 붙인다.
 # order 는 single·multi 문항에 꼭 적는다. ordinal(경력, 연봉처럼 선택지에 순서가 있다)은 결과 화면에서 이 순서 그대로,
 # nominal(언어, 도구처럼 순서가 없다)은 비율이 높은 순으로 보여 준다. 화면에만 쓰는 값이라 fixed 문항에도 적을 수 있다.
 # 동의와 만 14세 확인은 문항이 아니라 설문 앞 단계에서 처리한다.
@@ -19,6 +20,7 @@ sections:
         type: single
         order: nominal
         label: 지금 어떤 상황인가요?
+        help: 여러 개에 해당하면 위에 있는 걸 골라 주세요. 일하면서 대학원에 다닌다면 "개발자로 일하고 있어요"예요.
         options:
           - { code: employed, label: "개발자로 일하고 있어요" }
           - { code: job_seeking, label: "개발 일자리를 찾고 있어요" }
@@ -35,10 +37,10 @@ sections:
         options:
           - { code: none, label: "아직 없어요" }
           - { code: lt_1, label: "1년 미만" }
-          - { code: "1_2", label: "1~2년" }
-          - { code: "3_5", label: "3~5년" }
-          - { code: "6_9", label: "6~9년" }
-          - { code: "10_14", label: "10~14년" }
+          - { code: "1_2", label: "1년 이상 3년 미만" }
+          - { code: "3_5", label: "3년 이상 6년 미만" }
+          - { code: "6_9", label: "6년 이상 10년 미만" }
+          - { code: "10_14", label: "10년 이상 15년 미만" }
           - { code: "15_plus", label: "15년 이상" }
 
       - id: major
@@ -46,7 +48,7 @@ sections:
         type: single
         order: nominal
         label: 대학 전공은 무엇인가요?
-        help: 학생이라면 지금 전공을 골라 주세요. 복수전공이고 그중 컴퓨터 관련 전공이 있다면 그쪽을 골라 주세요.
+        help: 학생이라면 지금 전공을 골라 주세요. 복수전공이나 대학원을 포함해 컴퓨터 관련 전공이 하나라도 있으면 그쪽을 골라 주세요.
         options:
           - { code: cs, label: "컴퓨터공학 등 컴퓨터 관련" }
           - { code: stem, label: "그 밖의 이공계" }
@@ -133,6 +135,7 @@ sections:
         type: single
         order: nominal
         label: 지금 일하는 곳은 어떤 곳인가요?
+        help: 외국계라면 규모와 관계없이 "외국계 기업"을, 투자를 받아 빠르게 크고 있는 회사라면 "스타트업"을 골라 주세요.
         options:
           - { code: large, label: "대기업" }
           - { code: midsize, label: "중견기업" }
@@ -163,12 +166,12 @@ sections:
         order: nominal
         label: 지금 하는 일은 주로 어떤 형태인가요?
         options:
-          - { code: own_service, label: "자사 서비스 및 제품 개발 (자사의 앱, 플랫폼, 게임 등)" }
+          - { code: own_service, label: "자사 서비스 및 제품 개발 (고객이 쓰는 자사의 앱, 플랫폼, 게임 등)" }
           - { code: si, label: "SI (고객사 시스템을 새로 구축하는 프로젝트)" }
           - { code: sm, label: "SM (고객사 시스템 운영 및 유지보수)" }
           - { code: solution, label: "솔루션, 패키지 (여러 고객사에 설치하고 맞춤 개발하는 제품)" }
           - { code: agency, label: "외주 개발, 에이전시 (웹, 앱 제작 의뢰를 받아 개발)" }
-          - { code: inhouse_it, label: "사내 IT, 전산 조직 (개발이 본업이 아닌 회사의 IT 부서. 예: 은행, 제조, 유통)" }
+          - { code: inhouse_it, label: "사내 IT, 전산 조직 (직원이 쓰는 사내 시스템을 만들고 운영. 예: 제조, 유통 회사 전산실)" }
           - { code: other, label: "기타" }
 
       - id: contract_position
@@ -217,16 +220,16 @@ sections:
         help: 성과급을 뺀 계약 연봉으로 골라 주세요. 프리랜서는 지난 1년 수입으로 답하면 돼요.
         options:
           - { code: lt_20, label: "2천만 원 미만" }
-          - { code: "20_30", label: "2천만~3천만 원" }
-          - { code: "30_40", label: "3천만~4천만 원" }
-          - { code: "40_50", label: "4천만~5천만 원" }
-          - { code: "50_60", label: "5천만~6천만 원" }
-          - { code: "60_70", label: "6천만~7천만 원" }
-          - { code: "70_80", label: "7천만~8천만 원" }
-          - { code: "80_90", label: "8천만~9천만 원" }
-          - { code: "90_100", label: "9천만~1억 원" }
-          - { code: "100_150", label: "1억~1억 5천만 원" }
-          - { code: "150_200", label: "1억 5천만~2억 원" }
+          - { code: "20_30", label: "2천만 원대" }
+          - { code: "30_40", label: "3천만 원대" }
+          - { code: "40_50", label: "4천만 원대" }
+          - { code: "50_60", label: "5천만 원대" }
+          - { code: "60_70", label: "6천만 원대" }
+          - { code: "70_80", label: "7천만 원대" }
+          - { code: "80_90", label: "8천만 원대" }
+          - { code: "90_100", label: "9천만 원대" }
+          - { code: "100_150", label: "1억 원 이상 1억 5천만 원 미만" }
+          - { code: "150_200", label: "1억 5천만 원 이상 2억 원 미만" }
           - { code: "200_plus", label: "2억 원 이상" }
           - { code: no_answer, label: "답하지 않을게요" }
 
@@ -373,9 +376,12 @@ sections:
         options:
           - { code: coding_test, label: "코딩 테스트" }
           - { code: experience_required, label: "경력을 요구하는 공고" }
-          - { code: few_openings, label: "공고가 적어요" }
+          - { code: few_openings, label: "적은 공고 수" }
           - { code: interview, label: "면접" }
           - { code: portfolio, label: "포트폴리오, 이력서" }
+          - { code: no_response, label: "서류 단계에서 연락 없음" }
+          - { code: pay_gap, label: "원하는 처우와의 차이" }
+          - { code: direction, label: "무엇부터 준비할지 모름" }
           - { code: other, label: "기타" }
 
       - id: company_criteria
@@ -385,17 +391,7 @@ sections:
         limit: 3
         label: 일할 곳을 고를 때 무엇을 가장 중요하게 보나요?
         help: 세 개까지 고를 수 있어요.
-        options:
-          - { code: pay, label: "연봉" }
-          - { code: growth, label: "성장할 기회" }
-          - { code: stability, label: "회사의 안정성" }
-          - { code: hours, label: "근무 시간과 워라밸" }
-          - { code: flexible, label: "재택, 유연 근무" }
-          - { code: culture, label: "동료와 조직 문화" }
-          - { code: reputation, label: "회사 규모와 인지도" }
-          - { code: commute, label: "출퇴근 거리" }
-          - { code: domain, label: "서비스와 도메인" }
-          - { code: other, label: "기타" }
+        options_from: job_good
 
       - id: next_workplace
         fixed: false
@@ -405,7 +401,8 @@ sections:
         options:
           - { code: stay, label: "지금 일하는 곳에 남고 싶어요" }
           - { code: large, label: "대기업" }
-          - { code: midsize_small, label: "중견·중소기업" }
+          - { code: midsize, label: "중견기업" }
+          - { code: small, label: "중소기업" }
           - { code: startup, label: "스타트업" }
           - { code: public, label: "공공기관·공기업" }
           - { code: foreign, label: "외국계 기업" }
@@ -421,12 +418,14 @@ sections:
         label: 요즘 커리어에서 가장 큰 고민은 무엇인가요?
         help: 두 개까지 고를 수 있어요.
         options:
-          - { code: expertise, label: "전문성이 부족한 것 같아요" }
+          - { code: expertise, label: "전문성 부족" }
           - { code: pay, label: "연봉" }
-          - { code: market, label: "얼어붙은 채용 시장" }
+          - { code: market, label: "채용 시장 상황" }
           - { code: ai, label: "AI가 바꿀 일자리" }
           - { code: direction, label: "앞으로 나아갈 방향" }
           - { code: balance, label: "일과 삶의 균형" }
+          - { code: job_security, label: "구조조정, 고용 불안" }
+          - { code: ic_or_manager, label: "관리자와 실무자 사이의 진로" }
           - { code: other, label: "기타" }
 
   - id: growth
@@ -458,7 +457,10 @@ sections:
           - { code: open_source, label: "오픈소스 기여" }
           - { code: conference, label: "컨퍼런스, 밋업" }
           - { code: algorithm, label: "알고리즘 문제 풀이" }
-          - { code: none, label: "딱히 없어요" }
+          - { code: certificate, label: "자격증 공부" }
+          - { code: online_course, label: "온라인 강의 수강" }
+          - { code: grad_school, label: "대학원, 학위 과정" }
+          - { code: none, label: "딱히 없어요", exclusive: true }
           - { code: other, label: "기타" }
 
       - id: learning_sources
@@ -539,13 +541,15 @@ sections:
         type: single
         order: nominal
         label: 프론트엔드에서 가장 많이 쓴 프레임워크는 무엇인가요?
+        help: Next.js, Nuxt, SvelteKit처럼 메타 프레임워크를 썼다면 그쪽을 골라 주세요.
         show_if: { role: [frontend, fullstack] }
         options:
           - { code: react, label: "React" }
           - { code: nextjs, label: "Next.js" }
           - { code: vue, label: "Vue" }
           - { code: nuxt, label: "Nuxt" }
-          - { code: svelte, label: "Svelte, SvelteKit" }
+          - { code: svelte, label: "Svelte" }
+          - { code: sveltekit, label: "SvelteKit" }
           - { code: angular, label: "Angular" }
           - { code: none, label: "프레임워크 없이" }
           - { code: not_yet, label: "아직 써 본 적 없어요" }
@@ -721,7 +725,7 @@ sections:
           - { code: quality, label: "테스트와 문서를 더 잘 챙겨요" }
           - { code: focus, label: "중요한 일에 더 집중할 수 있어요" }
           - { code: enjoyment, label: "일이 더 재밌어졌어요" }
-          - { code: none, label: "딱히 없어요" }
+          - { code: none, label: "딱히 없어요", exclusive: true }
           - { code: other, label: "기타" }
 
       - id: ai_downsides
@@ -741,7 +745,7 @@ sections:
           - { code: skill, label: "실력이 줄어드는 것 같아요" }
           - { code: tool_churn, label: "따라가야 할 도구가 너무 많아요" }
           - { code: cost, label: "도구 비용을 직접 내야 해요" }
-          - { code: none, label: "딱히 없어요" }
+          - { code: none, label: "딱히 없어요", exclusive: true }
           - { code: other, label: "기타" }
 
       - id: ai_outlook

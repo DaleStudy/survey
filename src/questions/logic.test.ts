@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { cleanAnswers, usesGrid, visibleQuestions } from './logic'
+import { cleanAnswers, toggleOption, usesGrid, visibleQuestions } from './logic'
 import { questionsFor } from './survey'
 
 const QUESTIONS = questionsFor('2026')!
@@ -142,6 +142,12 @@ describe('응답 검증', () => {
     expect(cleanAnswers(QUESTIONS, { ...employed, job_satisfaction: '6' }).ok).toBe(false)
   })
 
+  test('"딱히 없어요"를 다른 선택지와 함께 고른 답은 거절한다', () => {
+    expect(cleanAnswers(QUESTIONS, { ...employed, growth_activities: ['none'] }).ok).toBe(true)
+    expect(cleanAnswers(QUESTIONS, { ...employed, growth_activities: ['reading', 'none'] }).ok).toBe(false)
+    expect(cleanAnswers(QUESTIONS, { ...employed, ai_upsides: ['speed', 'none'] }).ok).toBe(false)
+  })
+
   test('기타를 고른 경우에만 직접 적은 내용을 남긴다', () => {
     const picked = cleanAnswers(QUESTIONS, { ...employed, role: ['other'], role_other: '  게임 클라이언트 ' })
     expect(picked.ok && picked.answers.role_other).toBe('게임 클라이언트')
@@ -154,5 +160,21 @@ describe('응답 검증', () => {
   test('기타 내용이 너무 길거나 글자가 아니면 거절한다', () => {
     expect(cleanAnswers(QUESTIONS, { ...employed, role: ['other'], role_other: 'a'.repeat(101) }).ok).toBe(false)
     expect(cleanAnswers(QUESTIONS, { ...employed, role: ['other'], role_other: ['x'] }).ok).toBe(false)
+  })
+})
+
+describe('복수 선택 누르기', () => {
+  const growth = QUESTIONS.find((q) => q.id === 'growth_activities')!
+  const upsides = QUESTIONS.find((q) => q.id === 'ai_upsides')!
+
+  test('"딱히 없어요"를 고르면 나머지가 풀리고, 다른 걸 고르면 "딱히 없어요"가 풀린다', () => {
+    expect(toggleOption(growth, ['reading', 'writing'], 'none')).toEqual(['none'])
+    expect(toggleOption(growth, ['none'], 'reading')).toEqual(['reading'])
+    expect(toggleOption(growth, ['reading'], 'reading')).toEqual([])
+  })
+
+  test('개수 제한이 차 있어도 "딱히 없어요"는 고를 수 있다', () => {
+    expect(toggleOption(upsides, ['speed', 'focus'], 'none')).toEqual(['none'])
+    expect(toggleOption(upsides, ['speed', 'focus'], 'learning')).toBeNull()
   })
 })

@@ -12,9 +12,9 @@ import { SiteHeader } from '@/components/SiteHeader'
 import { ShareButton } from '@/components/ShareButton'
 import { StarBurst } from '@/components/StarBurst'
 import { type DevType, devTypeOf, findDevType } from '@/lib/devType'
-import { findEdition, isBeta, isClosed } from '@/editions'
+import { doneKey, findEdition, isBeta, isClosed } from '@/editions'
 import { koDate } from '@/lib/date'
-import { OTHER, isEmpty, otherKey, visibleQuestions } from '@/questions/logic'
+import { OTHER, isEmpty, otherKey, toggleOption, visibleQuestions } from '@/questions/logic'
 import { clearProgress, loadProgress, saveProgress } from '@/questions/progress'
 import { type Answers, SCALE_POINTS, questionsFor } from '@/questions/survey'
 import { submitResponse } from '@/server/functions/responses'
@@ -233,7 +233,7 @@ function Survey() {
     ? `결과와 분석한 인사이트는 ${koDate(edition.resultsAt)}에 모두 공개해요.`
     : '결과와 분석한 인사이트는 정리되는 대로 모두 공개해요.'
   // 같은 브라우저에서 다시 답하지 않게 남기는 표시. 서버로는 보내지 않는다.
-  const DONE_KEY = `survey-${edition.id}-done`
+  const DONE_KEY = doneKey(edition)
   const PROGRESS_KEY = `survey-${edition.id}-progress`
   const [answers, setAnswers] = useState<Answers>({})
   const [qid, setQid] = useState<string | null>(null)
@@ -347,12 +347,12 @@ function Survey() {
   function toggle(code: string) {
     if (!current) return
     const picked = answers[current.id]
-    const list = Array.isArray(picked) ? picked : []
-    if (!list.includes(code) && current.limit && list.length >= current.limit) {
+    const next = toggleOption(current, Array.isArray(picked) ? picked : [], code)
+    if (!next) {
       setError(`최대 ${current.limit}개까지 고를 수 있어요. 다른 걸 먼저 빼 주세요.`)
       return
     }
-    update({ ...answers, [current.id]: list.includes(code) ? list.filter((c) => c !== code) : [...list, code] })
+    update({ ...answers, [current.id]: next })
   }
 
   if (phase === 'done') {
