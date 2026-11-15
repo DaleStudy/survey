@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import { questionsFor } from '@/questions/survey'
-import { MIN_GROUP, aggregate } from './aggregate'
+import { BREAKDOWNS, MIN_GROUP, aggregate } from './aggregate'
 
 const QUESTIONS = questionsFor('2026')!
 
@@ -47,4 +47,41 @@ describe('aggregate', () => {
     const status = result.breakdowns.find((b) => b.id === 'status')!
     expect(status.questions.status).toBeUndefined()
   })
+
+  test('복수 선택 문항으로 나누면 고른 집단에 모두 들어간다', () => {
+    const backend = { status: 'employed', role: ['backend'], ai_frequency: 'daily' }
+    const both = { status: 'employed', role: ['backend', 'frontend'], ai_frequency: 'weekly' }
+    const data = { status: 'employed', role: ['data_eng', 'ai_ml'], ai_frequency: 'never' }
+    const r = aggregate(QUESTIONS, [...many(backend, 30), ...many(both, 10), ...many(data, 30)], '2025', true)
+    const role = r.breakdowns.find((b) => b.id === 'role')!
+    const count = (code: string) => role.groups.find((g) => g.code === code)?.count
+    expect(count('backend')).toBe(40)
+    expect(count('frontend')).toBe(10)
+    // 한 집단에 묶인 두 직무를 함께 골라도 한 번만 센다
+    expect(count('data_ai')).toBe(30)
+    expect(role.questions.ai_frequency.find((g) => g.group === 'backend')?.shares.daily).toBeCloseTo(30 / 40)
+  })
+})
+
+describe('집단 기준', () => {
+  for (const spec of BREAKDOWNS) {
+    const q = QUESTIONS.find((x) => x.id === spec.by)
+
+    test(`${spec.id}: 집단의 선택지는 문항에 있고 집단끼리 겹치지 않는다`, () => {
+      const codes = spec.groups.flatMap((g) => g.codes)
+      expect(q?.options.map((o) => o.code)).toEqual(expect.arrayContaining(codes))
+      expect(new Set(codes).size).toBe(codes.length)
+    })
+
+    // 차트 색 수: 순서가 있는 집단은 밝기 3단계, 없는 집단은 6색 (src/components/ResultChart.tsx)
+    test(`${spec.id}: 집단 수가 차트 색 수를 넘지 않는다`, () => {
+      expect(spec.groups.length).toBeLessThanOrEqual(spec.ordinal ? 3 : 6)
+    })
+
+    if (q?.type === 'multi') {
+      test(`${spec.id}: 복수 선택 기준은 한 응답이 여러 집단에 들어간다는 것을 알린다`, () => {
+        expect(spec.note).toBeDefined()
+      })
+    }
+  }
 })

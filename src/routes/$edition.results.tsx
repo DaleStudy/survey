@@ -344,6 +344,12 @@ function Results({ title, result }: { title: string; result: ResultSet }) {
           </nav>
 
           <div style={{ flex: '999 1 560px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 56 }}>
+            {breakdown?.note && (
+              <div role="note" style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center', padding: '12px 16px', borderRadius: 'var(--radii-md)', background: 'var(--colors-bg-neutral-hover)' }}>
+                <Icon name="info" size="sm" />
+                <Text size="sm">{breakdown.note}</Text>
+              </div>
+            )}
             {sections.map(([sectionId, section]) => (
               <section key={sectionId} id={sectionId} aria-labelledby={`${sectionId}-title`} style={{ scrollMarginTop: 88, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-20)' }}>
                 <SectionTitle id={`${sectionId}-title`} icon={sectionIcon(sectionId)}>

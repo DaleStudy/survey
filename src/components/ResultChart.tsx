@@ -17,10 +17,10 @@ export const BRAND = '#5333e1'
 const ORDINAL = ['#9d8cf0', '#5333e1', '#2a1a80']
 // 강조하지 않는 막대(관리자 화면의 지난날). ORDINAL 의 가장 밝은 단계다.
 export const BRAND_SOFT = ORDINAL[0]
-// 순서가 없는 집단: 보라와 주황
-const CATEGORICAL = ['#5333e1', '#eb6834']
-// 문항 비교의 계열: 보라, 주황, 청록. 청록은 바탕 대비가 3:1 에 못 미쳐서 막대마다 비율 글자와 표 보기를 함께 둔다.
-const COMPARE = ['#5333e1', '#eb6834', '#1baf7a']
+// 순서가 없는 집단과 문항 비교의 계열: 보라, 주황, 청록, 파랑, 올리브, 진홍. 이 순서로 쓴다.
+// 여섯 색 모두 서로 구별되는 것을 확인했다(색각 이상에서 올리브↔주황은 경계 수준). 청록 등 일부는 바탕 대비가 3:1 에 못 미쳐서
+// 막대마다 비율 글자와 범례, 표 보기를 함께 둔다.
+const CATEGORICAL = ['#5333e1', '#eb6834', '#1baf7a', '#1f88d9', '#8a6d00', '#c2185b']
 // 1~5점 척도: 주황(낮음) → 회색(보통) → 보라(높음)
 const LIKERT = ['#d9531e', '#f3a07c', '#dde3e6', '#9d8cf0', '#5333e1']
 // 척도 막대 칸 안의 비율 글자. 칸 색마다 4.5:1 을 넘는 색이다(흰 글자는 진한 주황 위에서 4.0:1 이라 쓰지 않는다).
@@ -174,7 +174,7 @@ export function ResultChart({ q, breakdown }: { q: QuestionStat; breakdown?: Bre
         options.map((o) => ({ label: o.label, shares: visibleGroups.map((g) => g.shares[o.code] ?? 0) })),
         visibleGroups.map((g) => groupLabel(g.group)),
         // 숨긴 집단이 있어도 남은 집단의 색이 바뀌지 않게 전체 집단으로 색을 정한다
-        { domain: breakdown?.groups.map((g) => g.label) ?? [], range: breakdown?.id === 'experience' ? ORDINAL : CATEGORICAL },
+        { domain: breakdown?.groups.map((g) => g.label) ?? [], range: breakdown?.ordinal ? ORDINAL : CATEGORICAL },
       )
     }
 
@@ -260,7 +260,7 @@ export function CompareChart({ view }: { view: ComparisonView }) {
     return groupedBars(
       groupedLines(view),
       view.series.map((s) => s.name),
-      { domain, range: COMPARE },
+      { domain, range: CATEGORICAL },
     )
   }, [view])
   return <Chart definition={definition} height={height} ariaLabel={view.comparison.title} />
