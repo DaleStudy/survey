@@ -174,7 +174,7 @@ describe('복수 선택 누르기', () => {
   })
 
   test('개수 제한이 차 있어도 "딱히 없어요"는 고를 수 있다', () => {
-    expect(toggleOption(upsides, ['speed', 'focus'], 'none')).toEqual(['none'])
-    expect(toggleOption(upsides, ['speed', 'focus'], 'learning')).toBeNull()
+    expect(toggleOption(upsides, ['speed', 'focus', 'search'], 'none')).toEqual(['none'])
+    expect(toggleOption(upsides, ['speed', 'focus', 'search'], 'learning')).toBeNull()
   })
 })

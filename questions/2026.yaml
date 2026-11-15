@@ -721,9 +721,9 @@ sections:
         fixed: false
         type: multi
         order: nominal
-        limit: 2
+        limit: 3
         label: AI 도구를 쓰고 나서 가장 좋아진 점은 무엇인가요?
-        help: 두 개까지 고를 수 있어요.
+        help: 세 개까지 고를 수 있어요.
         show_if: { ai_frequency: [daily, weekly, monthly] }
         options:
           - { code: speed, label: "작업 속도가 빨라졌어요" }
@@ -741,9 +741,9 @@ sections:
         fixed: false
         type: multi
         order: nominal
-        limit: 2
+        limit: 3
         label: AI 도구를 쓰고 나서 가장 힘들어진 점은 무엇인가요?
-        help: 두 개까지 고를 수 있어요.
+        help: 세 개까지 고를 수 있어요.
         show_if: { ai_frequency: [daily, weekly, monthly] }
         options:
           - { code: review, label: "검토할 코드가 늘었어요" }
