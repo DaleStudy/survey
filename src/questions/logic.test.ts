@@ -10,11 +10,13 @@ const ids = (answers: Record<string, string | string[]>) => visibleQuestions(QUE
 const employed = {
   status: 'employed',
   experience: '3_5',
+  major: 'cs',
   role: ['backend'],
   region: 'seoul',
   employment_type: 'permanent',
   company_type: 'startup',
   company_size: '10_49',
+  work_type: 'own_service',
   work_mode: 'hybrid',
   weekly_hours: '41_45',
   job_satisfaction: '4',
@@ -43,9 +45,9 @@ const employed = {
 }
 
 describe('문항 원본', () => {
-  test('45문항, 고정 32개', () => {
-    expect(QUESTIONS.length).toBe(45)
-    expect(QUESTIONS.filter((q) => q.fixed).length).toBe(32)
+  test('48문항, 고정 33개', () => {
+    expect(QUESTIONS.length).toBe(48)
+    expect(QUESTIONS.filter((q) => q.fixed).length).toBe(33)
   })
 
   test('선택형 문항은 모두 선택지가 있고, options_from 도 풀린다', () => {
@@ -110,9 +112,18 @@ describe('응답 검증', () => {
   })
 
   test('숨겨진 문항의 답은 버린다', () => {
-    const result = cleanAnswers(QUESTIONS, { ...employed, company_type: 'none', company_size: '10_49', contract_position: 'prime' })
+    const result = cleanAnswers(QUESTIONS, {
+      ...employed,
+      company_type: 'none',
+      company_size: '10_49',
+      work_type: 'agency',
+      contract_position: 'prime',
+    })
     expect(result.ok && result.answers.company_size).toBeUndefined()
     expect(result.ok && result.answers.contract_position).toBe('prime')
+    // 자사 서비스를 만들면 하청 위치를 묻지 않는다
+    const own = cleanAnswers(QUESTIONS, { ...employed, contract_position: 'prime' })
+    expect(own.ok && own.answers.contract_position).toBeUndefined()
   })
 
   test('필수 문항이 빠지면 거절한다', () => {

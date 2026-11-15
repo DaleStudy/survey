@@ -24,6 +24,8 @@ describe('결과 선택지 순서', () => {
   test('nominal 이어도 기타·모르겠음·무응답은 맨 아래에 원래 순서대로 둔다', () => {
     const q = stat('nominal', [['unknown', 0.4], ['aws', 0.3], ['other', 0.5], ['gcp', 0.1]])
     expect(codes(q)).toEqual(['aws', 'gcp', 'unknown', 'other'])
+    const major = stat('nominal', [['cs', 0.2], ['no_answer', 0.5], ['stem', 0.3]])
+    expect(codes(major)).toEqual(['stem', 'cs', 'no_answer'])
   })
 
   test('비율이 같으면 원래 순서를 지킨다', () => {

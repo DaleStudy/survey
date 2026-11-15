@@ -25,7 +25,7 @@ describe('CSV', () => {
     expect(columns.slice(0, 3)).toEqual(['created_at', 'status', 'experience'])
     expect(columns[columns.indexOf('role') + 1]).toBe('role_other')
     expect(columns.length).toBe(1 + QUESTIONS.length + QUESTIONS.filter((q) => q.options.some((o) => o.code === 'other')).length)
-    expect(row).toContain('Z,student,,backend;other,게임 서버')
+    expect(row).toContain('Z,student,,,backend;other,게임 서버')
     expect(row.endsWith('"좋아요, ""또"" 해요"')).toBe(true)
   })
 })

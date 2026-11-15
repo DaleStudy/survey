@@ -64,7 +64,7 @@ export const BREAKDOWNS: { id: string; label: string; by: string; groups: { code
     label: '경력별',
     by: 'experience',
     groups: [
-      { code: 'junior', label: '2년 이하', codes: ['none', '0_2'] },
+      { code: 'junior', label: '2년 이하', codes: ['none', 'lt_1', '1_2'] },
       { code: 'mid', label: '3~9년', codes: ['3_5', '6_9'] },
       { code: 'senior', label: '10년 이상', codes: ['10_14', '15_plus'] },
     ],
