@@ -137,11 +137,11 @@ sections:
         help: 빅테크라면 한국 회사든 외국 회사든 "국내외 빅테크"를, 투자를 받아 빠르게 크고 있는 회사는 "스타트업"을 골라 주세요. "외국계 기업"은 한국에 있는 외국 회사예요.
         options:
           - { code: large, label: "대기업" }
-          - { code: bigtech, label: "국내외 빅테크 (FAANG, 네카라쿠배당토 등)" }
           - { code: midsize, label: "중견기업" }
           - { code: small, label: "중소기업" }
           - { code: startup, label: "스타트업" }
           - { code: public, label: "공공기관·공기업" }
+          - { code: bigtech, label: "국내외 빅테크 (FAANG, 네카라쿠배당토 등)" }
           - { code: foreign, label: "외국계 기업" }
           - { code: none, label: "회사에 속해 있지 않아요" }
 
@@ -150,7 +150,7 @@ sections:
         type: single
         order: ordinal
         label: 회사 직원은 모두 몇 명인가요?
-        show_if: { company_type: [large, bigtech, midsize, small, startup, public, foreign] }
+        show_if: { company_type: [large, midsize, small, startup, public, bigtech, foreign] }
         options:
           - { code: lt_10, label: "10명 미만" }
           - { code: "10_49", label: "10~49명" }
@@ -172,6 +172,7 @@ sections:
           - { code: solution, label: "솔루션, 패키지 (여러 고객사에 설치하고 맞춤 개발하는 제품)" }
           - { code: agency, label: "외주 개발, 에이전시 (웹, 앱 제작 의뢰를 받아 개발)" }
           - { code: inhouse_it, label: "사내 IT, 전산 조직 (직원이 쓰는 사내 시스템을 만들고 운영. 예: 제조, 유통 회사 전산실)" }
+          - { code: oss, label: "오픈 소스 개발 (오픈 소스 프로젝트를 만들고 유지보수하는 일이 주 업무)" }
           - { code: other, label: "기타" }
 
       - id: contract_position
