@@ -21,6 +21,11 @@ export function ConsentStep({ deleteAt, onAgree }: { deleteAt?: string; onAgree:
     setAgree({ ...agree, [key]: checked })
     setError(false)
   }
+  const all = agree.age && agree.collect && agree.abroad
+  const setAll = (checked: boolean) => {
+    setAgree({ age: checked, collect: checked, abroad: checked })
+    setError(false)
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)' }}>
@@ -48,6 +53,8 @@ export function ConsentStep({ deleteAt, onAgree }: { deleteAt?: string; onAgree:
         ))}
       </dl>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-12)' }}>
+        <Checkbox tone="brand" label="모두 동의해요" checked={all} onChange={setAll} />
+        <hr style={{ width: '100%', margin: 0, border: 0, borderTop: '1px solid var(--colors-border-neutral)' }} />
         <Checkbox tone="brand" label="만 14세 이상이에요" required checked={agree.age} onChange={set('age')} />
         <Checkbox tone="brand" label="개인정보 수집·이용에 동의해요" required checked={agree.collect} onChange={set('collect')} />
         <Checkbox
@@ -71,7 +78,7 @@ export function ConsentStep({ deleteAt, onAgree }: { deleteAt?: string; onAgree:
         <Button
           tone="brand"
           size="lg"
-          onClick={() => (agree.age && agree.collect && agree.abroad ? onAgree() : setError(true))}
+          onClick={() => (all ? onAgree() : setError(true))}
         >
           동의하고 시작하기 <Icon name="chevronRight" size="sm" />
         </Button>
