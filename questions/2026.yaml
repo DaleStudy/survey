@@ -3,6 +3,7 @@
 # id 와 선택지 code 는 연도별 비교의 키다. 회차를 연 뒤에는 fixed: true 문항의 문구·선택지·순서를 바꾸지 않는다.
 # 선택지를 늘릴 때는 기존 code 를 지우지 않고 "기타"를 쪼개는 식으로 새 code 를 더한다.
 # show_if 는 키마다 AND, 값 목록은 OR 이다. required 를 적지 않으면 필수다.
+# exclusive: true 는 multi 문항에서 "딱히 없어요"처럼 다른 선택지와 함께 고를 수 없는 선택지에 붙인다.
 # order 는 single·multi 문항에 꼭 적는다. ordinal(경력, 연봉처럼 선택지에 순서가 있다)은 결과 화면에서 이 순서 그대로,
 # nominal(언어, 도구처럼 순서가 없다)은 비율이 높은 순으로 보여 준다. 화면에만 쓰는 값이라 fixed 문항에도 적을 수 있다.
 # 동의와 만 14세 확인은 문항이 아니라 설문 앞 단계에서 처리한다.
@@ -19,6 +20,7 @@ sections:
         type: single
         order: nominal
         label: 지금 어떤 상황인가요?
+        help: 여러 개에 해당하면 위에 있는 걸 골라 주세요. 일하면서 대학원에 다닌다면 "개발자로 일하고 있어요"예요.
         options:
           - { code: employed, label: "개발자로 일하고 있어요" }
           - { code: job_seeking, label: "개발 일자리를 찾고 있어요" }
@@ -46,7 +48,7 @@ sections:
         type: single
         order: nominal
         label: 대학 전공은 무엇인가요?
-        help: 학생이라면 지금 전공을 골라 주세요. 복수전공이고 그중 컴퓨터 관련 전공이 있다면 그쪽을 골라 주세요.
+        help: 학생이라면 지금 전공을 골라 주세요. 복수전공이나 대학원을 포함해 컴퓨터 관련 전공이 하나라도 있으면 그쪽을 골라 주세요.
         options:
           - { code: cs, label: "컴퓨터공학 등 컴퓨터 관련" }
           - { code: stem, label: "그 밖의 이공계" }
@@ -458,7 +460,7 @@ sections:
           - { code: open_source, label: "오픈소스 기여" }
           - { code: conference, label: "컨퍼런스, 밋업" }
           - { code: algorithm, label: "알고리즘 문제 풀이" }
-          - { code: none, label: "딱히 없어요" }
+          - { code: none, label: "딱히 없어요", exclusive: true }
           - { code: other, label: "기타" }
 
       - id: learning_sources
@@ -719,7 +721,7 @@ sections:
           - { code: quality, label: "테스트와 문서를 더 잘 챙겨요" }
           - { code: focus, label: "중요한 일에 더 집중할 수 있어요" }
           - { code: enjoyment, label: "일이 더 재밌어졌어요" }
-          - { code: none, label: "딱히 없어요" }
+          - { code: none, label: "딱히 없어요", exclusive: true }
           - { code: other, label: "기타" }
 
       - id: ai_downsides
@@ -739,7 +741,7 @@ sections:
           - { code: skill, label: "실력이 줄어드는 것 같아요" }
           - { code: tool_churn, label: "따라가야 할 도구가 너무 많아요" }
           - { code: cost, label: "도구 비용을 직접 내야 해요" }
-          - { code: none, label: "딱히 없어요" }
+          - { code: none, label: "딱히 없어요", exclusive: true }
           - { code: other, label: "기타" }
 
       - id: ai_outlook

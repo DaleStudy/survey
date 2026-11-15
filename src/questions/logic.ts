@@ -41,6 +41,16 @@ export function visibleQuestions(questions: Question[], answers: Answers): Quest
   return questions.filter((q) => isVisible(q, answers))
 }
 
+const isExclusive = (q: Question, code: string) => q.options.some((o) => o.code === code && o.exclusive)
+
+// 복수 선택에서 하나를 누른 결과. exclusive 선택지를 고르면 나머지가 풀리고, 다른 걸 고르면 exclusive 가 풀린다.
+// 개수 제한을 넘으면 null.
+export function toggleOption(q: Question, picked: string[], code: string): string[] | null {
+  if (picked.includes(code)) return picked.filter((c) => c !== code)
+  const next = isExclusive(q, code) ? [code] : [...picked.filter((c) => !isExclusive(q, c)), code]
+  return q.limit && next.length > q.limit ? null : next
+}
+
 // 한 문항의 답이 형식에 맞는지. 비어 있는지는 따로 본다.
 export function answerError(q: Question, a: Answer): string | null {
   switch (q.type) {
@@ -56,6 +66,7 @@ export function answerError(q: Question, a: Answer): string | null {
       if (!Array.isArray(a) || new Set(a).size !== a.length) return '선택이 올바르지 않아요.'
       if (!a.every((v) => q.options.some((o) => o.code === v))) return '없는 선택지예요.'
       if (q.limit && a.length > q.limit) return `최대 ${q.limit}개까지 고를 수 있어요.`
+      if (a.length > 1 && a.some((v) => isExclusive(q, v))) return '다른 선택지와 함께 고를 수 없는 선택지가 있어요.'
       return null
     }
     case 'long':
