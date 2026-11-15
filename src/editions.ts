@@ -14,11 +14,11 @@ export interface Edition {
   deleteAt?: string
   // 완료 화면에서 개발자 유형을 보여 주는지
   devTypes: boolean
-  // 결과 화면을 시험하려고 만든 예시 데이터. 실제 설문이 아니다. 오픈 전에 지운다.
+  // 결과 화면을 시험하려고 만든 예시 데이터. 실제 설문이 아니다. 개발 서버(bun run dev)에서만 보인다.
   sample?: boolean
 }
 
-export const EDITIONS: Edition[] = [
+export const EDITIONS: Edition[] = ([
   {
     id: '2026',
     title: '2026 달레 스터디 개발자 설문조사',
@@ -36,7 +36,7 @@ export const EDITIONS: Edition[] = [
     devTypes: false,
     sample: true,
   },
-]
+] satisfies Edition[]).filter((e) => !e.sample || import.meta.env.DEV)
 
 export function findEdition(id: string): Edition | undefined {
   return EDITIONS.find((e) => e.id === id)
