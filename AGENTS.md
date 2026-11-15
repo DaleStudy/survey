@@ -49,18 +49,6 @@ bun scripts/results-og.ts <회차> <임시 폴더>   # 차트 공유 페이지 o
 - PR 마다 `preview.yml` 이 테스트를 돌리고, 같은 저장소 브랜치면 `pr-<번호>.survey.dalestudy.com` 에 미리보기를 띄운다. 미리보기는 운영 바인딩을 물려받지 않아서 `wrangler.jsonc` 의 `previews` 블록에 따로 적는다(D1 은 미리보기끼리 함께 쓰는 `survey-preview`).
 - `main` 에 병합하면 `deploy.yml` 이 운영 D1 마이그레이션을 먼저 적용한 뒤 배포한다. 미리보기도 배포 직전에 마이그레이션을 적용하므로, 마이그레이션은 이전 코드가 그대로 돌아가는 변경이어야 한다(칸을 지우는 순서는 `docs/data-model.md`).
 
-## 2026 회차 오픈 (11월 16일)
-
-오픈을 마치면 이 섹션을 지운다.
-
-- 그 전까지는 베타다. Access 앱 "한국 개발자 설문 (베타)"(정책 "베타 테스터", GitHub `DaleStudy` 조직 멤버)가 응답과 결과 경로(`/survey`, `/2026/survey`, `/_serverFn`, `/results`, `/2025`, `/2026/results`)만 잠근다. 랜딩, 유형 공유, 처리방침, `/types/` 이미지는 링크 미리보기가 뜨도록 공개해 두었다(`noindex` 는 유지). 베타 응답도 운영 D1 에 쌓이고 따로 표시하지 않는다.
-- 오픈 직전에 할 일:
-  1. 베타 응답 지우기 (`DELETE FROM responses` — `bun run export` 로 먼저 받아 둘지 정한다)
-  2. 베타 Access 앱 끄기 또는 삭제. `/admin` 을 잠그는 관리자 앱은 남긴다
-  3. `src/routes/__root.tsx` 의 `noindex` 빼기
-  4. 링크 미리보기 캐시 새로 고치기: 카카오 공유 디버거, LinkedIn Post Inspector, Facebook Sharing Debugger(Threads 포함). X, Slack, Discord 는 `?v=1` 같은 쿼리를 붙인 주소로 공유한다. 오픈 전에는 주소를 소셜에 공유하지 않는다
-  5. D1 주 저장소가 아직 홍콩인지 확인 (`docs/operations.md`)
-
 ## 문서 규칙
 
 - 문서에는 지금 결정된 상태만 둔다. 결정은 그것이 적용되는 곳(`docs/`, 코드 주석, 이 파일)에 적고, 다시 물을 만한 결정이면 이유나 기각한 대안을 한두 문장 덧붙인다. 결정 과정은 PR 과 이슈에 남은 것으로 충분하고 따로 옮겨 적지 않는다.
