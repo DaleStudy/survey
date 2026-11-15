@@ -751,7 +751,7 @@ sections:
         options:
           - { code: replaced, label: "AI가 내 일을 대신해서 일자리가 위태로워질 것 같아요" }
           - { code: delegate, label: "AI에게 대부분의 일을 맡기고 감독하게 될 것 같아요" }
-          - { code: workflow, label: "하는 일은 그대로지만 일하는 방식이 크게 바뀔 것 같아요" }
+          - { code: partial, label: "일의 일부는 AI에게 맡기고 나머지는 계속 직접 할 것 같아요" }
           - { code: tools, label: "쓰는 도구만 조금 바뀌고 큰 틀은 그대로일 것 같아요" }
           - { code: none, label: "거의 바뀌지 않을 것 같아요" }
           - { code: unknown, label: "잘 모르겠어요" }

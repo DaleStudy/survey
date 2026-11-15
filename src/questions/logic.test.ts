@@ -40,7 +40,7 @@ const employed = {
   ai_policy: 'provided',
   ai_upsides: ['speed'],
   ai_downsides: ['review'],
-  ai_outlook: 'workflow',
+  ai_outlook: 'partial',
 }
 
 describe('문항 원본', () => {
