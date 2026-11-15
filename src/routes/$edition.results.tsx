@@ -1,6 +1,6 @@
 import { Link, createFileRoute, notFound } from '@tanstack/react-router'
 import { Heading, Icon, Tag, Text } from 'daleui'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { findEdition } from '@/editions'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
@@ -204,12 +204,32 @@ const cell: React.CSSProperties = {
 // 집단별 보기 선택. 주소(?by=)에 남겨 그 상태 그대로 공유할 수 있게 한다.
 function BreakdownPicker({ breakdowns, active }: { breakdowns: Breakdown[]; active?: string }) {
   const options = [{ id: undefined, label: '전체' }, ...breakdowns.map((b) => ({ id: b.id, label: b.label }))]
+  // 옆으로 넘기는 좁은 화면에서 고른 기준이 가려지지 않게 그 버튼까지 넘겨 둔다. 페이지는 움직이지 않는다.
+  const strip = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const on = strip.current?.querySelector<HTMLElement>('[data-on]')
+    if (strip.current && on) strip.current.scrollLeft = on.offsetLeft - strip.current.offsetLeft - 8
+  }, [active])
   return (
-    <nav aria-label="집단별로 보기" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-12)', alignItems: 'center' }}>
+    <nav aria-label="집단별로 보기" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-12)', alignItems: 'center', minWidth: 0, maxWidth: '100%' }}>
       <Text size="sm" weight="bold">
         나눠 보기
       </Text>
-      <div style={{ display: 'inline-flex', flexWrap: 'wrap', gap: 'var(--spacing-4)', padding: 'var(--spacing-4)', borderRadius: 12, background: 'var(--colors-bg-neutral-hover)' }}>
+      {/* 기준이 많아서 좁은 화면에서는 줄을 바꾸지 않고 옆으로 넘긴다. 줄을 바꾸면 위에 붙는 막대가 화면을 너무 많이 가린다. */}
+      <div
+        ref={strip}
+        style={{
+          display: 'inline-flex',
+          maxWidth: '100%',
+          overflowX: 'auto',
+          // 끝 버튼이 잘려 보이는 것으로 더 있다는 것을 알 수 있어서 스크롤 막대는 숨긴다
+          scrollbarWidth: 'none',
+          gap: 'var(--spacing-4)',
+          padding: 'var(--spacing-4)',
+          borderRadius: 12,
+          background: 'var(--colors-bg-neutral-hover)',
+        }}
+      >
         {options.map((o) => {
           const on = o.id === active
           return (
@@ -220,6 +240,7 @@ function BreakdownPicker({ breakdowns, active }: { breakdowns: Breakdown[]; acti
               replace
               resetScroll={false}
               aria-current={on ? 'true' : undefined}
+              data-on={on || undefined}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -232,6 +253,8 @@ function BreakdownPicker({ breakdowns, active }: { breakdowns: Breakdown[]; acti
                 textDecoration: 'none',
                 fontSize: 14,
                 fontWeight: on ? 700 : 500,
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
               }}
             >
               {o.label}
@@ -344,6 +367,12 @@ function Results({ title, result }: { title: string; result: ResultSet }) {
           </nav>
 
           <div style={{ flex: '999 1 560px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 56 }}>
+            {breakdown?.note && (
+              <div role="note" style={{ display: 'flex', gap: 'var(--spacing-8)', alignItems: 'center', padding: '12px 16px', borderRadius: 'var(--radii-md)', background: 'var(--colors-bg-neutral-hover)' }}>
+                <Icon name="info" size="sm" />
+                <Text size="sm">{breakdown.note}</Text>
+              </div>
+            )}
             {sections.map(([sectionId, section]) => (
               <section key={sectionId} id={sectionId} aria-labelledby={`${sectionId}-title`} style={{ scrollMarginTop: 88, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-20)' }}>
                 <SectionTitle id={`${sectionId}-title`} icon={sectionIcon(sectionId)}>
