@@ -14,10 +14,7 @@ interface Props {
   onOtherText: (text: string) => void
 }
 
-// 숫자 키(1~9)로 고를 수 있는 선택지 수. 설문 화면(Survey)의 키 처리와 같은 값이다.
-export const KEY_OPTIONS = 9
-
-// 선택지 행의 :hover, :focus-visible 과 키 안내. 키 안내는 마우스가 있는 화면에서만 보인다.
+// 선택지 행의 :hover, :focus-visible
 const OPTION_CSS = `
 .q-option { display: flex; gap: 14px; align-items: center; width: 100%; min-height: 56px; padding: 0 18px; box-sizing: border-box; border-radius: 12px; border: 1px solid var(--colors-border-neutral-active); background: var(--colors-app-bg); color: var(--colors-fg-neutral); font: inherit; font-size: 1.0625rem; font-weight: 500; line-height: 1.35; text-align: left; cursor: pointer; }
 .q-option:hover { border-color: var(--colors-border-brand); background: var(--colors-bg-brand); }
@@ -25,8 +22,6 @@ const OPTION_CSS = `
 .q-option[aria-checked='true'] { border: 2px solid var(--colors-border-brand-active); padding: 0 17px; background: var(--colors-bg-brand-hover); color: var(--colors-fg-neutral-active); font-weight: 700; }
 .q-mark { display: inline-flex; flex: none; width: 22px; height: 22px; box-sizing: border-box; align-items: center; justify-content: center; border: 2px solid var(--colors-border-neutral-active); color: var(--colors-fg-solid-brand); }
 .q-option[aria-checked='true'] .q-mark { border: 0; background: var(--colors-bg-solid-brand); }
-.q-key { display: none; margin-left: auto; min-width: 24px; padding: 2px 6px; box-sizing: border-box; border-radius: 4px; border: 1px solid var(--colors-bg-neutral-active); color: var(--colors-fg-neutral-placeholder); font-family: var(--fonts-mono); font-size: 0.75rem; font-weight: 500; text-align: center; }
-@media (hover: hover) and (pointer: fine) { .q-key { display: inline-block; } }
 `
 
 export function QuestionStep({ question: q, value, error, onPick, onToggle, onText, otherText, onOtherText }: Props) {
@@ -70,7 +65,7 @@ export function QuestionStep({ question: q, value, error, onPick, onToggle, onTe
             gap: 10,
           }}
         >
-          {q.options.map((o, i) => {
+          {q.options.map((o) => {
             const on = q.type === 'multi' ? picked.includes(o.code) : value === o.code
             return (
               <button
@@ -85,11 +80,6 @@ export function QuestionStep({ question: q, value, error, onPick, onToggle, onTe
                   {on && (q.type === 'multi' ? <Icon name="check" size="xs" /> : <span style={{ width: 8, height: 8, borderRadius: 'var(--radii-full)', background: 'currentColor' }} />)}
                 </span>
                 <span>{o.label}</span>
-                {i < KEY_OPTIONS && (
-                  <kbd aria-hidden="true" className="q-key">
-                    {i + 1}
-                  </kbd>
-                )}
               </button>
             )
           })}
