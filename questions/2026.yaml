@@ -710,6 +710,7 @@ sections:
         options:
           - { code: speed, label: "작업 속도가 빨라졌어요" }
           - { code: repetitive, label: "반복 작업이 줄었어요" }
+          - { code: search, label: "검색하고 찾아보는 시간이 줄었어요" }
           - { code: learning, label: "새 기술을 빨리 배워요" }
           - { code: unfamiliar, label: "낯선 영역의 일도 해낼 수 있어요" }
           - { code: quality, label: "테스트와 문서를 더 잘 챙겨요" }
@@ -727,8 +728,10 @@ sections:
         show_if: { ai_frequency: [daily, weekly, monthly] }
         options:
           - { code: review, label: "검토할 코드가 늘었어요" }
-          - { code: fixing, label: "AI가 만든 코드를 고치는 데 시간이 들어요" }
+          - { code: fixing, label: "그럴듯하지만 틀린 코드를 고치느라 시간이 들어요" }
           - { code: expectation, label: "회사가 기대하는 업무량이 늘었어요" }
+          - { code: fatigue, label: "AI에게 맡긴 여러 작업을 챙기느라 더 지쳐요" }
+          - { code: isolation, label: "동료에게 묻고 함께 이야기할 일이 줄었어요" }
           - { code: skill, label: "실력이 줄어드는 것 같아요" }
           - { code: tool_churn, label: "따라가야 할 도구가 너무 많아요" }
           - { code: cost, label: "도구 비용을 직접 내야 해요" }
