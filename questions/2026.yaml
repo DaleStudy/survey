@@ -399,6 +399,7 @@ sections:
         type: single
         order: nominal
         label: 다음에는 어떤 곳에서 일하고 싶나요?
+        help: 해외 빅테크라면 "해외 회사"가 아니라 "국내외 빅테크"를 골라 주세요.
         options:
           - { code: stay, label: "지금 일하는 곳에 남고 싶어요" }
           - { code: large, label: "대기업" }
@@ -406,6 +407,7 @@ sections:
           - { code: small, label: "중소기업" }
           - { code: startup, label: "스타트업" }
           - { code: public, label: "공공기관·공기업" }
+          - { code: bigtech, label: "국내외 빅테크 (FAANG, 네카라쿠배당토 등)" }
           - { code: foreign, label: "외국계 기업" }
           - { code: abroad, label: "해외 회사" }
           - { code: independent, label: "프리랜서, 창업" }
