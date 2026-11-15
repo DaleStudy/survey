@@ -69,12 +69,11 @@ sections:
           - { code: frontend, label: "프론트엔드" }
           - { code: fullstack, label: "풀스택" }
           - { code: mobile, label: "모바일 앱" }
-          - { code: data_eng, label: "데이터 엔지니어링" }
-          - { code: data_analysis, label: "데이터 분석, 데이터 사이언스" }
+          - { code: data, label: "데이터 엔지니어링, 분석, 사이언스" }
           - { code: ai_ml, label: "AI, 머신러닝 엔지니어링" }
           - { code: devops, label: "DevOps, 인프라, SRE" }
           - { code: security, label: "보안" }
-          - { code: embedded, label: "임베디드, 시스템" }
+          - { code: embedded, label: "임베디드, 시스템 소프트웨어" }
           - { code: game, label: "게임" }
           - { code: qa, label: "QA, 테스트" }
           - { code: manager, label: "엔지니어링 매니저" }

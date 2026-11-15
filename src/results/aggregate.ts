@@ -101,7 +101,7 @@ export const BREAKDOWNS: {
       { code: 'frontend', label: '프론트엔드', codes: ['frontend'] },
       { code: 'fullstack', label: '풀스택', codes: ['fullstack'] },
       { code: 'mobile', label: '모바일', codes: ['mobile'] },
-      { code: 'data_ai', label: '데이터·AI', codes: ['data_eng', 'data_analysis', 'ai_ml'] },
+      { code: 'data_ai', label: '데이터·AI', codes: ['data', 'ai_ml'] },
       { code: 'devops', label: 'DevOps·인프라', codes: ['devops'] },
     ],
   },
