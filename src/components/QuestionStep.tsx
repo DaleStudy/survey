@@ -1,5 +1,5 @@
 import { Button, Heading, Icon, Tag, Text, TextInput } from 'daleui'
-import { LONG_MAX, OTHER, OTHER_MAX, picksOther } from '@/questions/logic'
+import { LONG_MAX, OTHER, OTHER_MAX, picksOther, usesGrid } from '@/questions/logic'
 import { sectionIcon } from '@/questions/sectionIcons'
 import { type Answer, type Question, SCALE_POINTS } from '@/questions/survey'
 
@@ -31,7 +31,7 @@ const OPTION_CSS = `
 
 export function QuestionStep({ question: q, value, error, onPick, onToggle, onText, otherText, onOtherText }: Props) {
   const picked = Array.isArray(value) ? value : []
-  const many = q.options.length >= 9
+  const grid = usesGrid(q)
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-32)' }}>
       <style>{OPTION_CSS}</style>
@@ -66,7 +66,7 @@ export function QuestionStep({ question: q, value, error, onPick, onToggle, onTe
           aria-labelledby="question"
           style={{
             display: 'grid',
-            gridTemplateColumns: many ? 'repeat(auto-fill, minmax(min(100%, 220px), 1fr))' : '1fr',
+            gridTemplateColumns: grid ?'repeat(auto-fill, minmax(min(100%, 220px), 1fr))' : '1fr',
             gap: 10,
           }}
         >

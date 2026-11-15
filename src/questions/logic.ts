@@ -12,6 +12,19 @@ export function picksOther(a: Answer | undefined): boolean {
   return a === OTHER || (Array.isArray(a) && a.includes(OTHER))
 }
 
+// 선택지가 많고 이름처럼 짧으면(언어, 도구) 여러 열로 놓는다. 문장형 선택지는 좁은 칸에서
+// 서너 줄로 꺾이므로 한 줄에 하나씩 둔다. 길이는 문구 표시 폭의 중앙값으로 본다(한글은 2, 나머지는 1).
+const GRID_MIN_OPTIONS = 9
+const GRID_MAX_MEDIAN_WIDTH = 20
+
+const displayWidth = (s: string) => [...s].reduce((w, c) => w + ((c.codePointAt(0) ?? 0) >= 0x1100 ? 2 : 1), 0)
+
+export function usesGrid(q: Question): boolean {
+  if (q.options.length < GRID_MIN_OPTIONS) return false
+  const widths = q.options.map((o) => displayWidth(o.label)).sort((a, b) => a - b)
+  return widths[Math.floor(widths.length / 2)] <= GRID_MAX_MEDIAN_WIDTH
+}
+
 export function isEmpty(a: Answer | undefined): boolean {
   return a == null || a === '' || (Array.isArray(a) && a.length === 0)
 }
