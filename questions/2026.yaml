@@ -278,9 +278,9 @@ sections:
         fixed: true
         type: multi
         order: nominal
-        limit: 2
+        limit: 3
         label: 지금 일하는 곳에서 가장 만족하는 점은 무엇인가요?
-        help: 두 개까지 고를 수 있어요.
+        help: 세 개까지 고를 수 있어요.
         show_if: { status: [employed] }
         options:
           - { code: pay, label: "연봉" }
@@ -301,9 +301,9 @@ sections:
         fixed: true
         type: multi
         order: nominal
-        limit: 2
+        limit: 3
         label: 지금 일하는 곳에서 가장 힘든 점은 무엇인가요?
-        help: 두 개까지 고를 수 있어요.
+        help: 세 개까지 고를 수 있어요.
         show_if: { status: [employed] }
         options_from: job_good
 
