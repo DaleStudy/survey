@@ -663,12 +663,13 @@ sections:
         options:
           - { code: aider, label: "Aider" }
           - { code: amp, label: "Amp" }
-          - { code: antigravity, label: "Google Antigravity, Gemini CLI·Code Assist" }
+          - { code: antigravity, label: "Google Antigravity" }
           - { code: claude_code, label: "Claude Code" }
           - { code: cline, label: "Cline" }
           - { code: codex, label: "Codex" }
           - { code: cursor, label: "Cursor" }
           - { code: devin, label: "Devin (Devin Desktop, 옛 Windsurf)" }
+          - { code: gemini_cli, label: "Gemini CLI·Code Assist" }
           - { code: copilot, label: "GitHub Copilot" }
           - { code: goose, label: "Goose" }
           - { code: grok_build, label: "Grok Build" }
