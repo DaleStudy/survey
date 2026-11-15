@@ -1,6 +1,6 @@
 import { Link, createFileRoute, notFound } from '@tanstack/react-router'
 import { Button, Heading, Icon, Tag, Text } from 'daleui'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { ConsentStep } from '@/components/ConsentStep'
 import { QuestionStep } from '@/components/QuestionStep'
 import { Turnstile } from '@/components/Turnstile'
@@ -237,18 +237,17 @@ function Survey() {
   const PROGRESS_KEY = `survey-${edition.id}-progress`
   const [answers, setAnswers] = useState<Answers>({})
   const [qid, setQid] = useState<string | null>(null)
-  const [phase, setPhase] = useState<'intro' | 'consent' | 'question' | 'sending' | 'done' | 'already'>('intro')
+  // 어느 화면부터 보일지는 브라우저 저장소를 읽어야 알 수 있어서, 읽기 전(서버 렌더링 포함)에는 빈 화면을 둔다
+  const [phase, setPhase] = useState<'loading' | 'intro' | 'consent' | 'question' | 'sending' | 'done' | 'already'>('loading')
   const [error, setError] = useState('')
-  // 하이드레이션 전에 누른 버튼은 아무 일도 하지 않으므로, 그 전에는 시작 버튼을 막아 둔다
-  const [hydrated, setHydrated] = useState(false)
   // 마지막 문항 화면에서 받는다. 토큰은 5분이면 만료돼서 설문을 시작할 때 받으면 늦다.
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
   const [turnstileReset, setTurnstileReset] = useState(0)
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
   // 응답을 마치면 브라우저에서 계산해 보여 준다. 서버에는 보내지 않는다.
   const [devType, setDevType] = useState<DevType>()
-  useEffect(() => {
-    setHydrated(true)
+  // 그리기 전에 화면을 정해야 빈 화면이 깜빡이지 않는다
+  useLayoutEffect(() => {
     const done = localStorage.getItem(DONE_KEY)
     if (done) {
       setDevType(findDevType(done))
@@ -260,7 +259,7 @@ function Survey() {
         setAnswers(saved.answers)
         setQid(saved.qid)
         setPhase('question')
-      }
+      } else setPhase('intro')
     }
     return () => clearTimeout(timer.current)
   }, [])
@@ -362,6 +361,8 @@ function Survey() {
     return <Finished title="설문이 마감됐어요" lead={`참여해 주신 분들 고마워요. ${resultsNote}`} edition={edition} />
   }
 
+  if (phase === 'loading') return <main style={page} />
+
   if (phase === 'already') {
     return (
       <Finished
@@ -414,7 +415,7 @@ function Survey() {
               </span>
             ))}
           </div>
-          <Button tone="brand" size="lg" disabled={!hydrated} onClick={() => setPhase('consent')}>
+          <Button tone="brand" size="lg" onClick={() => setPhase('consent')}>
             시작하기 <Icon name="chevronRight" size="sm" />
           </Button>
           <Link to="/privacy">개인정보 처리방침</Link>
