@@ -1,4 +1,5 @@
 import { Button, Heading, Icon, Text } from 'daleui'
+import { CopyStatus } from '@/components/CopyStatus'
 import type { DevType } from '@/lib/devType'
 import { SITE_URL } from '@/lib/og'
 import { useShare } from '@/lib/useShare'
@@ -28,7 +29,7 @@ export function ShareButton({ type, edition }: { type: DevType; edition: { id: s
   const title = `나는 '${type.name}' 개발자`
   // 설문을 도와 달라는 부탁보다, 나를 드러내고 상대에게 되묻는 말이 더 잘 퍼진다
   const text = `${edition.title}에 참여했어요. ${title}래요. 당신은 어떤 유형인가요?`
-  const { nativeShare, copied, copy, share } = useShare(url, title, text)
+  const { nativeShare, status, copy, share } = useShare(url, title, text)
 
   const q = encodeURIComponent
   const targets = [
@@ -48,14 +49,15 @@ export function ShareButton({ type, edition }: { type: DevType; edition: { id: s
         </Text>
       </div>
       <Button tone="brand" size="lg" fullWidth onClick={nativeShare ? share : copy}>
-        <Icon name={nativeShare ? 'share2' : 'copy'} size="sm" />
-        {nativeShare ? '결과 공유하기' : copied ? '링크를 복사했어요' : '링크 복사하기'}
+        <Icon name={nativeShare ? 'share2' : status === 'copied' ? 'check' : 'copy'} size="sm" />
+        {nativeShare ? '결과 공유하기' : status === 'copied' ? '링크를 복사했어요' : status === 'failed' ? '복사하지 못했어요' : '링크 복사하기'}
       </Button>
+      <CopyStatus status={status} copied="링크를 복사했어요." />
       <div style={{ display: 'grid', gridTemplateColumns: `repeat(${nativeShare ? 2 : 3}, minmax(0, 1fr))`, gap: 'var(--spacing-8)' }}>
         {nativeShare && (
           <button type="button" onClick={copy} style={outline}>
-            <Icon name="copy" size="sm" />
-            {copied ? '복사함' : '링크 복사'}
+            <Icon name={status === 'copied' ? 'check' : 'copy'} size="sm" />
+            {status === 'copied' ? '복사함' : status === 'failed' ? '복사 실패' : '링크 복사'}
           </button>
         )}
         {targets.map((t) => (
