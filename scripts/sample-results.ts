@@ -1,5 +1,5 @@
 // 결과 화면을 시험하려는 예시 데이터. 실제 설문이 아니다. 운영 D1 에는 넣지 않고 집계만 파일로 남긴다.
-// 오픈 전에 지운다(AGENTS.md 의 오픈 체크리스트).
+// 예시 회차는 개발 서버에서만 보인다(src/editions.ts).
 import { visibleQuestions } from '../src/questions/logic'
 import { type Answers, questionsFor } from '../src/questions/survey'
 import { aggregate } from '../src/results/aggregate'
