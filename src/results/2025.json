@@ -1838,7 +1838,7 @@
       "options": [
         {
           "code": "course",
-          "label": "온라인 강의 (인프런, 유데미 등)",
+          "label": "온라인 강의",
           "count": 259,
           "share": 0.32375
         },
@@ -1856,7 +1856,7 @@
         },
         {
           "code": "newsletter",
-          "label": "뉴스레터, 큐레이션 사이트 (GeekNews 등)",
+          "label": "뉴스레터, 큐레이션 사이트",
           "count": 93,
           "share": 0.11625
         },

@@ -479,10 +479,10 @@ sections:
         label: 새로운 기술이나 개발 소식은 주로 어디서 접하나요?
         help: 세 개까지 고를 수 있어요.
         options:
-          - { code: course, label: "온라인 강의 (인프런, 유데미 등)" }
+          - { code: course, label: "온라인 강의" }
           - { code: youtube, label: "유튜브" }
           - { code: podcast, label: "팟캐스트" }
-          - { code: newsletter, label: "뉴스레터, 큐레이션 사이트 (GeekNews 등)" }
+          - { code: newsletter, label: "뉴스레터, 큐레이션 사이트" }
           - { code: tech_blog, label: "기업 기술 블로그" }
           - { code: official_docs, label: "공식 문서" }
           - { code: social, label: "X, LinkedIn, Threads" }
