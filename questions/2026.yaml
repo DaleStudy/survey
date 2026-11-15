@@ -541,6 +541,7 @@ sections:
           - { code: aspnet, label: "ASP.NET" }
           - { code: laravel, label: "Laravel" }
           - { code: go_web, label: "Go (Gin, Echo 등)" }
+          - { code: rust_web, label: "Rust (Axum, Actix Web 등)" }
           - { code: none, label: "프레임워크 없이" }
           - { code: not_yet, label: "아직 써 본 적 없어요" }
           - { code: other, label: "기타" }
