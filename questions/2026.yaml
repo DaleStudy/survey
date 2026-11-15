@@ -699,14 +699,6 @@ sections:
           - { code: "50_75", label: "50~75%" }
           - { code: "75_plus", label: "75% 이상" }
 
-      - id: ai_productivity
-        fixed: false
-        type: scale
-        label: AI 도구를 쓰고 나서 생산성은 어떻게 달라졌나요?
-        show_if: { ai_frequency: [daily, weekly, monthly] }
-        min: { value: 1, label: "크게 줄었어요" }
-        max: { value: 5, label: "크게 늘었어요" }
-
       - id: ai_upsides
         fixed: false
         type: multi
