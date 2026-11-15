@@ -591,6 +591,7 @@ sections:
         help: 망분리 같은 보안 규정도 함께 떠올려 주세요.
         show_if: { status: [employed] }
         options:
+          - { code: required, label: "써야 해요 (사용을 요구하거나 평가에 반영해요)" }
           - { code: provided, label: "회사가 마련해 주고 권해요" }
           - { code: allowed, label: "쓸 수 있지만 각자 준비해요" }
           - { code: limited, label: "일부 업무에서만 쓸 수 있어요" }
@@ -605,7 +606,7 @@ sections:
         options:
           - { code: daily, label: "매일 써요" }
           - { code: weekly, label: "일주일에 몇 번 써요" }
-          - { code: monthly, label: "한 달에 몇 번 써요" }
+          - { code: monthly, label: "한 달에 몇 번 이하로 써요" }
           - { code: stopped, label: "써 봤지만 지금은 안 써요" }
           - { code: never, label: "써 본 적 없어요" }
 
@@ -622,7 +623,8 @@ sections:
           - { code: no_need, label: "필요성을 못 느껴요" }
           - { code: distrust, label: "결과를 신뢰하기 어려워요" }
           - { code: cost, label: "비용이 부담돼요" }
-          - { code: disappointing, label: "써 봤는데 별로였어요" }
+          - { code: privacy, label: "내 코드나 데이터가 밖으로 나가는 게 걱정돼요" }
+          - { code: skill, label: "내 실력을 스스로 키우고 싶어요" }
           - { code: no_time, label: "배울 시간이 없어요" }
           - { code: other, label: "기타" }
 
@@ -693,11 +695,12 @@ sections:
         label: 지난 한 달 동안 내가 낸 코드 중 AI가 쓴 코드는 얼마쯤인가요?
         show_if: { ai_frequency: [daily, weekly, monthly] }
         options:
-          - { code: almost_none, label: "거의 없어요" }
-          - { code: lt_25, label: "25% 미만" }
+          - { code: lt_10, label: "10% 미만" }
+          - { code: "10_25", label: "10~25%" }
           - { code: "25_50", label: "25~50%" }
           - { code: "50_75", label: "50~75%" }
-          - { code: "75_plus", label: "75% 이상" }
+          - { code: "75_90", label: "75~90%" }
+          - { code: "90_plus", label: "90% 이상" }
 
       - id: ai_upsides
         fixed: false
