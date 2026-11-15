@@ -39,7 +39,7 @@ function BreakdownPicker({ breakdowns, active }: { breakdowns: Breakdown[]; acti
   // 옆으로 넘기는 좁은 화면에서 고른 기준이 가려지지 않게 그 버튼까지 넘겨 둔다. 페이지는 움직이지 않는다.
   const strip = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    const on = strip.current?.querySelector<HTMLElement>('[data-on]')
+    const on = strip.current?.querySelector<HTMLElement>('[aria-current="page"]')
     if (strip.current && on) strip.current.scrollLeft = on.offsetLeft - strip.current.offsetLeft - 8
   }, [active])
   return (
@@ -68,11 +68,12 @@ function BreakdownPicker({ breakdowns, active }: { breakdowns: Breakdown[]; acti
             <Link
               key={o.label}
               from="/$edition/results"
-              search={o.id ? { by: o.id } : {}}
+              // 라우터는 search 를 포함 관계로 비교해서 {} 이면 어느 기준에서나 활성이 된다.
+              // "전체"는 by 를 undefined 로 적고 explicitUndefined 로 by 가 없을 때만 활성이 되게 한다. 활성 링크에는 라우터가 aria-current="page" 를 단다.
+              search={{ by: o.id }}
+              activeOptions={{ explicitUndefined: true }}
               replace
               resetScroll={false}
-              aria-current={on ? 'true' : undefined}
-              data-on={on || undefined}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
