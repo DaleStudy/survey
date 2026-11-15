@@ -135,6 +135,7 @@ sections:
         type: single
         order: nominal
         label: 지금 일하는 곳은 어떤 곳인가요?
+        help: 외국계라면 규모와 관계없이 "외국계 기업"을, 투자를 받아 빠르게 크고 있는 회사라면 "스타트업"을 골라 주세요.
         options:
           - { code: large, label: "대기업" }
           - { code: midsize, label: "중견기업" }
@@ -165,12 +166,12 @@ sections:
         order: nominal
         label: 지금 하는 일은 주로 어떤 형태인가요?
         options:
-          - { code: own_service, label: "자사 서비스 및 제품 개발 (자사의 앱, 플랫폼, 게임 등)" }
+          - { code: own_service, label: "자사 서비스 및 제품 개발 (고객이 쓰는 자사의 앱, 플랫폼, 게임 등)" }
           - { code: si, label: "SI (고객사 시스템을 새로 구축하는 프로젝트)" }
           - { code: sm, label: "SM (고객사 시스템 운영 및 유지보수)" }
           - { code: solution, label: "솔루션, 패키지 (여러 고객사에 설치하고 맞춤 개발하는 제품)" }
           - { code: agency, label: "외주 개발, 에이전시 (웹, 앱 제작 의뢰를 받아 개발)" }
-          - { code: inhouse_it, label: "사내 IT, 전산 조직 (개발이 본업이 아닌 회사의 IT 부서. 예: 은행, 제조, 유통)" }
+          - { code: inhouse_it, label: "사내 IT, 전산 조직 (직원이 쓰는 사내 시스템을 만들고 운영. 예: 제조, 유통 회사 전산실)" }
           - { code: other, label: "기타" }
 
       - id: contract_position
@@ -375,9 +376,12 @@ sections:
         options:
           - { code: coding_test, label: "코딩 테스트" }
           - { code: experience_required, label: "경력을 요구하는 공고" }
-          - { code: few_openings, label: "공고가 적어요" }
+          - { code: few_openings, label: "적은 공고 수" }
           - { code: interview, label: "면접" }
           - { code: portfolio, label: "포트폴리오, 이력서" }
+          - { code: no_response, label: "서류 단계에서 연락 없음" }
+          - { code: pay_gap, label: "원하는 처우와의 차이" }
+          - { code: direction, label: "무엇부터 준비할지 모름" }
           - { code: other, label: "기타" }
 
       - id: company_criteria
@@ -387,17 +391,7 @@ sections:
         limit: 3
         label: 일할 곳을 고를 때 무엇을 가장 중요하게 보나요?
         help: 세 개까지 고를 수 있어요.
-        options:
-          - { code: pay, label: "연봉" }
-          - { code: growth, label: "성장할 기회" }
-          - { code: stability, label: "회사의 안정성" }
-          - { code: hours, label: "근무 시간과 워라밸" }
-          - { code: flexible, label: "재택, 유연 근무" }
-          - { code: culture, label: "동료와 조직 문화" }
-          - { code: reputation, label: "회사 규모와 인지도" }
-          - { code: commute, label: "출퇴근 거리" }
-          - { code: domain, label: "서비스와 도메인" }
-          - { code: other, label: "기타" }
+        options_from: job_good
 
       - id: next_workplace
         fixed: false
@@ -407,7 +401,8 @@ sections:
         options:
           - { code: stay, label: "지금 일하는 곳에 남고 싶어요" }
           - { code: large, label: "대기업" }
-          - { code: midsize_small, label: "중견·중소기업" }
+          - { code: midsize, label: "중견기업" }
+          - { code: small, label: "중소기업" }
           - { code: startup, label: "스타트업" }
           - { code: public, label: "공공기관·공기업" }
           - { code: foreign, label: "외국계 기업" }
@@ -423,12 +418,14 @@ sections:
         label: 요즘 커리어에서 가장 큰 고민은 무엇인가요?
         help: 두 개까지 고를 수 있어요.
         options:
-          - { code: expertise, label: "전문성이 부족한 것 같아요" }
+          - { code: expertise, label: "전문성 부족" }
           - { code: pay, label: "연봉" }
-          - { code: market, label: "얼어붙은 채용 시장" }
+          - { code: market, label: "채용 시장 상황" }
           - { code: ai, label: "AI가 바꿀 일자리" }
           - { code: direction, label: "앞으로 나아갈 방향" }
           - { code: balance, label: "일과 삶의 균형" }
+          - { code: job_security, label: "구조조정, 고용 불안" }
+          - { code: ic_or_manager, label: "관리자와 실무자 사이의 진로" }
           - { code: other, label: "기타" }
 
   - id: growth
@@ -460,6 +457,9 @@ sections:
           - { code: open_source, label: "오픈소스 기여" }
           - { code: conference, label: "컨퍼런스, 밋업" }
           - { code: algorithm, label: "알고리즘 문제 풀이" }
+          - { code: certificate, label: "자격증 공부" }
+          - { code: online_course, label: "온라인 강의 수강" }
+          - { code: grad_school, label: "대학원, 학위 과정" }
           - { code: none, label: "딱히 없어요", exclusive: true }
           - { code: other, label: "기타" }
 

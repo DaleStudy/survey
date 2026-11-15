@@ -24,7 +24,7 @@ const COMPARISONS_2026: Comparison[] = [
       { id: 'company_criteria', name: '고를 때 보는 점' },
     ],
     layout: 'grouped',
-    note: '만족하는 점과 힘든 점은 2개까지, 고를 때 보는 점은 3개까지 골랐어요. 기술 스택, 리더와 매니저, 평가와 승진은 고를 때 보는 점에서 묻지 않았어요.',
+    note: '만족하는 점과 힘든 점은 2개까지, 고를 때 보는 점은 3개까지 골랐어요.',
   },
   {
     id: 'pay',
