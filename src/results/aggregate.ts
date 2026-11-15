@@ -111,7 +111,7 @@ export const BREAKDOWNS: {
     by: 'company_type',
     groups: [
       { code: 'large', label: '대기업·외국계', codes: ['large', 'foreign'] },
-      { code: 'bigtech', label: 'IT 대기업·빅테크', codes: ['bigtech'] },
+      { code: 'bigtech', label: '빅테크', codes: ['bigtech'] },
       { code: 'mid_small', label: '중견·중소', codes: ['midsize', 'small'] },
       { code: 'startup', label: '스타트업', codes: ['startup'] },
       { code: 'public', label: '공공', codes: ['public'] },
