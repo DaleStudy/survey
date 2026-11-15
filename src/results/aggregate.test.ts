@@ -51,7 +51,7 @@ describe('aggregate', () => {
   test('복수 선택 문항으로 나누면 고른 집단에 모두 들어간다', () => {
     const backend = { status: 'employed', role: ['backend'], ai_frequency: 'daily' }
     const both = { status: 'employed', role: ['backend', 'frontend'], ai_frequency: 'weekly' }
-    const data = { status: 'employed', role: ['data_eng', 'ai_ml'], ai_frequency: 'never' }
+    const data = { status: 'employed', role: ['data', 'ai_ml'], ai_frequency: 'never' }
     const r = aggregate(QUESTIONS, [...many(backend, 30), ...many(both, 10), ...many(data, 30)], '2025', true)
     const role = r.breakdowns.find((b) => b.id === 'role')!
     const count = (code: string) => role.groups.find((g) => g.code === code)?.count
