@@ -5,7 +5,7 @@ import { scaleLinear } from '@tanstack/charts/scales/linear'
 import { tooltip } from '@tanstack/charts/tooltip'
 import { Heading, Text } from 'daleui'
 import { useMemo } from 'react'
-import { BRAND, BRAND_SOFT } from '@/components/ResultChart'
+import { BRAND, BRAND_SOFT } from '@/lib/chartColors'
 import { koDate } from '@/lib/date'
 import type { AdminSummary } from '@/server/admin'
 

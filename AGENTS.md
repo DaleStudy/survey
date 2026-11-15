@@ -28,6 +28,7 @@ bun run results <회차>      # 운영 D1 원본 응답을 집계해 src/results
 bun scripts/sample-results.ts   # 예시 회차 2025 의 집계(src/results/2025.json)를 다시 만든다. 예시 회차는 dev 서버에서만 보인다
 OPENAI_API_KEY=$(op read op://dev/OpenAI-DaleStudy/credential) bun scripts/type-images.ts <임시 폴더> [slug...]   # 유형 일러스트와 대표 이미지 → public/types/<slug>.jpg (1200×630, 유형 카드와 홈·회차 페이지 og:image)
 bun scripts/og-images.ts <임시 폴더>   # 유형 공유 페이지 og:image → public/og/<회차>/<slug>.jpg (일러스트 + 설문·유형 이름)
+bun scripts/results-og.ts <회차> <임시 폴더>   # 차트 공유 페이지 og:image → public/og/<회차>/results/<id>.jpg. 결과를 공개할 때 bun run results 다음에 돌린다
 ```
 
 ## Architecture
@@ -37,7 +38,7 @@ bun scripts/og-images.ts <임시 폴더>   # 유형 공유 페이지 og:image �
 - 화면은 `src/routes/` 의 파일 기반 라우트다. 설문을 여는 버튼("설문 시작하기")은 회차 페이지(`/<회차>`)에만 두고, 홈, 유형 공유 페이지, 헤더의 참여 버튼은 회차 페이지로 보낸다. 설문 진행 화면을 뺀 모든 화면에 `SiteHeader`·`SiteFooter` 를 둔다(헤더의 "결과" 메뉴는 예시가 아닌 결과가 생기면, "참여하기"는 응답을 받는 회차가 있으면 저절로 나온다). 응답 완료·이미 응답·마감 화면은 `$edition.survey.tsx` 의 `Finished` 하나로 그린다.
 - 마감은 회차의 `closesAt` 으로 정한다. 화면과 서버 함수가 함께 본다. 회차의 `opensAt` 전(`isBeta`)에는 종료 화면에 "다시 답하기"가 나온다.
 - 익명 설문이다. 로그인이 없고, 응답자를 알아볼 수 있는 값은 스키마에 칸을 두지 않는 것으로 지킨다. 개발자 유형도 브라우저에서만 계산한다. 서버와 브라우저에 무엇을 두는지는 `docs/data-model.md`.
-- 결과 화면은 `src/results/<회차>.json` 만 읽고 원본 응답을 모른다(집계 규칙은 `docs/data-model.md`). TanStack Charts(`src/components/ResultChart.tsx`)로 그리고, 보기 기준은 `?by=` 에 남는다. 차트 색은 dataviz 검증 스크립트를 통과한 값이다.
+- 결과 화면은 `src/results/<회차>.json` 만 읽고 원본 응답을 모른다(집계 규칙은 `docs/data-model.md`). TanStack Charts(`src/components/ResultChart.tsx`)로 그리고, 보기 기준은 `?by=` 에 남는다. 차트마다 공유 페이지(`/<회차>/results/<id>`, 전체 응답 기준)가 있고, 어떤 차트를 공유할지는 `src/results/share.ts` 가 정한다. 차트 색은 dataviz 검증 스크립트를 통과한 값이다.
 - 선택지에 `code: other`(기타)가 있는 문항은 "기타"를 고르면 직접 적을 수 있다. 다음 회차 선택지를 고르는 데 쓴다(`docs/research/2026-11-trend-tracking.md`).
 - 제출은 Turnstile 로 막는다. 위젯은 마지막 문항 화면에만 띄운다 — 토큰이 5분이면 만료된다. 서버(`submitResponse`)는 저장 전에 `verifyTurnstile`(`src/lib/turnstile.ts`)로 `success`·action `survey_submit`·호스트 이름을 확인하고, 하나라도 어긋나면 거절한다(fail closed). 허용 호스트는 `wrangler.jsonc` 의 `TURNSTILE_HOSTNAMES`(운영에는 localhost 를 넣지 않는다)이고, 점으로 시작하는 항목(`.survey.dalestudy.com`)은 미리보기 주소를 위해 하위 도메인을 모두 받는다.
 - 운영진은 `/admin` 에서 회차별 응답 수와 원본 응답을 읽기만 한다. 고치거나 지우는 기능과 SQL 입력창은 두지 않는다. 인증은 직접 만들지 않고 Cloudflare Access 가 `/admin` 을 잠근다. Access 는 잠근 경로로 가는 요청에만 토큰을 붙이므로 데이터는 서버 함수가 아니라 `/admin/api/*`(회차 요약 `summary`, 원본 전체 `responses`)가 주고, 요청마다 `verifyAccessToken`(`src/lib/access.ts`)으로 확인해 하나라도 어긋나면 거절한다(fail closed). 원본 응답은 회차 단위로 한 번에 받아 브라우저에서 거르고 정렬한다. 로컬에서는 토큰이 없어 늘 거절되므로 미리보기에서 확인한다. 접근 대상은 처리방침과 맞물린다(`docs/operations.md`).

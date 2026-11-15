@@ -1,7 +1,7 @@
 import { Button, Heading, Icon, Text } from 'daleui'
-import { useEffect, useState } from 'react'
 import type { DevType } from '@/lib/devType'
 import { SITE_URL } from '@/lib/og'
+import { useShare } from '@/lib/useShare'
 
 // 테두리 버튼 모양의 링크. 공유 대상은 새 탭에서 열리는 주소라 <a> 로 둔다.
 const outline: React.CSSProperties = {
@@ -23,31 +23,12 @@ const outline: React.CSSProperties = {
 }
 
 // 공유 링크에는 유형 이름만 넣는다. 응답 내용은 담지 않는다.
-// 데스크톱의 OS 공유 창은 메시지나 메모 같은 대상만 보여서, 터치 기기에서만 쓴다.
 export function ShareButton({ type, edition }: { type: DevType; edition: { id: string; title: string } }) {
-  const [copied, setCopied] = useState(false)
-  const [nativeShare, setNativeShare] = useState(false)
   const url = `${SITE_URL}/${edition.id}/type/${type.slug}`
   const title = `나는 '${type.name}' 개발자`
   // 설문을 도와 달라는 부탁보다, 나를 드러내고 상대에게 되묻는 말이 더 잘 퍼진다
   const text = `${edition.title}에 참여했어요. ${title}래요. 당신은 어떤 유형인가요?`
-
-  useEffect(() => {
-    setNativeShare(typeof navigator.share === 'function' && matchMedia('(pointer: coarse)').matches)
-  }, [])
-
-  async function copy() {
-    await navigator.clipboard.writeText(url)
-    setCopied(true)
-  }
-
-  async function share() {
-    try {
-      await navigator.share({ title, text, url })
-    } catch {
-      // 사용자가 공유 창을 닫은 경우
-    }
-  }
+  const { nativeShare, copied, copy, share } = useShare(url, title, text)
 
   const q = encodeURIComponent
   const targets = [
