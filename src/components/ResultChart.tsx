@@ -7,6 +7,7 @@ import { tooltip } from '@tanstack/charts/tooltip'
 import { Text } from 'daleui'
 import { useMemo } from 'react'
 import type { Breakdown, QuestionStat } from '@/results/aggregate'
+import { type ComparisonView, groupedLines } from '@/results/comparisons'
 import { SCALE_POINTS } from '@/questions/survey'
 import { displayOptions } from '@/results/order'
 
@@ -18,6 +19,8 @@ const ORDINAL = ['#9d8cf0', '#5333e1', '#2a1a80']
 export const BRAND_SOFT = ORDINAL[0]
 // 순서가 없는 집단: 보라와 주황
 const CATEGORICAL = ['#5333e1', '#eb6834']
+// 문항 비교의 계열: 보라, 주황, 청록. 청록은 바탕 대비가 3:1 에 못 미쳐서 막대마다 비율 글자와 표 보기를 함께 둔다.
+const COMPARE = ['#5333e1', '#eb6834', '#1baf7a']
 // 1~5점 척도: 주황(낮음) → 회색(보통) → 보라(높음)
 const LIKERT = ['#d9531e', '#f3a07c', '#dde3e6', '#9d8cf0', '#5333e1']
 // 척도 막대 칸 안의 비율 글자. 칸 색마다 4.5:1 을 넘는 색이다(흰 글자는 진한 주황 위에서 4.0:1 이라 쓰지 않는다).
@@ -64,6 +67,51 @@ function likertRows(label: string, shares: Record<string, number>, scale?: { min
     share: shares[code] ?? 0,
     series: code === '1' && scale ? `1 ${scale.min}` : code === '5' && scale ? `5 ${scale.max}` : code,
   }))
+}
+
+// 선택지 줄마다 계열(집단별 보기의 집단, 문항 비교의 문항)의 막대를 나란히 그린다.
+// share 가 없는 칸(그 문항에 없는 선택지)은 막대 없이 "–"만 적는다.
+function groupedBars(
+  lines: { label: string; shares: (number | undefined)[] }[],
+  series: string[],
+  colors: { domain: string[]; range: string[] },
+): { definition: ChartDefinition<any, any, any>; height: number } {
+  const n = series.length
+  const rows = lines.flatMap((l) => series.map((s, i) => ({ label: l.label, share: l.shares[i] ?? 0, missing: l.shares[i] === undefined, series: s })))
+  // text 마크에는 group() 배치가 없어서, 라벨은 막대 중심을 따로 계산해 별도 y축(LABEL_Y)에 놓는다.
+  // 단위는 바깥 밴드 한 칸. 줄 k 는 k 에서 시작해 막대 영역(1 - BAND_PADDING)을 차지하고,
+  // 그 안을 group() 이 D3 band 처럼(양 끝 틈 포함, 가운데 정렬) n + GROUP_PADDING 칸으로 나눈다.
+  const subStep = (1 - BAND_PADDING) / (n + GROUP_PADDING)
+  const subCenter = (i: number) => i + GROUP_PADDING + (1 - GROUP_PADDING) / 2
+  const labels = lines.flatMap((_, k) => series.map((_, i) => ({ ...rows[k * n + i], at: k + subStep * subCenter(i) })))
+  return {
+    height: lines.length * (n * 14 + 18) + 80,
+    definition: defineChart({
+      marks: [
+        barX(rows, { x: 'share', y: 'label', color: 'series', z: 'series', inset: 1, radius: 4, layout: group({ padding: GROUP_PADDING }) }),
+        text(labels, {
+          x: 'share',
+          y: 'at',
+          yScale: LABEL_Y,
+          key: (d) => `${d.label}:${d.series}`,
+          text: (d) => (d.missing ? '–' : percent(d.share)),
+          anchor: 'start',
+          dx: 4,
+          fontSize: 11,
+        }),
+      ],
+      scales: {
+        x: { scale: withHeadroom(rows), grid: true, axis: { ticks: { format: percent } } },
+        y: { scale: () => scaleBand<string>().paddingInner(BAND_PADDING) },
+        [LABEL_Y]: { scale: scaleLinear().domain([0, lines.length - BAND_PADDING]), channel: 'y', reverse: true, axis: false },
+      },
+      color: {
+        scale: scaleOrdinal<string, string>().domain(colors.domain).range(colors.range),
+        legend: colorLegend({ placement: 'top', items: colorLegendItems({ justify: 'start', gap: 20 }) }),
+      },
+      tooltip: { use: tooltip, items: [{ channel: 'x', label: '비율', text: (p) => (p.datum.missing ? '선택지 없음' : percent(p.datum.share)) }, 'group'] },
+    }),
+  }
 }
 
 export function ResultChart({ q, breakdown }: { q: QuestionStat; breakdown?: Breakdown }) {
@@ -122,48 +170,12 @@ export function ResultChart({ q, breakdown }: { q: QuestionStat; breakdown?: Bre
     const options = displayOptions(q)
 
     if (groups) {
-      const range = breakdown?.id === 'experience' ? ORDINAL : CATEGORICAL
-      const domain = breakdown?.groups.map((g) => g.label) ?? []
-      const rows: Row[] = options.flatMap((o) =>
-        visibleGroups.map((g) => ({ label: o.label, share: g.shares[o.code] ?? 0, series: groupLabel(g.group) })),
+      return groupedBars(
+        options.map((o) => ({ label: o.label, shares: visibleGroups.map((g) => g.shares[o.code] ?? 0) })),
+        visibleGroups.map((g) => groupLabel(g.group)),
+        // 숨긴 집단이 있어도 남은 집단의 색이 바뀌지 않게 전체 집단으로 색을 정한다
+        { domain: breakdown?.groups.map((g) => g.label) ?? [], range: breakdown?.id === 'experience' ? ORDINAL : CATEGORICAL },
       )
-      // text 마크에는 group() 배치가 없어서, 라벨은 막대 중심을 따로 계산해 별도 y축(LABEL_Y)에 놓는다.
-      // 단위는 바깥 밴드 한 칸. 줄 k 는 k 에서 시작해 막대 영역(1 - BAND_PADDING)을 차지하고,
-      // 그 안을 group() 이 D3 band 처럼(양 끝 틈 포함, 가운데 정렬) n + GROUP_PADDING 칸으로 나눈다.
-      const n = visibleGroups.length
-      const subStep = (1 - BAND_PADDING) / (n + GROUP_PADDING)
-      const subCenter = (i: number) => i + GROUP_PADDING + (1 - GROUP_PADDING) / 2
-      const labels = options.flatMap((_, k) =>
-        visibleGroups.map((g, i) => ({ ...rows[k * n + i], at: k + subStep * subCenter(i), group: g.group })),
-      )
-      return {
-        height: options.length * (n * 14 + 18) + 80,
-        definition: defineChart({
-          marks: [
-            barX(rows, { x: 'share', y: 'label', color: 'series', z: 'series', inset: 1, radius: 4, layout: group({ padding: GROUP_PADDING }) }),
-            text(labels, {
-              x: 'share',
-              y: 'at',
-              yScale: LABEL_Y,
-              key: (d) => `${d.label}:${d.group}`,
-              text: (d) => percent(d.share),
-              anchor: 'start',
-              dx: 4,
-              fontSize: 11,
-            }),
-          ],
-          scales: {
-            x: { scale: withHeadroom(rows), grid: true, axis: { ticks: { format: percent } } },
-            y: { scale: () => scaleBand<string>().paddingInner(BAND_PADDING) },
-            [LABEL_Y]: { scale: scaleLinear().domain([0, options.length - BAND_PADDING]), channel: 'y', reverse: true, axis: false },
-          },
-          color: {
-            scale: scaleOrdinal<string, string>().domain(domain).range(range),
-            legend: colorLegend({ placement: 'top', items: colorLegendItems({ justify: 'start', gap: 20 }) }),
-          },
-          tooltip: { use: tooltip, items: [{ channel: 'x', label: '비율', text: (p) => percent(p.datum.share) }, 'group'] },
-        }),
-      }
     }
 
     const rows: Row[] = options.map((o) => ({ label: o.label, share: o.share, series: '전체' }))
@@ -200,4 +212,56 @@ export function ResultChart({ q, breakdown }: { q: QuestionStat; breakdown?: Bre
       )}
     </div>
   )
+}
+
+// code 가 다른 두 문항을 가운데 0 에서 첫 문항은 왼쪽(주황), 둘째 문항은 오른쪽(보라)으로 뻗게 그린다.
+// 줄은 첫 문항, 둘째 문항 순서로 쌓고 각 문항 안에서는 결과 화면 순서를 따른다.
+// 한 줄에는 한쪽 막대만 있으므로 % 라벨은 모두 0 오른쪽에 둔다. 왼쪽 막대 끝에 두면 휴대폰에서 선택지 이름과 겹친다.
+function divergingBars(view: ComparisonView): { definition: ChartDefinition<any, any, any>; height: number } {
+  const [left, right] = view.series
+  const rows = [left, right].flatMap(({ name, q }, side) =>
+    displayOptions(q).map((o) => ({ key: `${q.id}:${o.code}`, label: o.label, share: o.share, x: side === 0 ? -o.share : o.share, series: name })),
+  )
+  const labelOf = new Map(rows.map((r) => [r.key, r.label]))
+  // 오른쪽 막대 끝의 % 라벨 자리. 그림을 반으로 나눠 쓰므로 한쪽으로만 뻗는 차트(withHeadroom)보다 여유를 더 둔다.
+  const edge = Math.max(0.01, ...rows.map((r) => r.share)) * 1.4
+  return {
+    height: rows.length * 32 + 90,
+    definition: defineChart({
+      marks: [
+        barX(rows, { x: 'x', y: 'key', color: 'series', inset: 2, radius: 4 }),
+        text(rows, {
+          x: (d) => Math.max(0, d.x),
+          y: 'key',
+          text: (d) => percent(d.share),
+          anchor: 'start',
+          dx: 6,
+          fontSize: 12,
+        }),
+      ],
+      scales: {
+        x: { scale: scaleLinear().domain([-edge, edge]), grid: true, axis: { ticks: { format: (v: number) => percent(Math.abs(v)) } } },
+        y: { scale: () => scaleBand<string>().padding(0.2), axis: { ticks: { format: (k: string) => labelOf.get(k) ?? k } } },
+      },
+      color: {
+        scale: scaleOrdinal<string, string>().domain([left.name, right.name]).range([CATEGORICAL[1], CATEGORICAL[0]]),
+        legend: colorLegend({ placement: 'top', items: colorLegendItems({ justify: 'start', gap: 20 }) }),
+      },
+      tooltip: { use: tooltip, items: [{ channel: 'x', label: '비율', text: (p) => percent(p.datum.share) }, 'group'] },
+    }),
+  }
+}
+
+export function CompareChart({ view }: { view: ComparisonView }) {
+  const { definition, height } = useMemo(() => {
+    if (view.comparison.layout === 'diverging') return divergingBars(view)
+    // 숨긴 문항이 있어도 남은 문항의 색이 바뀌지 않게 묶음의 모든 문항으로 색을 정한다
+    const domain = view.comparison.questions.map((q) => q.name)
+    return groupedBars(
+      groupedLines(view),
+      view.series.map((s) => s.name),
+      { domain, range: COMPARE },
+    )
+  }, [view])
+  return <Chart definition={definition} height={height} ariaLabel={view.comparison.title} />
 }

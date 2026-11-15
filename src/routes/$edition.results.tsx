@@ -1,14 +1,15 @@
 import { Link, createFileRoute, notFound } from '@tanstack/react-router'
 import { Heading, Icon, Tag, Text } from 'daleui'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { findEdition } from '@/editions'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
-import { ResultChart } from '@/components/ResultChart'
+import { CompareChart, ResultChart } from '@/components/ResultChart'
 import { UpcomingResults } from '@/components/UpcomingResults'
 import { sectionIcon } from '@/questions/sectionIcons'
 import { RESULTS } from '@/results'
 import { type Breakdown, MIN_GROUP, type QuestionStat, type ResultSet } from '@/results/aggregate'
+import { type ComparisonView, comparisonViews, groupedLines } from '@/results/comparisons'
 import { displayOptions } from '@/results/order'
 
 // 화면은 집계(src/results/<회차>.json)만 읽는다. 원본 응답은 여기로 오지 않는다.
@@ -127,6 +128,64 @@ function QuestionResult({ q, breakdown }: { q: QuestionStat; breakdown?: Breakdo
   )
 }
 
+// 여러 문항을 한 차트로. 집단별 보기를 골라도 전체 응답으로 그린다.
+function ComparisonResult({ view, breakdown }: { view: ComparisonView; breakdown?: Breakdown }) {
+  const { comparison, series } = view
+  // 표는 차트와 같은 줄. diverging 은 문항마다 선택지가 달라서 문항별로 이어 붙인다.
+  const rows =
+    comparison.layout === 'grouped'
+      ? groupedLines(view).map((l) => ({ key: l.code, label: l.label, cells: l.shares.map((s) => (s === undefined ? '–' : percent(s))) }))
+      : series.flatMap(({ q }, i) =>
+          displayOptions(q).map((o) => ({ key: `${q.id}:${o.code}`, label: o.label, cells: series.map((_, j) => (i === j ? percent(o.share) : '')) })),
+        )
+  return (
+    <article id={`compare-${comparison.id}`} style={card}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <Heading level={3} size={5} wordBreak="cjk" style={{ lineHeight: 1.4 }}>
+          {comparison.title}
+        </Heading>
+        <Text size="sm" muted>
+          {series.map((s) => `${s.name} ${s.q.answered.toLocaleString()}명`).join(' · ')}이 답했어요.
+          {comparison.note && ` ${comparison.note}`}
+          {breakdown && ' 집단별로 나누지 않은 전체 응답이에요.'}
+        </Text>
+      </div>
+      <CompareChart view={view} />
+      <details style={{ paddingTop: 14, borderTop: '1px solid var(--colors-bg-neutral-hover)' }}>
+        <summary style={{ cursor: 'pointer', fontSize: 14, fontWeight: 600 }}>표로 보기</summary>
+        <table style={{ marginTop: 'var(--spacing-8)', borderCollapse: 'collapse', fontSize: 14 }}>
+          <thead>
+            <tr>
+              <th scope="col" style={cell}>
+                선택지
+              </th>
+              {series.map((s) => (
+                <th key={s.q.id} scope="col" style={cell}>
+                  {s.name}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r.key}>
+                <th scope="row" style={{ ...cell, fontWeight: 400 }}>
+                  {r.label}
+                </th>
+                {r.cells.map((c, i) => (
+                  <td key={series[i].q.id} style={cell}>
+                    {c}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </details>
+    </article>
+  )
+}
+
 const card: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
@@ -217,7 +276,8 @@ function Results({ title, result }: { title: string; result: ResultSet }) {
   const { by } = Route.useSearch()
   const breakdown = result.breakdowns.find((b) => b.id === by)
   const sections = [...new Map(result.questions.map((q) => [q.sectionId, q.section]))]
-  const active = useActiveSection([...sections.map(([id]) => id), 'method'])
+  const comparisons = useMemo(() => comparisonViews(result), [result])
+  const active = useActiveSection([...sections.map(([id]) => id), ...(comparisons.length ? ['compare'] : []), 'method'])
   const count = (id: string) => result.questions.filter((q) => q.sectionId === id).length
   const wrap: React.CSSProperties = { maxWidth: 1120, margin: '0 auto', padding: '0 24px', boxSizing: 'border-box' }
 
@@ -272,6 +332,12 @@ function Results({ title, result }: { title: string; result: ResultSet }) {
                 <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--colors-fg-neutral-placeholder)' }}>{count(id)}</span>
               </a>
             ))}
+            {comparisons.length > 0 && (
+              <a href="#compare" aria-current={active === 'compare' ? 'true' : undefined}>
+                문항 비교
+                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--colors-fg-neutral-placeholder)' }}>{comparisons.length}</span>
+              </a>
+            )}
             <a href="#method" aria-current={active === 'method' ? 'true' : undefined} style={{ marginTop: 8, borderTop: rule, borderRadius: 0, fontSize: 14 }}>
               어떻게 조사했나요
             </a>
@@ -280,24 +346,9 @@ function Results({ title, result }: { title: string; result: ResultSet }) {
           <div style={{ flex: '999 1 560px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 56 }}>
             {sections.map(([sectionId, section]) => (
               <section key={sectionId} id={sectionId} aria-labelledby={`${sectionId}-title`} style={{ scrollMarginTop: 88, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-20)' }}>
-                <div style={{ display: 'flex', gap: 'var(--spacing-12)', alignItems: 'center' }}>
-                  <span
-                    style={{
-                      display: 'inline-flex',
-                      width: 40,
-                      height: 40,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: 10,
-                      background: 'var(--colors-bg-brand-hover)',
-                    }}
-                  >
-                    <Icon name={sectionIcon(sectionId)} size="sm" tone="brand" />
-                  </span>
-                  <Heading level={2} size={3} id={`${sectionId}-title`}>
-                    {section}
-                  </Heading>
-                </div>
+                <SectionTitle id={`${sectionId}-title`} icon={sectionIcon(sectionId)}>
+                  {section}
+                </SectionTitle>
                 {result.questions
                   .filter((q) => q.sectionId === sectionId)
                   .map((q) => (
@@ -305,6 +356,17 @@ function Results({ title, result }: { title: string; result: ResultSet }) {
                   ))}
               </section>
             ))}
+
+            {comparisons.length > 0 && (
+              <section id="compare" aria-labelledby="compare-title" style={{ scrollMarginTop: 88, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-20)' }}>
+                <SectionTitle id="compare-title" icon="chartBar">
+                  문항 비교
+                </SectionTitle>
+                {comparisons.map((view) => (
+                  <ComparisonResult key={view.comparison.id} view={view} breakdown={breakdown} />
+                ))}
+              </section>
+            )}
 
             <section
               id="method"
@@ -337,6 +399,29 @@ function Results({ title, result }: { title: string; result: ResultSet }) {
 }
 
 const rule = '1px solid var(--colors-bg-neutral-hover)'
+
+function SectionTitle({ id, icon, children }: { id: string; icon: React.ComponentProps<typeof Icon>['name']; children: React.ReactNode }) {
+  return (
+    <div style={{ display: 'flex', gap: 'var(--spacing-12)', alignItems: 'center' }}>
+      <span
+        style={{
+          display: 'inline-flex',
+          width: 40,
+          height: 40,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 10,
+          background: 'var(--colors-bg-brand-hover)',
+        }}
+      >
+        <Icon name={icon} size="sm" tone="brand" />
+      </span>
+      <Heading level={2} size={3} id={id}>
+        {children}
+      </Heading>
+    </div>
+  )
+}
 
 function Figure({ label, value, brand }: { label: string; value: string; brand?: boolean }) {
   return (
