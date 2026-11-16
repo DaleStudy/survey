@@ -8,6 +8,7 @@
 |---|---|---|
 | `TURNSTILE_SECRET` | Worker 시크릿, 미리보기용 repo secret | 1Password `dev/CF_SURVEY_TURNSTILE` (위젯 대시보드 URL 포함) |
 | `CLOUDFLARE_API_TOKEN` | org secret, 배포와 마이그레이션 | 1Password `dev/CF_DALESTUDY`. DaleStudy 계정 소유 토큰이고 Turnstile 권한도 있다 |
+| `CF_LOCAL` | 로컬에서 Access 앱·정책을 API 로 바꿀 때 | 1Password `dev/CF_LOCAL`. DaleStudy 계정 소유 토큰이고 Access 권한만 있다 |
 | GitHub OAuth 앱 "DaleStudy Cloudflare Access" | Access 의 GitHub 로그인 수단 | 1Password `dev/GH_OAUTH_APP_DALESTUDY_CF_ACCESS`. DaleStudy 조직 소유 |
 
 로컬 개발에는 `.dev.vars` 에 `TURNSTILE_SECRET` 과 `TURNSTILE_HOSTNAMES=localhost,127.0.0.1` 을 둔다.
