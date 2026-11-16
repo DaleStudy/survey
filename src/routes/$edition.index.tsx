@@ -1,4 +1,5 @@
 import { Link, createFileRoute, notFound } from '@tanstack/react-router'
+import { useMemo } from 'react'
 import { Heading, Icon, Tag, Text } from 'daleui'
 import { DevTypeGrid } from '@/components/DevTypeGrid'
 import { SiteFooter } from '@/components/SiteFooter'
@@ -8,6 +9,7 @@ import { koDate } from '@/lib/date'
 import { ctaLink, eyebrow, gradientText, heroFrame, heroImage, heroTitle } from '@/lib/brand'
 import { SITE_URL, ogImage } from '@/lib/og'
 import { sectionIcon } from '@/questions/sectionIcons'
+import { type CountRange, questionCounts } from '@/questions/logic'
 import { questionsFor } from '@/questions/survey'
 import { RESULTS } from '@/results'
 
@@ -42,6 +44,8 @@ const rule = '1px solid var(--colors-bg-neutral-hover)'
 const brandRule = '1px solid var(--colors-bg-brand-active)'
 const sectionHeading: React.CSSProperties = { fontSize: 'clamp(1.625rem, 1.5vw + 1rem, 1.875rem)', fontWeight: 800, letterSpacing: '-0.025em' }
 
+const countLabel = ({ min, max }: CountRange) => (min === max ? `${min}문항` : `${min}~${max}문항`)
+
 // 올해의 주제. 주제 목록에서 큰 칸으로 떼어 낸다.
 const FEATURED = 'ai'
 
@@ -52,6 +56,7 @@ function EditionPage() {
   const questions = questionsFor(e.id) ?? []
   const topics = [...new Map(questions.filter((q) => q.sectionId !== 'closing').map((q) => [q.sectionId, { id: q.sectionId, title: q.section }])).values()]
   const featured = topics.find((t) => t.id === FEATURED)
+  const counts = useMemo(() => questionCounts(questions), [questions])
   const steps = [
     e.opensAt && { label: '시작', date: koDate(e.opensAt), note: '응답을 받기 시작해요' },
     e.closesAt && { label: '마감', date: koDate(e.closesAt), note: '밤 11시 59분까지 받아요' },
@@ -199,7 +204,7 @@ function EditionPage() {
                   무엇을 묻나요
                 </Heading>
                 <Text size="lg" style={{ lineHeight: 1.7 }}>
-                  {topics.length}가지 주제를 물어요. 본인 상황에 맞는 질문만 나와서 10분 안팎이면 끝나요.
+                  {topics.length}가지 주제를 물어요. 본인 상황에 맞는 질문만 나와서 {countLabel(counts.total)}, 10분 안팎이면 끝나요.
                 </Text>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-16)' }}>
@@ -233,6 +238,7 @@ function EditionPage() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
                       <span style={{ fontSize: '0.875rem', fontWeight: 700, opacity: 0.85 }}>올해의 주제</span>
                       <span style={{ fontSize: '1.75rem', fontWeight: 800, letterSpacing: '-0.025em' }}>{featured.title.replace(/^올해의 주제\s*/, '')}</span>
+                      <span style={{ fontSize: '0.875rem', fontWeight: 500, opacity: 0.85 }}>{countLabel(counts.sections[featured.id])}</span>
                     </div>
                   </div>
                 )}
@@ -278,7 +284,10 @@ function EditionPage() {
                         >
                           <Icon name={sectionIcon(t.id)} size="sm" tone="brand" />
                         </span>
-                        {t.title}
+                        <span style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                          {t.title}
+                          <span style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--colors-fg-neutral-placeholder)' }}>{countLabel(counts.sections[t.id])}</span>
+                        </span>
                       </li>
                     ))}
                 </ul>

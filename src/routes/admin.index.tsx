@@ -1,4 +1,4 @@
-import { createFileRoute, getRouteApi } from '@tanstack/react-router'
+import { Link, createFileRoute, getRouteApi } from '@tanstack/react-router'
 import { Heading, Text } from 'daleui'
 import type { QuestionStat } from '@/results/aggregate'
 import { displayOptions } from '@/results/order'
@@ -11,7 +11,7 @@ export const Route = createFileRoute('/admin/')({
 })
 
 function Overview() {
-  const { summary } = admin.useLoaderData()
+  const { edition, summary } = admin.useLoaderData()
   if (summary.total === 0) return <Text muted>아직 응답이 없어요.</Text>
   const sections = [...new Map(summary.stats.map((q) => [q.sectionId, q.section]))]
   return (
@@ -27,7 +27,7 @@ function Overview() {
             {summary.stats
               .filter((q) => q.sectionId === id)
               .map((q) => (
-                <Distribution key={q.id} q={q} />
+                <Distribution key={q.id} q={q} edition={edition} />
               ))}
           </div>
         </section>
@@ -36,7 +36,7 @@ function Overview() {
   )
 }
 
-function Distribution({ q }: { q: QuestionStat }) {
+function Distribution({ q, edition }: { q: QuestionStat; edition: string }) {
   const options = displayOptions(q)
   const max = Math.max(1, ...options.map((o) => o.count))
   const scaleLabel = (code: string) => (code === '1' ? `1 ${q.scale?.min ?? ''}` : code === '5' ? `5 ${q.scale?.max ?? ''}` : code)
@@ -53,7 +53,11 @@ function Distribution({ q }: { q: QuestionStat }) {
       </div>
       {q.type === 'long' ? (
         <Text size="sm" muted>
-          서술형이라 원본 응답에서 읽어요.
+          서술형 답은{' '}
+          <Link to="/admin/raw" search={{ edition }} style={{ color: 'var(--colors-fg-brand)', textDecoration: 'underline' }}>
+            원본 응답
+          </Link>{' '}
+          탭에서 읽을 수 있어요.
         </Text>
       ) : (
         <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
