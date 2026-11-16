@@ -1,4 +1,5 @@
 import { Link, createFileRoute, notFound } from '@tanstack/react-router'
+import { useMemo } from 'react'
 import { Heading, Icon, Tag, Text } from 'daleui'
 import { DevTypeGrid } from '@/components/DevTypeGrid'
 import { SiteFooter } from '@/components/SiteFooter'
@@ -8,6 +9,7 @@ import { koDate } from '@/lib/date'
 import { ctaLink, eyebrow, gradientText, heroFrame, heroImage, heroTitle } from '@/lib/brand'
 import { SITE_URL, ogImage } from '@/lib/og'
 import { sectionIcon } from '@/questions/sectionIcons'
+import { questionCountRange } from '@/questions/logic'
 import { questionsFor } from '@/questions/survey'
 import { RESULTS } from '@/results'
 
@@ -52,6 +54,7 @@ function EditionPage() {
   const questions = questionsFor(e.id) ?? []
   const topics = [...new Map(questions.filter((q) => q.sectionId !== 'closing').map((q) => [q.sectionId, { id: q.sectionId, title: q.section }])).values()]
   const featured = topics.find((t) => t.id === FEATURED)
+  const range = useMemo(() => questionCountRange(questions), [questions])
   const steps = [
     e.opensAt && { label: '시작', date: koDate(e.opensAt), note: '응답을 받기 시작해요' },
     e.closesAt && { label: '마감', date: koDate(e.closesAt), note: '밤 11시 59분까지 받아요' },
@@ -199,7 +202,7 @@ function EditionPage() {
                   무엇을 묻나요
                 </Heading>
                 <Text size="lg" style={{ lineHeight: 1.7 }}>
-                  {topics.length}가지 주제를 물어요. 본인 상황에 맞는 질문만 나와서 10분 안팎이면 끝나요.
+                  {topics.length}가지 주제를 물어요. 본인 상황에 맞는 질문만 나와서 {range.min}~{range.max}문항, 10분 안팎이면 끝나요.
                 </Text>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-16)' }}>

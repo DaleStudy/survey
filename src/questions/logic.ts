@@ -41,6 +41,37 @@ export function visibleQuestions(questions: Question[], answers: Answers): Quest
   return questions.filter((q) => isVisible(q, answers))
 }
 
+// 응답자가 받게 되는 문항 수의 범위. 분기를 거는 문항의 선택지를 모두 겪어 보고 보이는 문항을 센다.
+// 분기에서 같은 결과를 내는 선택지는 하나만 겪는다. 복수 선택 문항은 하나만 고른 것으로 본다.
+export function questionCountRange(questions: Question[]): { min: number; max: number } {
+  const keys = [...new Set(questions.flatMap((q) => Object.keys(q.showIf)))]
+  const choices = keys.map((key) => {
+    const options = questions.find((q) => q.id === key)?.options ?? []
+    const byEffect = new Map(options.map((o) => [questions.map((q) => q.showIf[key]?.includes(o.code) ?? false).join(), o.code]))
+    return [...byEffect.values()]
+  })
+  let min = Infinity
+  let max = 0
+  const walk = (i: number, answers: Answers) => {
+    if (i < keys.length) {
+      for (const code of choices[i]) walk(i + 1, { ...answers, [keys[i]]: code })
+      return
+    }
+    // 보이지 않는 문항의 답은 그 문항에 기대는 분기를 열지 않는다. 분기를 거는 문항이 늘 앞에 있어서 한 번 훑으면 된다.
+    const shown: Answers = {}
+    let count = 0
+    for (const q of questions) {
+      if (!isVisible(q, shown)) continue
+      count++
+      if (q.id in answers) shown[q.id] = answers[q.id]
+    }
+    min = Math.min(min, count)
+    max = Math.max(max, count)
+  }
+  walk(0, {})
+  return { min, max }
+}
+
 const isExclusive = (q: Question, code: string) => q.options.some((o) => o.code === code && o.exclusive)
 
 // 복수 선택에서 하나를 누른 결과. exclusive 선택지를 고르면 나머지가 풀리고, 다른 걸 고르면 exclusive 가 풀린다.
