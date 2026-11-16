@@ -54,7 +54,7 @@ function Distribution({ q, edition }: { q: QuestionStat; edition: string }) {
       {q.type === 'long' ? (
         <Text size="sm" muted>
           서술형 답은{' '}
-          <Link to="/admin/raw" search={{ edition }}>
+          <Link to="/admin/raw" search={{ edition }} style={{ color: 'var(--colors-fg-brand)', textDecoration: 'underline' }}>
             원본 응답
           </Link>{' '}
           탭에서 읽을 수 있어요.
