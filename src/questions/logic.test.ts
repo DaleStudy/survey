@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { cleanAnswers, questionCountRange, toggleOption, usesGrid, visibleQuestions } from './logic'
+import { cleanAnswers, questionCounts, toggleOption, usesGrid, visibleQuestions } from './logic'
 import { questionsFor } from './survey'
 
 const QUESTIONS = questionsFor('2026')!
@@ -79,8 +79,12 @@ describe('문항 원본', () => {
 })
 
 describe('분기', () => {
-  test('응답자가 받는 문항 수는 상황에 따라 19~41개다', () => {
-    expect(questionCountRange(QUESTIONS)).toEqual({ min: 19, max: 41 })
+  test('응답자가 받는 문항 수는 상황에 따라 다르다', () => {
+    const { total, sections } = questionCounts(QUESTIONS)
+    expect(total).toEqual({ min: 19, max: 41 })
+    expect(sections.about).toEqual({ min: 6, max: 6 })
+    expect(sections.workplace).toEqual({ min: 0, max: 7 })
+    expect(sections.ai).toEqual({ min: 3, max: 8 })
   })
 
   test('학생에게는 일하는 곳과 보상 문항이 나오지 않는다', () => {
