@@ -15,8 +15,8 @@
 ## Cloudflare Access
 
 - Zero Trust 팀 도메인은 `dalestudy.cloudflareaccess.com`, 로그인 수단은 위 GitHub OAuth 앱이다.
-- 관리자 앱 "달레 스터디 개발자 설문 (관리자)"가 정책 "운영진"으로 `/admin` 을 GitHub `DaleStudy/maintainer` 팀에게만 연다. 미리보기 주소의 `/admin` 도 같은 앱이 잠근다. 앱의 AUD 는 `src/lib/access.ts` 에 있어서, 앱을 다시 만들면 그 값도 바꾼다.
-- 접근 대상을 바꾸면 처리방침 8번("운영진만 로그인해서 접근")도 함께 고친다.
+- 관리자 앱 "달레 스터디 개발자 설문 (관리자)"가 정책 "운영진"으로 `/admin` 을 GitHub `DaleStudy/survey` 팀에게만 연다. 이 팀은 이 저장소에 기여한 사람들이고, 새 기여자는 자동으로 들어가지 않아 운영진이 직접 넣는다. Access 는 로그인할 때 팀을 확인하므로 팀에서 뺀 사람의 기존 세션은 Zero Trust 에서 철회한다. 미리보기 주소의 `/admin` 도 같은 앱이 잠근다. 앱의 AUD 는 `src/lib/access.ts` 에 있어서, 앱을 다시 만들면 그 값도 바꾼다.
+- 접근 대상을 바꾸면 처리방침 8번("이 설문을 만드는 운영진만 로그인해서 접근")도 함께 고친다.
 
 ## Turnstile
 
