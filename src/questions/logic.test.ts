@@ -71,6 +71,17 @@ describe('문항 원본', () => {
     for (const q of QUESTIONS) for (const key of Object.keys(q.showIf)) expect(at.get(key)!).toBeLessThan(at.get(q.id)!)
   })
 
+  test('선택지 이모지는 고정이 아닌 nominal 문항에만, 문항 안에서 겹치지 않게 붙는다', () => {
+    const iconed = QUESTIONS.filter((q) => q.options.some((o) => o.icon))
+    expect(iconed.length).toBeGreaterThan(0)
+    for (const q of iconed) {
+      expect(q.fixed).toBe(false)
+      expect(q.order).toBe('nominal')
+      const icons = q.options.flatMap((o) => (o.icon ? [o.icon] : []))
+      expect(new Set(icons).size).toBe(icons.length)
+    }
+  })
+
   test('짧은 이름이 많은 문항만 여러 열로, 문장형 선택지는 한 줄에 하나씩 놓는다', () => {
     const grid = (id: string) => usesGrid(QUESTIONS.find((q) => q.id === id)!)
     for (const id of ['main_language', 'ai_harness', 'ai_model', 'learning_sources']) expect(grid(id)).toBe(true)

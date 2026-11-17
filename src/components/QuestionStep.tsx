@@ -22,11 +22,14 @@ const OPTION_CSS = `
 .q-option[aria-checked='true'] { border: 2px solid var(--colors-border-brand-active); padding: 0 17px; background: var(--colors-bg-brand-hover); color: var(--colors-fg-neutral-active); font-weight: 700; }
 .q-mark { display: inline-flex; flex: none; width: 22px; height: 22px; box-sizing: border-box; align-items: center; justify-content: center; border: 2px solid var(--colors-border-neutral-active); color: var(--colors-fg-solid-brand); }
 .q-option[aria-checked='true'] .q-mark { border: 0; background: var(--colors-bg-solid-brand); }
+.q-icon { flex: none; width: 1.5em; font-size: 1.25rem; line-height: 1; text-align: center; }
 `
 
 export function QuestionStep({ question: q, value, error, onPick, onToggle, onText, otherText, onOtherText }: Props) {
   const picked = Array.isArray(value) ? value : []
   const grid = usesGrid(q)
+  // 이모지가 하나라도 있으면 없는 선택지(기타 등)도 자리를 비워 두어 글자 시작점을 맞춘다
+  const iconed = q.options.some((o) => o.icon)
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-32)' }}>
       <style>{OPTION_CSS}</style>
@@ -79,6 +82,11 @@ export function QuestionStep({ question: q, value, error, onPick, onToggle, onTe
                 <span aria-hidden="true" className="q-mark" style={{ borderRadius: q.type === 'multi' ? 'var(--radii-sm)' : 'var(--radii-full)' }}>
                   {on && (q.type === 'multi' ? <Icon name="check" size="xs" /> : <span style={{ width: 8, height: 8, borderRadius: 'var(--radii-full)', background: 'currentColor' }} />)}
                 </span>
+                {iconed && (
+                  <span aria-hidden="true" className="q-icon">
+                    {o.icon}
+                  </span>
+                )}
                 <span>{o.label}</span>
               </button>
             )

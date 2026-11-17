@@ -6,6 +6,8 @@
 # exclusive: true 는 multi 문항에서 "딱히 없어요"처럼 다른 선택지와 함께 고를 수 없는 선택지에 붙인다.
 # order 는 single·multi 문항에 꼭 적는다. ordinal(경력, 연봉처럼 선택지에 순서가 있다)은 결과 화면에서 이 순서 그대로,
 # nominal(언어, 도구처럼 순서가 없다)은 비율이 높은 순으로 보여 준다. 화면에만 쓰는 값이라 fixed 문항에도 적을 수 있다.
+# icon 은 선택지 앞에 붙는 장식 이모지다. 응답에 영향을 줄 수 있어서 fixed: false 이고 nominal 인 문항에만 붙이고, 결과 화면에는 쓰지 않는다.
+# 감정을 드러내는 얼굴 이모지는 쓰지 않는다. 기타나 답하지 않을게요처럼 맞는 이모지가 없는 선택지는 비워 둔다.
 # 동의와 만 14세 확인은 문항이 아니라 설문 앞 단계에서 처리한다.
 
 edition: "2026"
@@ -50,10 +52,10 @@ sections:
         label: 대학 전공은 무엇인가요?
         help: 학생이라면 지금 전공을 골라 주세요. 복수전공이나 대학원을 포함해 컴퓨터 관련 전공이 하나라도 있으면 그쪽을 골라 주세요.
         options:
-          - { code: cs, label: "컴퓨터공학 등 컴퓨터 관련" }
-          - { code: stem, label: "그 밖의 이공계" }
-          - { code: humanities, label: "인문, 사회, 상경" }
-          - { code: arts, label: "예체능" }
+          - { code: cs, label: "컴퓨터공학 등 컴퓨터 관련", icon: "💻" }
+          - { code: stem, label: "그 밖의 이공계", icon: "🔬" }
+          - { code: humanities, label: "인문, 사회, 상경", icon: "📚" }
+          - { code: arts, label: "예체능", icon: "🎨" }
           - { code: none, label: "해당 없음" }
           - { code: no_answer, label: "답하지 않을게요" }
 
@@ -315,13 +317,13 @@ sections:
         label: 첫 개발 일자리는 어떻게 구했나요?
         show_if: { experience: [lt_1, "1_2", "3_5", "6_9", "10_14", "15_plus"] }
         options:
-          - { code: open_recruit, label: "신입 공채" }
-          - { code: rolling, label: "수시 채용" }
-          - { code: intern, label: "인턴에서 전환" }
-          - { code: referral, label: "지인 추천" }
-          - { code: bootcamp, label: "부트캠프나 교육 과정 연계" }
-          - { code: alt_service, label: "산업기능요원·전문연구요원" }
-          - { code: founder, label: "창업하거나 프리랜서로 시작" }
+          - { code: open_recruit, label: "신입 공채", icon: "📢" }
+          - { code: rolling, label: "수시 채용", icon: "📬" }
+          - { code: intern, label: "인턴에서 전환", icon: "🔄" }
+          - { code: referral, label: "지인 추천", icon: "🤝" }
+          - { code: bootcamp, label: "부트캠프나 교육 과정 연계", icon: "🏫" }
+          - { code: alt_service, label: "산업기능요원·전문연구요원", icon: "🎖️" }
+          - { code: founder, label: "창업하거나 프리랜서로 시작", icon: "🚀" }
           - { code: other, label: "기타" }
 
       - id: job_search
@@ -381,14 +383,14 @@ sections:
         help: 두 개까지 고를 수 있어요.
         show_if: { status: [job_seeking] }
         options:
-          - { code: coding_test, label: "코딩 테스트" }
-          - { code: experience_required, label: "경력을 요구하는 공고" }
-          - { code: few_openings, label: "적은 공고 수" }
-          - { code: interview, label: "면접" }
-          - { code: portfolio, label: "포트폴리오, 이력서" }
-          - { code: no_response, label: "서류 단계에서 연락 없음" }
-          - { code: pay_gap, label: "원하는 처우와의 차이" }
-          - { code: direction, label: "무엇부터 준비할지 모름" }
+          - { code: coding_test, label: "코딩 테스트", icon: "🧩" }
+          - { code: experience_required, label: "경력을 요구하는 공고", icon: "📜" }
+          - { code: few_openings, label: "적은 공고 수", icon: "🔍" }
+          - { code: interview, label: "면접", icon: "🗣️" }
+          - { code: portfolio, label: "포트폴리오, 이력서", icon: "📁" }
+          - { code: no_response, label: "서류 단계에서 연락 없음", icon: "📭" }
+          - { code: pay_gap, label: "원하는 처우와의 차이", icon: "💰" }
+          - { code: direction, label: "무엇부터 준비할지 모름", icon: "🧭" }
           - { code: other, label: "기타" }
 
       - id: company_criteria
