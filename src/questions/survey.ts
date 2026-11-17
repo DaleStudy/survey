@@ -4,7 +4,8 @@ export type QuestionType = 'single' | 'multi' | 'scale' | 'long'
 // 선택지에 순서가 있는지. 결과 화면에서 ordinal 은 원래 순서, nominal 은 비율이 높은 순으로 보여 준다.
 export type OptionOrder = 'ordinal' | 'nominal'
 // exclusive: "딱히 없어요"처럼 다른 선택지와 함께 고를 수 없는 복수 선택지
-export type Option = { code: string; label: string; exclusive?: boolean }
+// icon: 설문 화면에서 선택지 앞에 붙는 장식 이모지. 결과 화면에는 쓰지 않는다.
+export type Option = { code: string; label: string; exclusive?: boolean; icon?: string }
 export type ScaleEnd = { value: number; label: string }
 // 척도 문항은 모두 5점이다. 결과 차트의 색과 가운데 정렬이 5점에 맞춰져 있어서, 테스트가 YAML 의 min·max 를 1·5 로 묶는다.
 export const SCALE_POINTS = ['1', '2', '3', '4', '5']
