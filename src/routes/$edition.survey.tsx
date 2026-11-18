@@ -14,6 +14,8 @@ import { StarBurst } from '@/components/StarBurst'
 import { type DevType, devTypeOf, findDevType } from '@/lib/devType'
 import { doneKey, findEdition, isBeta, isClosed } from '@/editions'
 import { koDate } from '@/lib/date'
+import { heroFrame, heroImage } from '@/lib/brand'
+import { KOREA } from '@/lib/stackOverflow'
 import { OTHER, isEmpty, otherKey, toggleOption, visibleQuestions } from '@/questions/logic'
 import { clearProgress, loadProgress, saveProgress } from '@/questions/progress'
 import { type Answers, questionsFor } from '@/questions/survey'
@@ -395,10 +397,32 @@ function Survey() {
     return (
       <main style={page}>
         <div style={{ ...column, alignItems: 'flex-start' }}>
+          <figure style={{ ...heroFrame, flex: 'none', alignSelf: 'stretch' }}>
+            <img src="/types/welcome.jpg" alt="" width={1200} height={630} style={heroImage} />
+          </figure>
           <Heading level={1}>{edition.title}</Heading>
-          <Text size="lg">
-            글로벌 설문조사에서는 잘 보이지 않는 한국 개발자의 일과 커리어를 물어요. {resultsNote}
+          <Text size="lg" style={{ lineHeight: 1.7 }}>
+            <b style={{ color: 'var(--colors-fg-brand)' }}>“그래서 한국은?”</b> 해외 개발자 설문 결과를 볼 때마다 남던 물음이에요. Stack Overflow 설문에 답한 한국 개발자는 {KOREA}명뿐이고, 국내 설문은 명맥이 끊겼죠. 그래서 달레 스터디가 다시 시작합니다.
           </Text>
+          <Text size="lg" style={{ lineHeight: 1.7 }}>
+            한 번으로 끝내지 않고 해마다 같은 질문을 던져 한국 개발자의 변화를 기록해 나가려고 합니다. 현업 개발자도, 개발자를 꿈꾸며 공부하는 분도 함께해 주세요. 다양한 분이 답할수록 한국 개발자의 모습을 더 넓게 담을 수 있습니다.
+          </Text>
+          <div
+            style={{
+              display: 'flex',
+              gap: 'var(--spacing-12)',
+              alignItems: 'flex-start',
+              padding: 'var(--spacing-20) var(--spacing-24)',
+              borderRadius: 16,
+              background: 'var(--colors-app-bg)',
+              border: '1px solid var(--colors-bg-brand-active)',
+            }}
+          >
+            <Icon name="handHeart" tone="brand" style={{ flex: 'none', marginTop: 2 }} />
+            <Text style={{ lineHeight: 1.7 }}>
+              바쁜 와중에 시간 내어 주셔서 진심으로 감사합니다. 한 분 한 분의 답이 모여 한국 개발자의 오늘을 담은 기록이 됩니다.
+            </Text>
+          </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-8) var(--spacing-20)' }}>
             {(
               [

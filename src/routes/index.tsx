@@ -7,6 +7,7 @@ import { openEditions } from '@/editions'
 import { koDate } from '@/lib/date'
 import { ctaLink, eyebrow, gradientBanner, gradientText, heroFrame, heroImage, heroTitle, sectionTitle } from '@/lib/brand'
 import { ogImage } from '@/lib/og'
+import { GLOBAL, KOREA } from '@/lib/stackOverflow'
 
 const TITLE = '달레 스터디 개발자 설문조사'
 const DESCRIPTION =
@@ -53,10 +54,6 @@ const PROMISES: { icon: IconName; title: string; body: string }[] = [
   { icon: 'globe', title: '결과는 모두 공개해요', body: '응답이 마감되면 결과를 누구나 볼 수 있게 공개하고, 분석한 인사이트도 함께 나눠요.' },
   { icon: 'heartHandshake', title: '통계에만 써요', body: '집계된 응답은 분석과 통계를 내는 데만 쓰고, 영리 목적으로는 쓰지 않아요.' },
 ]
-
-// Stack Overflow 2025 설문조사 응답자 가운데 한국 개발자
-const KOREA = 86
-const GLOBAL = 49_009
 
 function Landing() {
   // 지금 응답을 받는 회차. 없으면 결과로 안내한다.
