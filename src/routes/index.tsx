@@ -39,8 +39,8 @@ const brandRule = '1px solid var(--colors-bg-brand-active)'
 
 const REASONS = [
   {
-    title: '국내 개발자 설문조사는 명맥이 끊겼어요',
-    body: '2023년 이후로 국내 개발자만을 대상으로 꾸준히 하는 설문조사가 없어요. 그래서 국내 기술이나 업계 동향을 파악하기가 어려워졌어요.',
+    title: '한국 개발자를 꾸준히 조사하는 곳이 없어요',
+    body: '몇 번 시도는 있었지만 대부분 한두 번에 그쳤고, 가장 컸던 설문도 2023년을 끝으로 멈췄어요. 그래서 한국 개발자가 쓰는 기술이나 업계 동향을 파악하기가 어려워졌어요.',
   },
   {
     title: '한국 소프트웨어 개발 현실에 맞는 질문을 해요',
@@ -107,7 +107,7 @@ function Landing() {
             함께 기록해요
           </Heading>
           <Text size="lg" style={{ maxWidth: 520, fontSize: '1.1875rem', lineHeight: 1.65 }}>
-            한국 개발자가 어떻게 일하고 성장하는지, 그 이야기를 함께 모아요. 응답 하나하나가 모여 국내 개발 생태계를 읽는 인사이트가 돼요.
+            국내외 어디에 있든 한국 개발자가 어떻게 일하고 성장하는지, 그 이야기를 함께 모아요. 응답 하나하나가 모여 한국 개발자 생태계를 읽는 인사이트가 돼요.
           </Text>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-12)', alignItems: 'center' }}>
             {open ? (
