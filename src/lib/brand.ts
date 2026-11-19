@@ -14,7 +14,7 @@ export const gradientBanner = 'linear-gradient(135deg, #0e8e7b 0%, #6d51d6 100%)
 // 홈과 회차 페이지 첫 화면의 제목. 휴대폰에서는 줄어든다.
 export const heroTitle: React.CSSProperties = {
   margin: 0,
-  fontSize: 'clamp(2.25rem, 4vw + 1rem, 3.75rem)',
+  fontSize: 'clamp(2rem, 3vw + 1rem, 3.25rem)',
   lineHeight: 1.18,
   fontWeight: 800,
   letterSpacing: '-0.03em',
@@ -34,8 +34,7 @@ export const eyebrow: React.CSSProperties = { margin: 0, fontSize: '0.875rem', f
 
 // 첫 화면 일러스트를 옅은 브랜드 면 위의 액자로 감싼다
 export const heroFrame: React.CSSProperties = {
-  flex: '1 1 420px',
-  minWidth: 0,
+  boxSizing: 'border-box',
   margin: 0,
   padding: 'var(--spacing-12)',
   borderRadius: 24,
@@ -43,6 +42,10 @@ export const heroFrame: React.CSSProperties = {
   border: '1px solid var(--colors-bg-brand-active)',
 }
 export const heroImage: React.CSSProperties = { display: 'block', width: '100%', height: 'auto', borderRadius: 'var(--radii-lg)' }
+
+// 홈과 회차 페이지에서 글 아래에 두는 일러스트(1200×630). 글 아래 남은 화면 높이에 다 들어가도록 폭을 정하고,
+// 낮은 화면에서도 560px 아래로는 줄이지 않는다. 500px 는 머리글과 글 영역의 높이다.
+export const heroBelow: React.CSSProperties = { ...heroFrame, width: 'clamp(min(100%, 560px), calc((100svh - 500px) * 1.9), 100%)' }
 
 // 주 행동 링크. 버튼처럼 보이지만 페이지를 옮기므로 <a> 다.
 export const ctaLink: React.CSSProperties = {

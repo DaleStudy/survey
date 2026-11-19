@@ -6,7 +6,7 @@ import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { findEdition, isBeta, isClosed } from '@/editions'
 import { koDate } from '@/lib/date'
-import { ctaLink, eyebrow, gradientText, heroFrame, heroImage, heroTitle } from '@/lib/brand'
+import { ctaLink, eyebrow, gradientText, heroBelow, heroImage, heroTitle } from '@/lib/brand'
 import { SITE_URL, ogImage } from '@/lib/og'
 import { sectionIcon } from '@/questions/sectionIcons'
 import { type CountRange, questionCounts } from '@/questions/logic'
@@ -68,9 +68,9 @@ function EditionPage() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--colors-app-bg)', color: 'var(--colors-fg-neutral)' }}>
       <SiteHeader />
       <main style={{ flex: 1 }}>
-        <section style={{ ...wrap, padding: '72px 24px 80px', display: 'flex', flexWrap: 'wrap', gap: 56, alignItems: 'center' }}>
-          <div style={{ flex: '1 1 460px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)', alignItems: 'flex-start' }}>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-8)' }}>
+        <section style={{ ...wrap, padding: '40px 24px 80px', display: 'flex', flexDirection: 'column', gap: 32, alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'center', textAlign: 'center' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-8)', justifyContent: 'center' }}>
               {e.sample && <Tag tone="warning">예시</Tag>}
               {result ? (
                 <Tag tone="brand">{result.total.toLocaleString()}명이 답했어요</Tag>
@@ -83,7 +83,7 @@ function EditionPage() {
                 e.resultsAt && <Tag tone="brand">{koDate(e.resultsAt)}에 결과를 공개해요</Tag>
               )}
             </div>
-            <Heading level={1} wordBreak="cjk" style={{ ...heroTitle, fontSize: 'clamp(2.125rem, 3.5vw + 1rem, 3.25rem)' }}>
+            <Heading level={1} wordBreak="cjk" style={heroTitle}>
               {/^\d{4}/.test(e.title) ? (
                 <>
                   <span style={gradientText}>{e.title.split(' ')[0]}</span> {e.title.split(' ').slice(1).join(' ')}
@@ -92,11 +92,11 @@ function EditionPage() {
                 e.title
               )}
             </Heading>
-            <Text size="lg" style={{ maxWidth: 520, lineHeight: 1.7 }}>
+            <Text size="lg" style={{ maxWidth: 640, lineHeight: 1.65 }}>
               {DESCRIPTION}
             </Text>
             {open && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14, alignItems: 'flex-start' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14, alignItems: 'center', marginTop: 8 }}>
                 <Link to="/$edition/survey" params={{ edition: e.id }} reloadDocument={isBeta(e)} style={ctaLink}>
                   설문 시작하기 <Icon name="chevronRight" size="sm" />
                 </Link>
@@ -107,6 +107,7 @@ function EditionPage() {
                     padding: 0,
                     display: 'flex',
                     flexWrap: 'wrap',
+                    justifyContent: 'center',
                     gap: 'var(--spacing-8) var(--spacing-24)',
                     fontSize: '0.9375rem',
                     color: 'var(--colors-fg-neutral-placeholder)',
@@ -124,12 +125,12 @@ function EditionPage() {
               </div>
             )}
             {result && (
-              <Link to="/$edition/results" params={{ edition: e.id }} style={ctaLink}>
+              <Link to="/$edition/results" params={{ edition: e.id }} style={{ ...ctaLink, marginTop: 8 }}>
                 결과 보기 <Icon name="chevronRight" size="sm" />
               </Link>
             )}
           </div>
-          <figure style={heroFrame}>
+          <figure style={heroBelow}>
             <img src="/types/default.jpg" alt="" width={1200} height={630} style={heroImage} />
           </figure>
         </section>

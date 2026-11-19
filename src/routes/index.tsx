@@ -5,7 +5,7 @@ import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { openEditions } from '@/editions'
 import { koDate } from '@/lib/date'
-import { ctaLink, eyebrow, gradientBanner, gradientText, heroFrame, heroImage, heroTitle, sectionTitle } from '@/lib/brand'
+import { ctaLink, eyebrow, gradientBanner, gradientText, heroBelow, heroImage, heroTitle, sectionTitle } from '@/lib/brand'
 import { ogImage } from '@/lib/og'
 import { GLOBAL, KOREA } from '@/lib/stackOverflow'
 
@@ -63,8 +63,8 @@ function Landing() {
     <div style={{ background: 'var(--colors-app-bg)', color: 'var(--colors-fg-neutral)' }}>
       <SiteHeader />
 
-      <section style={{ ...wrap, padding: '80px 24px 96px', display: 'flex', flexWrap: 'wrap', gap: 56, alignItems: 'center' }}>
-        <div style={{ flex: '1 1 440px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 28, alignItems: 'flex-start' }}>
+      <section style={{ ...wrap, padding: '40px 24px 96px', display: 'flex', flexDirection: 'column', gap: 32, alignItems: 'center' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'center', textAlign: 'center' }}>
           {open?.opensAt && (
             <Link
               to="/$edition"
@@ -99,14 +99,16 @@ function Landing() {
             </Link>
           )}
           <Heading level={1} wordBreak="cjk" style={heroTitle}>
-            한국 개발자의 <span style={gradientText}>오늘</span>을
-            <br />
-            함께 기록해요
+            {/* 좁은 화면에서는 두 덩어리 사이에서 줄을 바꾼다 */}
+            <span style={{ display: 'inline-block' }}>
+              한국 개발자의 <span style={gradientText}>오늘</span>을
+            </span>{' '}
+            <span style={{ display: 'inline-block' }}>함께 기록해요</span>
           </Heading>
-          <Text size="lg" style={{ maxWidth: 520, fontSize: '1.1875rem', lineHeight: 1.65 }}>
+          <Text size="lg" style={{ maxWidth: 640, lineHeight: 1.65 }}>
             국내외 어디에 있든 한국 개발자가 어떻게 일하고 성장하는지, 그 이야기를 함께 모아요. 응답 하나하나가 모여 한국 개발자 생태계를 읽는 인사이트가 돼요.
           </Text>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-12)', alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-12)', alignItems: 'center', justifyContent: 'center', marginTop: 8 }}>
             {open ? (
               <Link to="/$edition" params={{ edition: open.id }} style={ctaLink}>
                 {open.title.replace(' 달레 스터디 개발자 설문조사', ' 설문조사')} 참여하기 <Icon name="chevronRight" size="sm" />
@@ -127,6 +129,7 @@ function Landing() {
               padding: 0,
               display: 'flex',
               flexWrap: 'wrap',
+              justifyContent: 'center',
               gap: 'var(--spacing-8) var(--spacing-24)',
               fontSize: '0.9375rem',
               color: 'var(--colors-fg-neutral-placeholder)',
@@ -137,7 +140,7 @@ function Landing() {
             <Fact icon="globe">결과는 모두 공개</Fact>
           </ul>
         </div>
-        <figure style={heroFrame}>
+        <figure style={heroBelow}>
           <img src="/types/home.jpg" alt="" width={1200} height={630} style={heroImage} />
         </figure>
       </section>

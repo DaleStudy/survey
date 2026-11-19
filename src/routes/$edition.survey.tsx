@@ -397,7 +397,7 @@ function Survey() {
     return (
       <main style={page}>
         <div style={{ ...column, alignItems: 'flex-start' }}>
-          <figure style={{ ...heroFrame, flex: 'none', alignSelf: 'stretch' }}>
+          <figure style={{ ...heroFrame, alignSelf: 'stretch' }}>
             <img src="/types/welcome.jpg" alt="" width={1200} height={630} style={heroImage} />
           </figure>
           <Heading level={1}>{edition.title}</Heading>
