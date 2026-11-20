@@ -65,39 +65,6 @@ function Landing() {
 
       <section style={{ ...wrap, padding: '40px 24px 96px', display: 'flex', flexDirection: 'column', gap: 32, alignItems: 'center' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'center', textAlign: 'center' }}>
-          {open?.opensAt && (
-            <Link
-              to="/$edition"
-              params={{ edition: open.id }}
-              style={{
-                display: 'inline-flex',
-                gap: 'var(--spacing-8)',
-                alignItems: 'center',
-                padding: '6px 14px 6px 6px',
-                borderRadius: 'var(--radii-full)',
-                background: 'var(--colors-bg-brand)',
-                border: brandRule,
-                color: 'var(--colors-fg-neutral)',
-                fontSize: '0.875rem',
-                fontWeight: 500,
-                textDecoration: 'none',
-              }}
-            >
-              <span
-                style={{
-                  padding: '3px 10px',
-                  borderRadius: 'var(--radii-full)',
-                  background: 'var(--colors-bg-solid-brand)',
-                  color: 'var(--colors-fg-solid-brand)',
-                  fontWeight: 600,
-                }}
-              >
-                {open.id}
-              </span>
-              {koDate(open.opensAt)}부터 응답을 받아요
-              <Icon name="chevronRight" size="sm" tone="brand" />
-            </Link>
-          )}
           <Heading level={1} wordBreak="cjk" style={heroTitle}>
             {/* 좁은 화면에서는 두 덩어리 사이에서 줄을 바꾼다 */}
             <span style={{ display: 'inline-block' }}>
@@ -135,12 +102,13 @@ function Landing() {
               color: 'var(--colors-fg-neutral-placeholder)',
             }}
           >
+            {open?.opensAt && <Fact icon="calendar">{koDate(open.opensAt)}부터</Fact>}
             <Fact icon="clock">10분 안팎</Fact>
             <Fact icon="eyeOff">로그인·이메일 없이 익명</Fact>
             <Fact icon="globe">결과는 모두 공개</Fact>
           </ul>
         </div>
-        <figure style={heroBelow}>
+        <figure style={heroBelow(450)}>
           <img src="/types/home.jpg" alt="" width={1200} height={630} style={heroImage} />
         </figure>
       </section>
