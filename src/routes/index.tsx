@@ -108,7 +108,7 @@ function Landing() {
             <Fact icon="globe">결과는 모두 공개</Fact>
           </ul>
         </div>
-        <figure style={heroBelow}>
+        <figure style={heroBelow(450)}>
           <img src="/types/home.jpg" alt="" width={1200} height={630} style={heroImage} />
         </figure>
       </section>

@@ -44,8 +44,11 @@ export const heroFrame: React.CSSProperties = {
 export const heroImage: React.CSSProperties = { display: 'block', width: '100%', height: 'auto', borderRadius: 'var(--radii-lg)' }
 
 // 홈과 회차 페이지에서 글 아래에 두는 일러스트(1200×630). 글 아래 남은 화면 높이에 다 들어가도록 폭을 정하고,
-// 낮은 화면에서도 560px 아래로는 줄이지 않는다. 500px 는 머리글과 글 영역의 높이다.
-export const heroBelow: React.CSSProperties = { ...heroFrame, width: 'clamp(min(100%, 560px), calc((100svh - 500px) * 1.9), 100%)' }
+// 낮은 화면에서도 560px 아래로는 줄이지 않는다. above 는 페이지마다 다른 머리글과 글 영역의 높이(px)다.
+export const heroBelow = (above: number): React.CSSProperties => ({
+  ...heroFrame,
+  width: `clamp(min(100%, 560px), calc((100svh - ${above}px) * 1.9), 100%)`,
+})
 
 // 주 행동 링크. 버튼처럼 보이지만 페이지를 옮기므로 <a> 다.
 export const ctaLink: React.CSSProperties = {

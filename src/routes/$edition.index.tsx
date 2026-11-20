@@ -130,7 +130,7 @@ function EditionPage() {
               </Link>
             )}
           </div>
-          <figure style={heroBelow}>
+          <figure style={heroBelow(500)}>
             <img src="/types/default.jpg" alt="" width={1200} height={630} style={heroImage} />
           </figure>
         </section>
