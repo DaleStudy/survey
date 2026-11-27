@@ -138,8 +138,8 @@ sections:
         label: 지금 일하는 곳은 어떤 곳인가요?
         help: 빅테크라면 한국 회사든 외국 회사든 "국내외 빅테크"를, 투자를 받아 빠르게 크고 있는 회사는 "스타트업"을 골라 주세요. "외국계 기업"은 한국에 있는 외국 회사예요.
         options:
-          - { code: large, label: "대기업" }
-          - { code: midsize, label: "중견기업" }
+          - { code: large, label: "대기업 (삼성, SK, 현대차, LG 같은 그룹과 계열사)" }
+          - { code: midsize, label: "중견기업 (매출 약 1,500억 원 이상)" }
           - { code: small, label: "중소기업" }
           - { code: startup, label: "스타트업" }
           - { code: public, label: "공공기관·공기업" }
